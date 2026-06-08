@@ -1,0 +1,18 @@
+{
+  "features": [
+    { "id": "F001", "name": "WhatsApp inbound handler", "status": "DONE", "node": "2" },
+    { "id": "F002", "name": "ReAct agent with Redis memory", "status": "DONE", "node": "2" },
+    { "id": "F003", "name": "Property CRUD + search", "status": "DONE", "node": "1" },
+    { "id": "F004", "name": "Client CRM + lead stages", "status": "DONE", "node": "1" },
+    { "id": "F005", "name": "Event scheduling (visits/calls)", "status": "DONE", "node": "2" },
+    { "id": "F006", "name": "XGBoost lead scoring", "status": "DONE", "node": "3" },
+    { "id": "F007", "name": "RAG document ingestion", "status": "DONE", "node": "4" },
+    { "id": "F008", "name": "Semantic property matching (pgvector)", "status": "DONE", "node": "4" },
+    { "id": "F009", "name": "Adinco scraper (Playwright)", "status": "DONE", "node": "5" },
+    { "id": "F010", "name": "Google Drive Excel sync", "status": "DONE", "node": "5" },
+    { "id": "F011", "name": "Analytics dashboard (Plotly)", "status": "DONE", "node": "5" },
+    { "id": "F012", "name": "WhatsApp appointment reminders", "status": "DONE", "node": "5" },
+    { "id": "F013", "name": "Meta-learning feedback loop", "status": "DONE", "node": "6.1" },
+    { "id": "F014", "name": "Production hardening + Sentry", "status": "DONE", "node": "6.2" }
+  ]
+}

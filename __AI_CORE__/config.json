@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "project": "asistente-real-state",
+    "version": "0.6.2",
+    "created": "2025-01-15",
+    "last_updated": "2025-06-08"
+  },
+  "roadmap": {
+    "current_node": "6.2-COMPLETE",
+    "progress_pct": 100,
+    "nodes": [
+      { "id": "1", "name": "Core backend + DB schema", "status": "COMPLETE" },
+      { "id": "2", "name": "ReAct agent + WhatsApp gateway", "status": "COMPLETE" },
+      { "id": "3", "name": "ML pipeline (XGBoost lead scoring)", "status": "COMPLETE" },
+      { "id": "4", "name": "RAG + semantic property search", "status": "COMPLETE" },
+      { "id": "5", "name": "Analytics dashboard + scraping", "status": "COMPLETE" },
+      { "id": "6.1", "name": "Meta-learning loop", "status": "COMPLETE" },
+      { "id": "6.2", "name": "Production hardening", "status": "COMPLETE" }
+    ]
+  },
+  "session_state": {
+    "pending_tomorrow": [],
+    "bugs_known": [],
+    "last_snap": "2025-06-08T000000"
+  }
+}
