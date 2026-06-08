@@ -1,26 +1,69 @@
 {
   "meta": {
-    "project": "asistente-real-state",
-    "version": "0.6.2",
-    "created": "2025-01-15",
-    "last_updated": "2025-06-08"
+    "project": "Asistente-de-Real-State",
+    "version": "0.7.0",
+    "created_at": "2026-06-08T00:00:00Z",
+    "last_updated": "2026-06-08T14:00:00Z"
+  },
+  "stack": {
+    "frontend": "Next.js 14",
+    "backend": "FastAPI + Python 3.12",
+    "database": "Supabase (PostgreSQL 16 + pgvector)",
+    "auth": "Supabase Auth + JWT",
+    "hosting": "Self-hosted Docker (backend/gateway) + Supabase cloud (DB)",
+    "email": "Resend",
+    "payments": null,
+    "monitoring": "Sentry",
+    "repo": "github.com/heraldoianode-ops/asistente-real-state",
+    "branch_main": "main",
+    "branch_dev": "claude/epic-feynman-d36kpq",
+    "package_manager": "pip / npm"
   },
   "roadmap": {
-    "current_node": "6.2-COMPLETE",
-    "progress_pct": 100,
+    "current_phase": "Fase 7 — Multi-tenant + Supabase",
+    "current_node": "7.1 — Multi-tenant schema + RLS",
+    "progress_pct": 54,
     "nodes": [
-      { "id": "1", "name": "Core backend + DB schema", "status": "COMPLETE" },
-      { "id": "2", "name": "ReAct agent + WhatsApp gateway", "status": "COMPLETE" },
-      { "id": "3", "name": "ML pipeline (XGBoost lead scoring)", "status": "COMPLETE" },
-      { "id": "4", "name": "RAG + semantic property search", "status": "COMPLETE" },
-      { "id": "5", "name": "Analytics dashboard + scraping", "status": "COMPLETE" },
-      { "id": "6.1", "name": "Meta-learning loop", "status": "COMPLETE" },
-      { "id": "6.2", "name": "Production hardening", "status": "COMPLETE" }
+      { "id": "1.1", "name": "Scaffolding & CI/CD", "status": "complete" },
+      { "id": "2.1", "name": "Auth & Users", "status": "complete" },
+      { "id": "2.2", "name": "Properties model", "status": "complete" },
+      { "id": "2.3", "name": "WhatsApp Gateway", "status": "complete" },
+      { "id": "3.1", "name": "Adinco RPA Scraper", "status": "complete" },
+      { "id": "3.2", "name": "Google Drive Sync", "status": "complete" },
+      { "id": "3.3", "name": "CRM LADS", "status": "complete" },
+      { "id": "4.1", "name": "RAG Pipeline", "status": "complete" },
+      { "id": "4.2", "name": "Property Matching Engine", "status": "complete" },
+      { "id": "5.1", "name": "XGBoost Lead Scorer", "status": "complete" },
+      { "id": "5.2", "name": "Analytics Engine", "status": "complete" },
+      { "id": "6.1", "name": "Meta-Learning Feedback Loop", "status": "complete" },
+      { "id": "6.2", "name": "Next.js Dashboard", "status": "complete" },
+      { "id": "7.1", "name": "Multi-tenant schema + Supabase RLS", "status": "in_progress" },
+      { "id": "7.2", "name": "RBAC + auth + WhatsApp admin panel", "status": "pending" },
+      { "id": "7.3", "name": "Privacy layer (backend enforcement)", "status": "pending" },
+      { "id": "7.4", "name": "Cross-agent match engine", "status": "pending" },
+      { "id": "7.5", "name": "Role-based dashboards (admin + agent)", "status": "pending" },
+      { "id": "7.6", "name": "WhatsApp /buscar command + DB export", "status": "pending" }
     ]
   },
   "session_state": {
-    "pending_tomorrow": [],
+    "pending_tomorrow": [
+      "7.2: RBAC + Supabase Auth integration + WhatsApp number admin panel",
+      "7.3: Privacy enforcement in FastAPI (listing_agent_id, client ownership)",
+      "7.4: Cross-agent match notification with explanation",
+      "7.5: Role-based dashboards",
+      "7.6: /buscar WhatsApp command + DB section export"
+    ],
     "bugs_known": [],
-    "last_snap": "2025-06-08T000000"
+    "last_snap": "2026-06-08T14:00:00Z"
+  },
+  "ai_policy": {
+    "default_llm": "ollama",
+    "allow_external_flag": "allow_external",
+    "external_llm_authorized_agents": [
+      "rag_legal_agent",
+      "objection_handler_agent",
+      "predictive_report_agent"
+    ],
+    "enforce": true
   }
 }

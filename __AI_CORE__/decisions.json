@@ -7,6 +7,11 @@
     { "id": "D005", "title": "XGBoost for lead scoring", "status": "ACTIVE", "rationale": "Tabular data, interpretable via SHAP, fast inference, no GPU required." },
     { "id": "D006", "title": "Celery + Redis for task queue", "status": "ACTIVE", "rationale": "Scraping and reminders need reliable async execution with beat scheduler." },
     { "id": "D007", "title": "Next.js 14 standalone dashboard", "status": "ACTIVE", "rationale": "SSR + API rewrites. Standalone output for lean Docker image." },
-    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Continuous improvement of agent, matching, and ML scoring from real interactions." }
+    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Continuous improvement of agent, matching, and ML scoring from real interactions." },
+    { "id": "D009", "title": "Supabase as primary DB (replaces local PostgreSQL)", "status": "ACTIVE", "rationale": "Cloud-hosted PostgreSQL with pgvector support. Admin can snapshot locally. Enables multi-tenant RLS natively." },
+    { "id": "D010", "title": "Multi-tenant via agent_id scoping + RLS", "status": "ACTIVE", "rationale": "Single DB instance. Privacy enforced at two layers: Supabase RLS (dashboard direct queries) + FastAPI application layer (API calls). Admin bypasses both." },
+    { "id": "D011", "title": "Property catalog is public; owner contacts are private", "status": "ACTIVE", "rationale": "All agents can search/match properties. Owner contact data lives in property_owner_contacts table, visible only to listing agent. conversation_summary visible to all for context." },
+    { "id": "D012", "title": "Cross-agent match: share client name + explanation only", "status": "ACTIVE", "rationale": "Listing agent sees buyer name + match reason to enable coordination. No other buyer data exposed. Recorded in cross_agent_matches table." },
+    { "id": "D013", "title": "WhatsApp numbers managed by admin, not self-registered", "status": "ACTIVE", "rationale": "Admin controls onboarding. Each agent gets one phone_number_id enabled/disabled from admin panel. Prevents unauthorized access." }
   ]
 }
