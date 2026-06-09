@@ -12,7 +12,7 @@ interface MatchRow {
   similarity_score: number
   status: string
   created_at: string
-  properties: { address: string | null; neighborhood: string | null } | null
+  properties: { address: string | null; neighborhood: string | null } | { address: string | null; neighborhood: string | null }[] | null
 }
 
 interface Stats {
@@ -20,6 +20,12 @@ interface Stats {
   clients: number
   matches: number
   pending_matches: number
+}
+
+function getPropLabel(p: MatchRow['properties']): string {
+  if (!p) return '—'
+  const item = Array.isArray(p) ? p[0] : p
+  return item?.address ?? item?.neighborhood ?? '—'
 }
 
 export default function AnalyticsPage() {
@@ -56,7 +62,7 @@ export default function AnalyticsPage() {
         matches: m.count ?? 0,
         pending_matches: pm.count ?? 0,
       })
-      setRecent((r.data as MatchRow[]) ?? [])
+      setRecent((r.data as unknown as MatchRow[]) ?? [])
       setLoading(false)
     })
   }, [user])
@@ -83,7 +89,6 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <>
-            {/* KPI Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {CARDS.map(({ label, value, icon: Icon }) => (
                 <div key={label} className="card-creatio p-5">
@@ -98,7 +103,6 @@ export default function AnalyticsPage() {
               ))}
             </div>
 
-            {/* Recent matches */}
             <div className="card-creatio overflow-hidden">
               <div className="px-5 py-4 border-b border-[hsl(var(--border))]">
                 <h2 className="text-sm font-semibold">Coincidencias recientes</h2>
@@ -117,9 +121,7 @@ export default function AnalyticsPage() {
                   <tbody className="divide-y divide-[hsl(var(--border))]">
                     {recent.map((m) => (
                       <tr key={m.id} className="hover:bg-[hsl(var(--secondary))] transition-colors">
-                        <td className="px-4 py-3 font-medium">
-                          {m.properties?.address ?? m.properties?.neighborhood ?? '—'}
-                        </td>
+                        <td className="px-4 py-3 font-medium">{getPropLabel(m.properties)}</td>
                         <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.explanation}</td>
                         <td className="px-4 py-3">{(m.similarity_score * 100).toFixed(0)}%</td>
                         <td className="px-4 py-3">
