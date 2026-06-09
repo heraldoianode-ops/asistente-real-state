@@ -1,43 +1,35 @@
-'use client';
+import { createClient } from './supabase'
 
-export interface SessionUser {
-  id: string;
-  email: string;
-  full_name: string | null;
-  role: 'admin' | 'agent';
-  is_active: boolean;
+export async function signIn(email: string, password: string) {
+  const supabase = createClient()
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw new Error(error.message)
+  return data
 }
 
-export function getTokenFromCookie(): string | null {
-  if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]*)/);
-  return match ? decodeURIComponent(match[1]) : null;
+export async function signOut() {
+  const supabase = createClient()
+  await supabase.auth.signOut()
 }
 
-export function isLoggedIn(): boolean {
-  return !!getTokenFromCookie();
+export async function getSession() {
+  const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
 }
 
-export function clearSession(): void {
-  document.cookie = 'access_token=; Max-Age=0; path=/';
+export async function getCurrentUser() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  const { data } = await supabase
+    .from('users')
+    .select('id, email, full_name, role, is_active')
+    .eq('auth_user_id', user.id)
+    .single()
+  return data as { id: string; email: string; full_name: string | null; role: string; is_active: boolean } | null
 }
 
-export async function getSession(): Promise<SessionUser | null> {
-  const token = getTokenFromCookie();
-  if (!token) return null;
-  try {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-    const res = await fetch(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-      credentials: 'include',
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
-export function isAdmin(user: SessionUser | null): boolean {
-  return user?.role === 'admin';
+export function clearToken() {
+  void signOut()
 }
