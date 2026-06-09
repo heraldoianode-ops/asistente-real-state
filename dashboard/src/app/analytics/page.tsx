@@ -6,8 +6,21 @@ import { StatusBadge } from '@/components/StatusBadge'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { Building2, Users, MessageSquare, TrendingUp } from 'lucide-react'
 
-interface MatchRow { id: string; explanation: string; similarity_score: number; status: string; created_at: string; properties: { address: string | null; neighborhood: string | null } | null }
+interface MatchRow {
+  id: string
+  explanation: string
+  similarity_score: number
+  status: string
+  created_at: string
+  properties: { address: string | null; neighborhood: string | null } | { address: string | null; neighborhood: string | null }[] | null
+}
 interface Stats { properties: number; clients: number; matches: number; pending_matches: number }
+
+function getPropLabel(p: MatchRow['properties']): string {
+  if (!p) return '—'
+  const item = Array.isArray(p) ? p[0] : p
+  return item?.address ?? item?.neighborhood ?? '—'
+}
 
 export default function AnalyticsPage() {
   const { user } = useCurrentUser()
@@ -27,7 +40,7 @@ export default function AnalyticsPage() {
       supabase.from('cross_agent_matches').select('id,explanation,similarity_score,status,created_at,properties(address,neighborhood)').order('created_at',{ascending:false}).limit(5),
     ]).then(([p,c,m,pm,r]) => {
       setStats({ properties: p.count??0, clients: c.count??0, matches: m.count??0, pending_matches: pm.count??0 })
-      setRecent((r.data as MatchRow[])??[])
+      setRecent((r.data as unknown as MatchRow[])??[])
       setLoading(false)
     })
   }, [user])
@@ -70,7 +83,7 @@ export default function AnalyticsPage() {
                   <tbody className="divide-y divide-[hsl(var(--border))]">
                     {recent.map(m=>(
                       <tr key={m.id} className="hover:bg-[hsl(var(--secondary))] transition-colors">
-                        <td className="px-4 py-3 font-medium">{m.properties?.address??m.properties?.neighborhood??'—'}</td>
+                        <td className="px-4 py-3 font-medium">{getPropLabel(m.properties)}</td>
                         <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.explanation}</td>
                         <td className="px-4 py-3">{(m.similarity_score*100).toFixed(0)}%</td>
                         <td className="px-4 py-3"><StatusBadge label={m.status==='pending'?'Pendiente':m.status==='accepted'?'Aceptado':'Rechazado'} variant={m.status==='pending'?'pending':m.status==='accepted'?'active':'inactive'} /></td>
