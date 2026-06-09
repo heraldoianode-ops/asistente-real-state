@@ -22,11 +22,20 @@ export default function AnalyticsPage() {
   const [stats, setStats] = useState<Stats>({ properties: 0, clients: 0, matches: 0, pending_matches: 0 })
   const [recent, setRecent] = useState<MatchRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
     const supabase = createClient()
     const isAdmin = user.role === 'admin'
+
+    let recentQuery = supabase
+      .from('cross_agent_matches')
+      .select('id, explanation, similarity_score, status, created_at, properties(address, neighborhood)')
+      .order('created_at', { ascending: false })
+      .limit(5)
+    if (!isAdmin) recentQuery = recentQuery.eq('listing_agent_id', user.id)
+
     Promise.all([
       supabase.from('properties').select('id', { count: 'exact', head: true }),
       isAdmin
@@ -38,16 +47,18 @@ export default function AnalyticsPage() {
       isAdmin
         ? supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true }).eq('status', 'pending')
         : supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true }).eq('listing_agent_id', user.id).eq('status', 'pending'),
-      supabase
-        .from('cross_agent_matches')
-        .select('id, explanation, similarity_score, status, created_at, properties(address, neighborhood)')
-        .order('created_at', { ascending: false })
-        .limit(5),
-    ]).then(([p, c, m, pm, r]) => {
-      setStats({ properties: p.count ?? 0, clients: c.count ?? 0, matches: m.count ?? 0, pending_matches: pm.count ?? 0 })
-      setRecent((r.data as unknown as MatchRow[]) ?? [])
-      setLoading(false)
-    })
+      recentQuery,
+    ])
+      .then(([p, c, m, pm, r]) => {
+        setStats({ properties: p.count ?? 0, clients: c.count ?? 0, matches: m.count ?? 0, pending_matches: pm.count ?? 0 })
+        setRecent((r.data as unknown as MatchRow[]) ?? [])
+        setLoading(false)
+      })
+      .catch((err: unknown) => {
+        console.error('[analytics] Failed to load data:', err)
+        setError('No se pudieron cargar los datos. Intentá de nuevo.')
+        setLoading(false)
+      })
   }, [user])
 
   const CARDS = [
@@ -68,6 +79,10 @@ export default function AnalyticsPage() {
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : (
           <>
