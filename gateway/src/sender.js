@@ -22,10 +22,9 @@ async function postWithRetry(payload, retries = 3, delayMs = 1000) {
       return resp.data;
     } catch (err) {
       const status = err.response?.status;
-      if (status && status !== 429 && status < 500 && attempt < retries) {
-        throw err;
-      }
-      if (attempt === retries) throw err;
+      // Only retry on rate-limit (429) or server errors (5xx)
+      const isRetryable = status === 429 || (status >= 500 && status < 600);
+      if (!isRetryable || attempt === retries) throw err;
       const wait = delayMs * Math.pow(2, attempt - 1);
       await new Promise((r) => setTimeout(r, wait));
     }
@@ -38,7 +37,7 @@ async function sendText(to, text, previewUrl = false) {
     recipient_type: "individual",
     to,
     type: "text",
-    text: { body: text.slice(0, 4096), preview_url: previewUrl },
+    text: { body: (text || "").slice(0, 4096), preview_url: previewUrl },
   });
 }
 
@@ -84,11 +83,14 @@ async function sendButtons(to, bodyText, buttons, headerText = "", footerText = 
     type: "interactive",
     interactive: {
       type: "button",
-      body: { text: bodyText.slice(0, 1024) },
+      body: { text: (bodyText || "").slice(0, 1024) },
       action: {
         buttons: buttons.slice(0, 3).map((b) => ({
           type: "reply",
-          reply: { id: b.id.slice(0, 256), title: b.title.slice(0, 20) },
+          reply: {
+            id: (b.id || "").slice(0, 256),
+            title: (b.title || "").slice(0, 20),
+          },
         })),
       },
     },
@@ -106,15 +108,15 @@ async function sendList(to, bodyText, buttonLabel, sections) {
     type: "interactive",
     interactive: {
       type: "list",
-      body: { text: bodyText.slice(0, 1024) },
+      body: { text: (bodyText || "").slice(0, 1024) },
       action: {
-        button: buttonLabel.slice(0, 20),
+        button: (buttonLabel || "").slice(0, 20),
         sections: sections.map((s) => ({
-          title: s.title?.slice(0, 24),
+          title: (s.title || "").slice(0, 24),
           rows: s.rows.slice(0, 10).map((r) => ({
-            id: r.id.slice(0, 200),
-            title: r.title.slice(0, 24),
-            description: r.description?.slice(0, 72),
+            id: (r.id || "").slice(0, 200),
+            title: (r.title || "").slice(0, 24),
+            description: (r.description || "").slice(0, 72),
           })),
         })),
       },
@@ -129,7 +131,9 @@ async function markRead(messageId) {
       { messaging_product: "whatsapp", status: "read", message_id: messageId },
       { headers: HEADERS(), timeout: 5000 }
     );
-  } catch (_) {}
+  } catch (err) {
+    console.warn("[sender] markRead failed:", err.message);
+  }
 }
 
 module.exports = { sendText, sendImage, sendDocument, sendTemplate, sendButtons, sendList, markRead };
