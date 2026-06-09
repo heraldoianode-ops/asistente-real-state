@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-09T14:00:00Z"
+    "last_updated": "2026-06-09T15:00:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -11,9 +11,6 @@
     "database": "Supabase — mh-systems-platform (schema: asistente_real_state)",
     "auth": "Supabase Auth + @supabase/ssr",
     "hosting": "Netlify (dashboard) + Supabase (DB + Edge Fn) + Hetzner CX11 (WhatsApp Gateway)",
-    "email": "Resend",
-    "payments": null,
-    "monitoring": "Sentry",
     "repo": "github.com/heraldoianode-ops/asistente-real-state",
     "branch_main": "main",
     "branch_dev": "claude/epic-feynman-d36kpq",
@@ -29,7 +26,7 @@
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "8.6 — complete",
+    "current_node": "8.7 — debt repair complete",
     "progress_pct": 100,
     "nodes": [
       { "id": "8.1", "name": "Dashboard → supabase-js direct", "status": "complete" },
@@ -37,17 +34,16 @@
       { "id": "8.3", "name": "Supabase Edge Functions (matching + notify)", "status": "complete" },
       { "id": "8.4", "name": "WhatsApp Gateway slim (Node.js only)", "status": "complete" },
       { "id": "8.5", "name": "Creatio design system", "status": "complete" },
-      { "id": "8.6", "name": "Netlify config + .env.example", "status": "complete" }
+      { "id": "8.6", "name": "Netlify config + .env.example", "status": "complete" },
+      { "id": "8.7", "name": "Debt repair — 5 issues resolved", "status": "complete" }
     ]
   },
   "session_state": {
     "pending_tomorrow": [
-      "SALUD + deuda técnica review",
-      "Reparar deuda encontrada",
-      "PUBLICAR MÓDULO — supabase-js client + StatusBadge + Sidebar"
+      "PUBLICAR MÓDULO — supabase-js client + StatusBadge + Sidebar Creatio"
     ],
     "bugs_known": [],
-    "last_snap": "2026-06-09T14:00:00Z"
+    "last_snap": "2026-06-09T15:00:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",

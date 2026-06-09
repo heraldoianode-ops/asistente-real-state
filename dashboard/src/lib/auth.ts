@@ -31,5 +31,5 @@ export async function getCurrentUser() {
 }
 
 export function clearToken() {
-  signOut()
+  void signOut()
 }

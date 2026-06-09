@@ -5,5 +5,15 @@
     "debt": { "critical": 0, "high": 0, "medium": 0 },
     "alerts": []
   },
-  "last_check": "2025-06-08"
+  "last_check": "2026-06-09",
+  "last_repair": {
+    "date": "2026-06-09",
+    "fixed": [
+      "TD-001: crm/analytics/admin pages migrated from axios/FastAPI to supabase-js",
+      "TD-002: app/page.tsx redirect uses Supabase session",
+      "TD-003: Sidebar routes corrected to /analytics, /crm, /admin",
+      "TD-004: decisions.json D006/D007 marked SUPERSEDED, D014/D015 added",
+      "TD-005: clearToken() uses void to suppress unhandled promise"
+    ]
+  }
 }

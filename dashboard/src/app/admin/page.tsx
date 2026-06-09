@@ -1,50 +1,95 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { Sidebar } from '@/components/Sidebar'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
-import { useToast } from '@/hooks/use-toast'
+import { StatusBadge } from '@/components/StatusBadge'
+import { createClient } from '@/lib/supabase'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { Users, Building2, MessageSquare, Phone } from 'lucide-react'
+
+interface Stats {
+  agents: number
+  properties: number
+  matches: number
+  wa_numbers: number
+}
 
 export default function AdminPage() {
-  const { toast } = useToast()
+  const { user } = useCurrentUser()
+  const [stats, setStats] = useState<Stats>({ agents: 0, properties: 0, matches: 0, wa_numbers: 0 })
+  const [loading, setLoading] = useState(true)
 
-  const triggerScraping = async (type: 'adinco' | 'drive') => {
-    try {
-      await api.post(`/scraping/${type}`)
-      toast({ title: 'OK', description: `Scraping ${type} iniciado` })
-    } catch {
-      toast({ title: 'Error', description: 'No se pudo iniciar', variant: 'destructive' })
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient()
+      const [a, p, m, w] = await Promise.all([
+        supabase.from('users').select('id', { count: 'exact', head: true }).neq('role', 'admin'),
+        supabase.from('properties').select('id', { count: 'exact', head: true }),
+        supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true }),
+        supabase.from('whatsapp_numbers').select('id', { count: 'exact', head: true }).eq('is_active', true),
+      ])
+      setStats({
+        agents: a.count ?? 0,
+        properties: p.count ?? 0,
+        matches: m.count ?? 0,
+        wa_numbers: w.count ?? 0,
+      })
+      setLoading(false)
     }
-  }
+    load()
+  }, [])
 
-  const triggerRetrain = async () => {
-    try {
-      await api.post('/predictions/retrain')
-      toast({ title: 'OK', description: 'Reentrenamiento iniciado' })
-    } catch {
-      toast({ title: 'Error', description: 'No se pudo iniciar', variant: 'destructive' })
-    }
-  }
+  const CARDS = [
+    { label: 'Agentes activos', value: stats.agents, icon: Users, href: '/admin/agents' },
+    { label: 'Propiedades', value: stats.properties, icon: Building2, href: '/crm' },
+    { label: 'Coincidencias', value: stats.matches, icon: MessageSquare, href: '/crm' },
+    { label: 'Números WA activos', value: stats.wa_numbers, icon: Phone, href: '/admin/whatsapp' },
+  ]
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
+    <div className="flex h-screen bg-[hsl(var(--background))]">
+      <Sidebar role={user?.role} />
       <main className="flex-1 overflow-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Admin</h1>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader><CardTitle>Scraping</CardTitle></CardHeader>
-            <CardContent className="space-y-2">
-              <Button onClick={() => triggerScraping('adinco')} className="w-full">Ejecutar Adinco</Button>
-              <Button onClick={() => triggerScraping('drive')} variant="outline" className="w-full">Sync Google Drive</Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader><CardTitle>ML Model</CardTitle></CardHeader>
-            <CardContent>
-              <Button onClick={triggerRetrain} className="w-full">Reentrenar Modelo</Button>
-            </CardContent>
-          </Card>
+        <div className="mb-6">
+          <h1 className="text-xl font-bold text-[hsl(var(--foreground))]">Administración</h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Resumen de la plataforma</p>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {CARDS.map(({ label, value, icon: Icon, href }) => (
+              <a key={label} href={href} className="card-creatio p-5 hover:shadow-md transition-shadow block">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">{label}</span>
+                  <div className="w-8 h-8 rounded-md bg-[hsl(var(--accent))] flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-[hsl(var(--primary))]" />
+                  </div>
+                </div>
+                <p className="text-3xl font-bold text-[hsl(var(--foreground))]">{value}</p>
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-6 card-creatio p-5">
+          <h2 className="text-sm font-semibold text-[hsl(var(--foreground))] mb-3">Estado de la plataforma</h2>
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <StatusBadge label="Supabase" active />
+              <span className="text-[hsl(var(--muted-foreground))]">Base de datos</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <StatusBadge label="Auth" active />
+              <span className="text-[hsl(var(--muted-foreground))]">Autenticación</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <StatusBadge label="Edge Functions" active />
+              <span className="text-[hsl(var(--muted-foreground))]">Matching</span>
+            </div>
+          </div>
         </div>
       </main>
     </div>

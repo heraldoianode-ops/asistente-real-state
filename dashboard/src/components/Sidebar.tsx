@@ -2,16 +2,14 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, Building2, Users, MessageSquare,
-  LogOut, UserCog, Phone, Download,
+  BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard,
 } from 'lucide-react'
 import { signOut } from '@/lib/auth'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/properties', label: 'Propiedades', icon: Building2 },
-  { href: '/clients', label: 'Clientes', icon: Users },
-  { href: '/matches', label: 'Coincidencias', icon: MessageSquare },
+  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/crm', label: 'CRM — Clientes', icon: Users },
+  { href: '/admin', label: 'Administración', icon: LayoutDashboard },
 ]
 
 const ADMIN_ITEMS = [
@@ -40,14 +38,14 @@ export function Sidebar({ role }: { role?: string }) {
 
   return (
     <aside
-      className="w-60 flex flex-col min-h-screen"
+      className="w-60 flex flex-col min-h-screen shrink-0"
       style={{ backgroundColor: 'hsl(var(--sidebar-bg))' }}
     >
       {/* Logo */}
       <div className="px-5 py-4 border-b border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-md bg-[hsl(var(--primary))] flex items-center justify-center shrink-0">
-            <Building2 className="w-4 h-4 text-white" />
+            <LayoutDashboard className="w-4 h-4 text-white" />
           </div>
           <div>
             <p className="text-white text-sm font-semibold leading-tight">PropTech AI</p>
@@ -56,7 +54,7 @@ export function Sidebar({ role }: { role?: string }) {
         </div>
       </div>
 
-      {/* Nav */}
+      {/* Nav principal */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         <p className="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 mb-2">Principal</p>
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
@@ -68,7 +66,7 @@ export function Sidebar({ role }: { role?: string }) {
 
         {role === 'admin' && (
           <>
-            <p className="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 mt-5 mb-2">Administración</p>
+            <p className="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 mt-5 mb-2">Panel admin</p>
             {ADMIN_ITEMS.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href} className={linkClass(href)}>
                 <Icon className="w-4 h-4 shrink-0" />
