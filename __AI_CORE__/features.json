@@ -1,0 +1,29 @@
+{
+  "features": [
+    { "id": "F001", "name": "WhatsApp inbound handler", "status": "DONE", "node": "2" },
+    { "id": "F002", "name": "ReAct agent with Redis memory", "status": "DONE", "node": "2" },
+    { "id": "F003", "name": "Property CRUD + search", "status": "DONE", "node": "1" },
+    { "id": "F004", "name": "Client CRM + lead stages", "status": "DONE", "node": "1" },
+    { "id": "F005", "name": "Event scheduling (visits/calls)", "status": "DONE", "node": "2" },
+    { "id": "F006", "name": "XGBoost lead scoring", "status": "DONE", "node": "3" },
+    { "id": "F007", "name": "RAG document ingestion", "status": "DONE", "node": "4" },
+    { "id": "F008", "name": "Semantic property matching (pgvector)", "status": "DONE", "node": "4" },
+    { "id": "F009", "name": "Adinco scraper (Playwright)", "status": "DONE", "node": "5" },
+    { "id": "F010", "name": "Google Drive Excel sync", "status": "DONE", "node": "5" },
+    { "id": "F011", "name": "Analytics dashboard (Plotly)", "status": "DONE", "node": "5" },
+    { "id": "F012", "name": "WhatsApp appointment reminders", "status": "DONE", "node": "5" },
+    { "id": "F013", "name": "Meta-learning feedback loop", "status": "DONE", "node": "6.1" },
+    { "id": "F014", "name": "Production hardening + Sentry", "status": "DONE", "node": "6.2" },
+    { "id": "F015", "name": "Supabase migration (replace local PostgreSQL)", "status": "IN_PROGRESS", "node": "7.1" },
+    { "id": "F016", "name": "Multi-tenant schema (listing_agent_id, client_type, property_owner_contacts, whatsapp_numbers, cross_agent_matches)", "status": "IN_PROGRESS", "node": "7.1" },
+    { "id": "F017", "name": "Row Level Security policies (admin bypass, agent scoping)", "status": "IN_PROGRESS", "node": "7.1" },
+    { "id": "F018", "name": "RBAC + Supabase Auth (admin / agent roles)", "status": "TODO", "node": "7.2" },
+    { "id": "F019", "name": "WhatsApp number admin panel (enable/disable per agent)", "status": "TODO", "node": "7.2" },
+    { "id": "F020", "name": "Privacy enforcement layer in FastAPI", "status": "TODO", "node": "7.3" },
+    { "id": "F021", "name": "Cross-agent match notifications (name + explanation)", "status": "TODO", "node": "7.4" },
+    { "id": "F022", "name": "Admin dashboard (global view + search)", "status": "TODO", "node": "7.5" },
+    { "id": "F023", "name": "Agent dashboard (own clients, catalog, matches)", "status": "TODO", "node": "7.5" },
+    { "id": "F024", "name": "WhatsApp /buscar command", "status": "TODO", "node": "7.6" },
+    { "id": "F025", "name": "DB export by section (admin tool)", "status": "TODO", "node": "7.6" }
+  ]
+}

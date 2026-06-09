@@ -1,0 +1,10 @@
+{
+  "sessions": [
+    {
+      "date": "2025-06-08",
+      "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
+      "nodes_touched": ["all"],
+      "commits": ["feat: initial migration from architect-ai-framework"]
+    }
+  ]
+}

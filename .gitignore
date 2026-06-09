@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.env
+*.env
+!.env.example
+
+# Node
+node_modules/
+.next/
+out/
+.nuxt/
+dist/
+
+# Secrets — NEVER commit
+__AI_CORE__/services.private.json
+__AI_CORE__/*.private.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Docker volumes
+postgres_data/
+redis_data/
+ollama_data/
