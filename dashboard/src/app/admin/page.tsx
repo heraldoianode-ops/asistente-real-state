@@ -12,6 +12,7 @@ export default function AdminPage() {
   const { user } = useCurrentUser()
   const [stats, setStats] = useState<Stats>({ agents: 0, properties: 0, matches: 0, wa_numbers: 0 })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -20,10 +21,16 @@ export default function AdminPage() {
       supabase.from('properties').select('id', { count: 'exact', head: true }),
       supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true }),
       supabase.from('whatsapp_numbers').select('id', { count: 'exact', head: true }).eq('is_active', true),
-    ]).then(([a, p, m, w]) => {
-      setStats({ agents: a.count ?? 0, properties: p.count ?? 0, matches: m.count ?? 0, wa_numbers: w.count ?? 0 })
-      setLoading(false)
-    })
+    ])
+      .then(([a, p, m, w]) => {
+        setStats({ agents: a.count ?? 0, properties: p.count ?? 0, matches: m.count ?? 0, wa_numbers: w.count ?? 0 })
+        setLoading(false)
+      })
+      .catch((err: unknown) => {
+        console.error('[admin] Failed to load stats:', err)
+        setError('No se pudieron cargar las estadísticas. Intentá de nuevo.')
+        setLoading(false)
+      })
   }, [])
 
   const CARDS = [
@@ -44,6 +51,10 @@ export default function AdminPage() {
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : (
           <>
