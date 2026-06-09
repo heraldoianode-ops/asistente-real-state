@@ -19,7 +19,8 @@ function verifySignature(rawBody, signature) {
     .digest("hex");
   try {
     return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-  } catch (_) {
+  } catch (err) {
+    console.warn("[webhook] timingSafeEqual error:", err.message);
     return false;
   }
 }
@@ -48,7 +49,13 @@ function decodeInteractiveReply(msg) {
 }
 
 async function handleInbound(rawBody, signature) {
-  const body = JSON.parse(rawBody.toString());
+  let body;
+  try {
+    body = JSON.parse(rawBody.toString());
+  } catch (err) {
+    console.error("[webhook] Malformed JSON payload — ignoring:", err.message);
+    return;
+  }
 
   if (!verifySignature(rawBody, signature)) {
     console.warn("[webhook] Invalid HMAC — request ignored");
