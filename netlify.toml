@@ -9,15 +9,3 @@
 [build.environment]
   NODE_VERSION            = "20"
   NEXT_TELEMETRY_DISABLED = "1"
-
-[context.production.environment]
-  # Set in Netlify dashboard — Site Settings → Environment variables
-  # NEXT_PUBLIC_SUPABASE_URL       = "https://nehfrtedwcmdlmbulhef.supabase.co"
-  # NEXT_PUBLIC_SUPABASE_ANON_KEY  = "sb_publishable_..."
-  # NEXT_PUBLIC_WHATSAPP_GW_URL    = "https://wa-gateway.tu-dominio.com"
-
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
-  status = 200
-  force  = false

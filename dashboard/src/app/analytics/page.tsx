@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase'
 import { Sidebar } from '@/components/Sidebar'
 import { StatusBadge } from '@/components/StatusBadge'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { getPropLabel } from '@/lib/formatters'
 import { Building2, Users, MessageSquare, TrendingUp } from 'lucide-react'
 
 interface MatchRow {
@@ -14,19 +15,7 @@ interface MatchRow {
   created_at: string
   properties: { address: string | null; neighborhood: string | null } | { address: string | null; neighborhood: string | null }[] | null
 }
-
-interface Stats {
-  properties: number
-  clients: number
-  matches: number
-  pending_matches: number
-}
-
-function getPropLabel(p: MatchRow['properties']): string {
-  if (!p) return '—'
-  const item = Array.isArray(p) ? p[0] : p
-  return item?.address ?? item?.neighborhood ?? '—'
-}
+interface Stats { properties: number; clients: number; matches: number; pending_matches: number }
 
 export default function AnalyticsPage() {
   const { user } = useCurrentUser()
@@ -38,7 +27,6 @@ export default function AnalyticsPage() {
     if (!user) return
     const supabase = createClient()
     const isAdmin = user.role === 'admin'
-
     Promise.all([
       supabase.from('properties').select('id', { count: 'exact', head: true }),
       isAdmin
@@ -56,12 +44,7 @@ export default function AnalyticsPage() {
         .order('created_at', { ascending: false })
         .limit(5),
     ]).then(([p, c, m, pm, r]) => {
-      setStats({
-        properties: p.count ?? 0,
-        clients: c.count ?? 0,
-        matches: m.count ?? 0,
-        pending_matches: pm.count ?? 0,
-      })
+      setStats({ properties: p.count ?? 0, clients: c.count ?? 0, matches: m.count ?? 0, pending_matches: pm.count ?? 0 })
       setRecent((r.data as unknown as MatchRow[]) ?? [])
       setLoading(false)
     })
@@ -82,7 +65,6 @@ export default function AnalyticsPage() {
           <h1 className="text-xl font-bold text-[hsl(var(--foreground))]">Analytics</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Resumen de actividad</p>
         </div>
-
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
@@ -102,24 +84,21 @@ export default function AnalyticsPage() {
                 </div>
               ))}
             </div>
-
             <div className="card-creatio overflow-hidden">
-              <div className="px-5 py-4 border-b border-[hsl(var(--border))]">
-                <h2 className="text-sm font-semibold">Coincidencias recientes</h2>
-              </div>
+              <div className="px-5 py-4 border-b border-[hsl(var(--border))]"><h2 className="text-sm font-semibold">Coincidencias recientes</h2></div>
               {recent.length === 0 ? (
                 <div className="text-center py-10 text-sm text-[hsl(var(--muted-foreground))]">Sin coincidencias aún.</div>
               ) : (
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-[hsl(var(--secondary))] border-b border-[hsl(var(--border))]">
-                      {['Propiedad', 'Explicación', 'Similitud', 'Estado', 'Fecha'].map((h) => (
+                      {['Propiedad', 'Explicación', 'Similitud', 'Estado', 'Fecha'].map(h => (
                         <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[hsl(var(--border))]">
-                    {recent.map((m) => (
+                    {recent.map(m => (
                       <tr key={m.id} className="hover:bg-[hsl(var(--secondary))] transition-colors">
                         <td className="px-4 py-3 font-medium">{getPropLabel(m.properties)}</td>
                         <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.explanation}</td>
