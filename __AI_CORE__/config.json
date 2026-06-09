@@ -3,7 +3,7 @@
     "project": "Asistente-de-Real-State",
     "version": "0.7.2",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-09T03:00:00Z"
+    "last_updated": "2026-06-09T04:00:00Z"
   },
   "stack": {
     "frontend": "Next.js 14",
@@ -31,7 +31,7 @@
   "roadmap": {
     "current_phase": "Fase 7 — Multi-tenant + Supabase",
     "current_node": "7.3 — Privacy enforcement layer (FastAPI)",
-    "progress_pct": 62,
+    "progress_pct": 64,
     "nodes": [
       { "id": "1.1", "name": "Scaffolding & CI/CD", "status": "complete" },
       { "id": "2.1", "name": "Auth & Users", "status": "complete" },
@@ -56,13 +56,13 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "7.3: Privacy enforcement in FastAPI (search_path, listing_agent_id, client ownership)",
+      "7.3: Privacy enforcement in FastAPI (search_path, listing_agent_id, client ownership, eliminate legacy JWT)",
       "7.4: Cross-agent match notification with explanation",
       "7.5: Role-based dashboards",
       "7.6: /buscar WhatsApp command + DB section export"
     ],
     "bugs_known": [],
-    "last_snap": "2026-06-09T03:00:00Z"
+    "last_snap": "2026-06-09T04:00:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
