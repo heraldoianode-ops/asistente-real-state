@@ -7,13 +7,21 @@ type AppUser = { id: string; email: string; full_name: string | null; role: stri
 export function useCurrentUser() {
   const [user, setUser] = useState<AppUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getCurrentUser().then((u) => {
-      setUser(u)
-      setLoading(false)
-    })
+    getCurrentUser()
+      .then((u) => {
+        setUser(u)
+      })
+      .catch((err: unknown) => {
+        console.error('[useCurrentUser] Failed to load user:', err)
+        setError('No se pudo cargar el usuario.')
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
-  return { user, loading, isAdmin: user?.role === 'admin' }
+  return { user, loading, error, isAdmin: user?.role === 'admin' }
 }
