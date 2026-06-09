@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminGuard from '@/components/AdminGuard';
+import { StatusBadge } from '@/components/StatusBadge';
 import { apiFetch } from '@/lib/api';
 
 interface Agent {
@@ -71,6 +72,7 @@ export default function AgentsPage() {
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold">Agentes</h1>
           <button
+            data-testid="btn-create-agent"
             onClick={() => setShowModal(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
           >
@@ -98,14 +100,11 @@ export default function AgentsPage() {
                   <td className="p-2">{a.email}</td>
                   <td className="p-2">{a.wa_contact_id ?? '-'}</td>
                   <td className="p-2">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      a.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {a.is_active ? 'Activo' : 'Inactivo'}
-                    </span>
+                    <StatusBadge label={a.is_active ? 'Activo' : 'Inactivo'} active={a.is_active} />
                   </td>
                   <td className="p-2">
                     <button
+                      data-testid={`toggle-agent-${a.id}`}
                       onClick={() => handleToggle(a)}
                       className="text-xs underline text-blue-600 hover:text-blue-800"
                     >

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminGuard from '@/components/AdminGuard';
+import { StatusBadge } from '@/components/StatusBadge';
 import { apiFetch } from '@/lib/api';
 
 interface WANumber {
@@ -103,14 +104,11 @@ export default function WhatsAppPage() {
                   <td className="p-2">{n.display_name ?? '-'}</td>
                   <td className="p-2 font-mono text-xs">{n.agent_id}</td>
                   <td className="p-2">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      n.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                    }`}>
-                      {n.is_active ? 'Activo' : 'Inactivo'}
-                    </span>
+                    <StatusBadge label={n.is_active ? 'Activo' : 'Inactivo'} active={n.is_active} />
                   </td>
                   <td className="p-2">
                     <button
+                      data-testid={`toggle-wa-${n.id}`}
                       onClick={() => handleToggle(n)}
                       className="text-xs underline text-blue-600 hover:text-blue-800"
                     >
