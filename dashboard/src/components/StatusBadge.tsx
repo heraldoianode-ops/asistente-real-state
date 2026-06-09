@@ -1,14 +1,23 @@
 interface StatusBadgeProps {
   label: string
-  active: boolean
+  variant?: 'active' | 'inactive' | 'pending' | 'auto'
+  active?: boolean
 }
 
-export function StatusBadge({ label, active }: StatusBadgeProps) {
+export function StatusBadge({ label, variant, active }: StatusBadgeProps) {
+  const resolved = variant ?? (active ? 'active' : 'inactive')
+
+  const styles: Record<string, string> = {
+    active: 'bg-[hsl(var(--status-active-bg))] text-[hsl(var(--status-active-fg))]',
+    inactive: 'bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))]',
+    pending: 'bg-[hsl(var(--status-pending-bg))] text-[hsl(var(--status-pending-fg))]',
+  }
+
   return (
     <span
       data-testid={`badge-${label}`}
-      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-        active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        styles[resolved] ?? styles.inactive
       }`}
     >
       {label}

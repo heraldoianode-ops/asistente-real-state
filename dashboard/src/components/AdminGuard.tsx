@@ -1,25 +1,26 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getSession, isAdmin, type SessionUser } from '@/lib/auth';
+'use client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const [ready, setReady] = useState(false);
-  const [user, setUser] = useState<SessionUser | null>(null);
+  const { user, loading } = useCurrentUser()
+  const router = useRouter()
 
   useEffect(() => {
-    getSession().then((s) => {
-      if (!s || !isAdmin(s)) {
-        router.replace('/login');
-      } else {
-        setUser(s);
-        setReady(true);
-      }
-    });
-  }, [router]);
+    if (!loading && (!user || user.role !== 'admin')) {
+      router.replace('/login')
+    }
+  }, [user, loading, router])
 
-  if (!ready) return <div className="p-8 text-center">Loading…</div>;
-  return <>{children}</>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user || user.role !== 'admin') return null
+  return <>{children}</>
 }
