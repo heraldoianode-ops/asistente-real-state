@@ -1,77 +1,64 @@
-'use client';
-
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+'use client'
+import { useState, FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import { Building2 } from 'lucide-react'
+import { signIn } from '@/lib/auth'
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
     try {
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.detail ?? 'Login failed');
-      }
-      const { access_token, expires_in } = await res.json();
-      const maxAge = expires_in ?? 3600;
-      document.cookie = `access_token=${encodeURIComponent(access_token)}; Max-Age=${maxAge}; path=/; SameSite=Lax`;
-      router.replace('/admin/agents');
+      await signIn(email, password)
+      router.replace('/analytics')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-sm space-y-4"
-      >
-        <h1 className="text-2xl font-bold text-gray-800">Iniciar sesión</h1>
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+    <main className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--background))' }}>
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[hsl(var(--primary))] mb-4">
+            <Building2 className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold">PropTech AI</h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">Asistente Real State</p>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="card-creatio p-8">
+          <h2 className="text-lg font-semibold mb-6">Iniciar sesión</h2>
+          {error && (
+            <div className="mb-4 p-3 rounded-md bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))] text-sm">{error}</div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Correo electrónico</label>
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Contraseña</label>
+              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent" />
+            </div>
+            <button type="submit" disabled={loading}
+              className="w-full bg-[hsl(var(--primary))] hover:bg-[hsl(207,100%,35%)] text-white font-semibold py-2.5 rounded-md text-sm transition disabled:opacity-50 mt-2">
+              {loading ? 'Iniciando sesión…' : 'Entrar'}
+            </button>
+          </form>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-        >
-          {loading ? 'Entrando…' : 'Entrar'}
-        </button>
-      </form>
+        <p className="text-center text-xs text-[hsl(var(--muted-foreground))] mt-6">© {new Date().getFullYear()} M H Systems</p>
+      </div>
     </main>
-  );
+  )
 }

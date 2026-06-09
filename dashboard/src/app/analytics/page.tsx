@@ -1,47 +1,88 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { api } from '@/lib/api'
+import { createClient } from '@/lib/supabase'
 import { Sidebar } from '@/components/Sidebar'
-import { PlotlyChart } from '@/components/PlotlyChart'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { StatusBadge } from '@/components/StatusBadge'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { Building2, Users, MessageSquare, TrendingUp } from 'lucide-react'
+
+interface MatchRow { id: string; explanation: string; similarity_score: number; status: string; created_at: string; properties: { address: string | null; neighborhood: string | null } | null }
+interface Stats { properties: number; clients: number; matches: number; pending_matches: number }
 
 export default function AnalyticsPage() {
-  const [charts, setCharts] = useState<Record<string, string>>({})
+  const { user } = useCurrentUser()
+  const [stats, setStats] = useState<Stats>({ properties: 0, clients: 0, matches: 0, pending_matches: 0 })
+  const [recent, setRecent] = useState<MatchRow[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchCharts = async () => {
-      const endpoints = ['funnel', 'activity', 'agents', 'forecast']
-      const results = await Promise.allSettled(endpoints.map(e => api.get(`/analytics/${e}`)))
-      const data: Record<string, string> = {}
-      results.forEach((r, i) => {
-        if (r.status === 'fulfilled') data[endpoints[i]] = r.value.data.chart
-      })
-      setCharts(data)
-    }
-    fetchCharts()
-  }, [])
+    if (!user) return
+    const supabase = createClient()
+    const isAdmin = user.role === 'admin'
+    Promise.all([
+      supabase.from('properties').select('id',{count:'exact',head:true}),
+      isAdmin ? supabase.from('clients').select('id',{count:'exact',head:true}) : supabase.from('clients').select('id',{count:'exact',head:true}).eq('agent_id',user.id),
+      isAdmin ? supabase.from('cross_agent_matches').select('id',{count:'exact',head:true}) : supabase.from('cross_agent_matches').select('id',{count:'exact',head:true}).eq('listing_agent_id',user.id),
+      isAdmin ? supabase.from('cross_agent_matches').select('id',{count:'exact',head:true}).eq('status','pending') : supabase.from('cross_agent_matches').select('id',{count:'exact',head:true}).eq('listing_agent_id',user.id).eq('status','pending'),
+      supabase.from('cross_agent_matches').select('id,explanation,similarity_score,status,created_at,properties(address,neighborhood)').order('created_at',{ascending:false}).limit(5),
+    ]).then(([p,c,m,pm,r]) => {
+      setStats({ properties: p.count??0, clients: c.count??0, matches: m.count??0, pending_matches: pm.count??0 })
+      setRecent((r.data as MatchRow[])??[])
+      setLoading(false)
+    })
+  }, [user])
+
+  const CARDS = [
+    { label: 'Propiedades', value: stats.properties, icon: Building2 },
+    { label: 'Clientes', value: stats.clients, icon: Users },
+    { label: 'Coincidencias totales', value: stats.matches, icon: MessageSquare },
+    { label: 'Pendientes', value: stats.pending_matches, icon: TrendingUp },
+  ]
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
+    <div className="flex h-screen bg-[hsl(var(--background))]">
+      <Sidebar role={user?.role} />
       <main className="flex-1 overflow-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Analytics</h1>
-        <Tabs defaultValue="funnel">
-          <TabsList>
-            <TabsTrigger value="funnel">Funnel</TabsTrigger>
-            <TabsTrigger value="activity">Actividad</TabsTrigger>
-            <TabsTrigger value="agents">Agentes</TabsTrigger>
-            <TabsTrigger value="forecast">Forecast</TabsTrigger>
-          </TabsList>
-          {['funnel', 'activity', 'agents', 'forecast'].map(tab => (
-            <TabsContent key={tab} value={tab}>
-              <Card><CardHeader><CardTitle className="capitalize">{tab}</CardTitle></CardHeader>
-                <CardContent>{charts[tab] ? <PlotlyChart data={charts[tab]} /> : <p className="text-muted-foreground">Cargando...</p>}</CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+        <div className="mb-6">
+          <h1 className="text-xl font-bold">Analytics</h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Resumen de actividad</p>
+        </div>
+        {loading ? <div className="flex items-center justify-center py-20"><div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" /></div> : (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {CARDS.map(({ label, value, icon: Icon }) => (
+                <div key={label} className="card-creatio p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-[hsl(var(--muted-foreground))]">{label}</span>
+                    <div className="w-8 h-8 rounded-md bg-[hsl(var(--accent))] flex items-center justify-center"><Icon className="w-4 h-4 text-[hsl(var(--primary))]" /></div>
+                  </div>
+                  <p className="text-3xl font-bold">{value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="card-creatio overflow-hidden">
+              <div className="px-5 py-4 border-b border-[hsl(var(--border))]"><h2 className="text-sm font-semibold">Coincidencias recientes</h2></div>
+              {recent.length===0 ? <div className="text-center py-10 text-sm text-[hsl(var(--muted-foreground))]">Sin coincidencias aún.</div> : (
+                <table className="w-full text-sm">
+                  <thead><tr className="bg-[hsl(var(--secondary))] border-b border-[hsl(var(--border))]">
+                    {['Propiedad','Explicación','Similitud','Estado','Fecha'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{h}</th>)}
+                  </tr></thead>
+                  <tbody className="divide-y divide-[hsl(var(--border))]">
+                    {recent.map(m=>(
+                      <tr key={m.id} className="hover:bg-[hsl(var(--secondary))] transition-colors">
+                        <td className="px-4 py-3 font-medium">{m.properties?.address??m.properties?.neighborhood??'—'}</td>
+                        <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.explanation}</td>
+                        <td className="px-4 py-3">{(m.similarity_score*100).toFixed(0)}%</td>
+                        <td className="px-4 py-3"><StatusBadge label={m.status==='pending'?'Pendiente':m.status==='accepted'?'Aceptado':'Rechazado'} variant={m.status==='pending'?'pending':m.status==='accepted'?'active':'inactive'} /></td>
+                        <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] text-xs">{new Date(m.created_at).toLocaleDateString('es-AR')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
       </main>
     </div>
   )

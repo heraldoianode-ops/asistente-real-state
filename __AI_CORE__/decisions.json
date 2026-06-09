@@ -1,17 +1,19 @@
 {
   "decisions": [
-    { "id": "D001", "title": "Local-first LLM via Ollama", "status": "ACTIVE", "rationale": "Privacy + zero API cost for development. Cloud fallback via AI_POLICY env var." },
-    { "id": "D002", "title": "pgvector for embeddings", "status": "ACTIVE", "rationale": "Avoid separate vector DB. PostgreSQL handles OLTP + vector search in one service." },
+    { "id": "D001", "title": "Local-first LLM via Ollama", "status": "ACTIVE", "rationale": "Privacy + zero API cost. Cloud fallback via AI_POLICY." },
+    { "id": "D002", "title": "pgvector for embeddings", "status": "ACTIVE", "rationale": "Avoid separate vector DB. PostgreSQL handles OLTP + vector search." },
     { "id": "D003", "title": "LangChain ReAct agent", "status": "ACTIVE", "rationale": "Tool-use pattern fits real estate Q&A. Reasoning trace is auditable." },
     { "id": "D004", "title": "WhatsApp Cloud API (Meta)", "status": "ACTIVE", "rationale": "Primary channel for Argentine market. No third-party BSP cost." },
     { "id": "D005", "title": "XGBoost for lead scoring", "status": "ACTIVE", "rationale": "Tabular data, interpretable via SHAP, fast inference, no GPU required." },
-    { "id": "D006", "title": "Celery + Redis for task queue", "status": "ACTIVE", "rationale": "Scraping and reminders need reliable async execution with beat scheduler." },
-    { "id": "D007", "title": "Next.js 14 standalone dashboard", "status": "ACTIVE", "rationale": "SSR + API rewrites. Standalone output for lean Docker image." },
-    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Continuous improvement of agent, matching, and ML scoring from real interactions." },
-    { "id": "D009", "title": "Supabase as primary DB (replaces local PostgreSQL)", "status": "ACTIVE", "rationale": "Cloud-hosted PostgreSQL with pgvector support. Admin can snapshot locally. Enables multi-tenant RLS natively." },
-    { "id": "D010", "title": "Multi-tenant via agent_id scoping + RLS", "status": "ACTIVE", "rationale": "Single DB instance. Privacy enforced at two layers: Supabase RLS (dashboard direct queries) + FastAPI application layer (API calls). Admin bypasses both." },
-    { "id": "D011", "title": "Property catalog is public; owner contacts are private", "status": "ACTIVE", "rationale": "All agents can search/match properties. Owner contact data lives in property_owner_contacts table, visible only to listing agent. conversation_summary visible to all for context." },
-    { "id": "D012", "title": "Cross-agent match: share client name + explanation only", "status": "ACTIVE", "rationale": "Listing agent sees buyer name + match reason to enable coordination. No other buyer data exposed. Recorded in cross_agent_matches table." },
-    { "id": "D013", "title": "WhatsApp numbers managed by admin, not self-registered", "status": "ACTIVE", "rationale": "Admin controls onboarding. Each agent gets one phone_number_id enabled/disabled from admin panel. Prevents unauthorized access." }
+    { "id": "D006", "title": "Celery + Redis for task queue", "status": "SUPERSEDED", "superseded_by": "D014", "rationale": "Replaced by Supabase Edge Functions in Fase 8." },
+    { "id": "D007", "title": "Next.js 14 standalone Docker output", "status": "SUPERSEDED", "superseded_by": "D015", "rationale": "Replaced by Netlify deploy in Fase 8." },
+    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Continuous improvement of agent, matching, ML scoring from real interactions." },
+    { "id": "D009", "title": "Supabase as primary DB", "status": "ACTIVE", "rationale": "Cloud PostgreSQL + pgvector + RLS. Admin can snapshot locally." },
+    { "id": "D010", "title": "Multi-tenant via agent_id scoping + RLS", "status": "ACTIVE", "rationale": "Single DB. Privacy enforced at Supabase RLS layer." },
+    { "id": "D011", "title": "Property catalog public; owner contacts private", "status": "ACTIVE", "rationale": "Owner contact visible only to listing agent. conversation_summary visible to all." },
+    { "id": "D012", "title": "Cross-agent match: share client name + explanation only", "status": "ACTIVE", "rationale": "Listing agent sees buyer name + reason. No other buyer data exposed." },
+    { "id": "D013", "title": "WhatsApp numbers managed by admin", "status": "ACTIVE", "rationale": "Admin controls onboarding. Each agent gets one phone_number_id." },
+    { "id": "D014", "title": "Supabase Edge Functions replace Celery workers", "status": "ACTIVE", "rationale": "Serverless Deno functions handle async matching + notifications. No Redis, no self-hosted workers." },
+    { "id": "D015", "title": "Netlify for dashboard hosting", "status": "ACTIVE", "rationale": "Next.js 14 on Netlify via @netlify/plugin-nextjs. Already paid plan. No Docker for frontend." }
   ]
 }
