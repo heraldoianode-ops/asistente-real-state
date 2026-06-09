@@ -5,6 +5,13 @@ from typing import List
 class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql+asyncpg://ars_user:changeme@postgres:5432/asistente_real_state"
+    db_schema: str = "asistente_real_state"
+
+    # Supabase
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
+    supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
 
     # Redis
     redis_url: str = "redis://redis:6379/0"
@@ -16,7 +23,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     openai_api_key: str = ""
 
-    # JWT
+    # JWT (legacy local auth)
     jwt_secret: str = "changeme_jwt_secret_min32chars"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60

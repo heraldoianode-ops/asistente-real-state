@@ -5,10 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.routers import (
-    health, auth, properties, clients, events,
+    health, properties, clients, events,
     agent, analytics, crm, matching, predictions,
     rag, scraping, feedback
 )
+from app.routers import auth as auth_router
+from app.routers import admin as admin_router
 
 if settings.sentry_dsn:
     sentry_sdk.init(dsn=settings.sentry_dsn, traces_sample_rate=0.1)
@@ -23,7 +25,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Asistente Real State API",
-    version="0.6.2",
+    version="0.7.2",
     lifespan=lifespan,
 )
 
@@ -36,7 +38,8 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
-app.include_router(auth.router, prefix="/auth")
+app.include_router(auth_router.router, prefix="/auth")
+app.include_router(admin_router.router, prefix="/admin")
 app.include_router(properties.router, prefix="/properties")
 app.include_router(clients.router, prefix="/clients")
 app.include_router(events.router, prefix="/events")

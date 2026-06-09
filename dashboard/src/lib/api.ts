@@ -1,23 +1,32 @@
-import axios from 'axios'
-import { getToken, clearToken } from './auth'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
-export const api = axios.create({
-  baseURL: '/api',
-})
+function getToken(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)access_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
-api.interceptors.request.use(config => {
-  const token = getToken()
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const token = getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
-api.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
-      clearToken()
-      window.location.href = '/login'
-    }
-    return Promise.reject(err)
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
+
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(detail?.detail ?? res.statusText);
   }
-)
+  if (res.status === 204) return undefined as T;
+  return res.json();
+}
