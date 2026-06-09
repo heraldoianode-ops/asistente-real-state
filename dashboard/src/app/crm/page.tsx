@@ -6,7 +6,23 @@ import { StatusBadge } from '@/components/StatusBadge'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { Search } from 'lucide-react'
 
-interface Client { id: string; full_name: string; client_type: string; lead_stage: string; phone: string | null; budget: number | null; currency: string | null; agent_id: string; users: { full_name: string | null } | null }
+interface Client {
+  id: string
+  full_name: string
+  client_type: string
+  lead_stage: string
+  phone: string | null
+  budget: number | null
+  currency: string | null
+  agent_id: string
+  users: { full_name: string | null } | { full_name: string | null }[] | null
+}
+
+function getAgentName(u: Client['users']): string {
+  if (!u) return '—'
+  const item = Array.isArray(u) ? u[0] : u
+  return item?.full_name ?? '—'
+}
 
 const STAGE_LABEL: Record<string, string> = {
   new: 'Nuevo', contacted: 'Contactado', qualified: 'Calificado',
@@ -25,7 +41,7 @@ export default function CRMPage() {
     const supabase = createClient()
     let q = supabase.from('clients').select('id,full_name,client_type,lead_stage,phone,budget,currency,agent_id,users(full_name)').order('full_name')
     if (user.role !== 'admin') q = q.eq('agent_id', user.id)
-    q.then(({ data }) => { setClients((data as Client[]) ?? []); setLoading(false) })
+    q.then(({ data }) => { setClients((data as unknown as Client[]) ?? []); setLoading(false) })
   }, [user])
 
   const filtered = clients.filter(c => c.full_name.toLowerCase().includes(search.toLowerCase()) || (c.phone ?? '').includes(search))
@@ -60,7 +76,7 @@ export default function CRMPage() {
                     <td className="px-4 py-3"><StatusBadge label={c.client_type==='buyer'?'Comprador':'Vendedor'} variant={c.client_type==='buyer'?'active':'pending'} /></td>
                     <td className="px-4 py-3">{STAGE_LABEL[c.lead_stage]??c.lead_stage}</td>
                     <td className="px-4 py-3 text-[hsl(var(--muted-foreground))]">{c.budget?`${c.currency??'USD'} ${c.budget.toLocaleString()}`:'—'}</td>
-                    {user?.role==='admin'&&<td className="px-4 py-3 text-[hsl(var(--muted-foreground))] text-xs">{c.users?.full_name??'—'}</td>}
+                    {user?.role==='admin'&&<td className="px-4 py-3 text-[hsl(var(--muted-foreground))] text-xs">{getAgentName(c.users)}</td>}
                   </tr>
                 ))}
               </tbody>
