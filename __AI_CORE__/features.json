@@ -24,11 +24,11 @@
     { "id": "F022", "name": "Admin dashboard (global view + search)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/admin/page.tsx", "dashboard/src/app/admin/agents/page.tsx"] },
     { "id": "F023", "name": "Agent dashboard (own clients, catalog, matches)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/analytics/page.tsx", "dashboard/src/app/crm/page.tsx"] },
     { "id": "F024", "name": "WhatsApp /buscar command", "status": "DONE", "node": "7.6", "evidence": ["whatsapp-gateway/index.js"] },
-    { "id": "F025", "name": "DB export by section (admin tool)", "status": "TODO", "node": "7.6", "note": "Not implemented — no export endpoint/UI found in dashboard, Edge Functions or backend." }
+    { "id": "F025", "name": "DB export by section (admin tool)", "status": "DONE", "node": "7.6", "evidence": ["dashboard/src/app/admin/export/page.tsx"], "completed": "2026-06-10" }
   ],
   "last_audit": {
     "date": "2026-06-10",
     "method": "code verification against repo",
-    "result": "F015-F024 verified DONE; F025 remains TODO"
+    "result": "F015-F024 verified DONE; F025 implemented 2026-06-10 — backlog complete"
   }
 }
