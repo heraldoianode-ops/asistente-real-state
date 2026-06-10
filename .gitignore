@@ -21,6 +21,7 @@ node_modules/
 out/
 .nuxt/
 dist/
+*.tsbuildinfo
 
 # Secrets — NEVER commit
 __AI_CORE__/services.private.json
