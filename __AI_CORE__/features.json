@@ -14,16 +14,21 @@
     { "id": "F012", "name": "WhatsApp appointment reminders", "status": "DONE", "node": "5" },
     { "id": "F013", "name": "Meta-learning feedback loop", "status": "DONE", "node": "6.1" },
     { "id": "F014", "name": "Production hardening + Sentry", "status": "DONE", "node": "6.2" },
-    { "id": "F015", "name": "Supabase migration (replace local PostgreSQL)", "status": "IN_PROGRESS", "node": "7.1" },
-    { "id": "F016", "name": "Multi-tenant schema (listing_agent_id, client_type, property_owner_contacts, whatsapp_numbers, cross_agent_matches)", "status": "IN_PROGRESS", "node": "7.1" },
-    { "id": "F017", "name": "Row Level Security policies (admin bypass, agent scoping)", "status": "IN_PROGRESS", "node": "7.1" },
-    { "id": "F018", "name": "RBAC + Supabase Auth (admin / agent roles)", "status": "TODO", "node": "7.2" },
-    { "id": "F019", "name": "WhatsApp number admin panel (enable/disable per agent)", "status": "TODO", "node": "7.2" },
-    { "id": "F020", "name": "Privacy enforcement layer in FastAPI", "status": "TODO", "node": "7.3" },
-    { "id": "F021", "name": "Cross-agent match notifications (name + explanation)", "status": "TODO", "node": "7.4" },
-    { "id": "F022", "name": "Admin dashboard (global view + search)", "status": "TODO", "node": "7.5" },
-    { "id": "F023", "name": "Agent dashboard (own clients, catalog, matches)", "status": "TODO", "node": "7.5" },
-    { "id": "F024", "name": "WhatsApp /buscar command", "status": "TODO", "node": "7.6" },
-    { "id": "F025", "name": "DB export by section (admin tool)", "status": "TODO", "node": "7.6" }
-  ]
+    { "id": "F015", "name": "Supabase migration (replace local PostgreSQL)", "status": "DONE", "node": "7.1", "evidence": ["db/init/02_schema.sql", "dashboard/src/lib/supabase.ts", "supabase/functions/"] },
+    { "id": "F016", "name": "Multi-tenant schema (listing_agent_id, client_type, property_owner_contacts, whatsapp_numbers, cross_agent_matches)", "status": "DONE", "node": "7.1", "evidence": ["db/migrations/03_multitenant.sql"] },
+    { "id": "F017", "name": "Row Level Security policies (admin bypass, agent scoping)", "status": "DONE", "node": "7.1", "evidence": ["db/migrations/04_rls_policies.sql"] },
+    { "id": "F018", "name": "RBAC + Supabase Auth (admin / agent roles)", "status": "DONE", "node": "7.2", "evidence": ["dashboard/src/middleware.ts", "dashboard/src/lib/auth.ts", "dashboard/src/components/AdminGuard.tsx", "supabase/functions/create-agent/index.ts"] },
+    { "id": "F019", "name": "WhatsApp number admin panel (enable/disable per agent)", "status": "DONE", "node": "7.2", "evidence": ["dashboard/src/app/admin/whatsapp/page.tsx"] },
+    { "id": "F020", "name": "Privacy enforcement layer (RLS at DB layer — FastAPI layer superseded by Fase 8)", "status": "DONE", "node": "7.3", "evidence": ["db/migrations/04_rls_policies.sql"], "note": "Original spec said 'in FastAPI'; enforcement moved to Supabase RLS. FastAPI backend is legacy and not used by dashboard." },
+    { "id": "F021", "name": "Cross-agent match notifications (name + explanation)", "status": "DONE", "node": "7.4", "evidence": ["supabase/functions/match-properties/index.ts", "supabase/functions/notify-agent/index.ts"] },
+    { "id": "F022", "name": "Admin dashboard (global view + search)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/admin/page.tsx", "dashboard/src/app/admin/agents/page.tsx"] },
+    { "id": "F023", "name": "Agent dashboard (own clients, catalog, matches)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/analytics/page.tsx", "dashboard/src/app/crm/page.tsx"] },
+    { "id": "F024", "name": "WhatsApp /buscar command", "status": "DONE", "node": "7.6", "evidence": ["whatsapp-gateway/index.js"] },
+    { "id": "F025", "name": "DB export by section (admin tool)", "status": "DONE", "node": "7.6", "evidence": ["dashboard/src/app/admin/export/page.tsx"], "completed": "2026-06-10" }
+  ],
+  "last_audit": {
+    "date": "2026-06-10",
+    "method": "code verification against repo",
+    "result": "F015-F024 verified DONE; F025 implemented 2026-06-10 — backlog complete"
+  }
 }

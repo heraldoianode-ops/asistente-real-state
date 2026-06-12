@@ -47,16 +47,19 @@ export default function CRMPage() {
       .order('full_name')
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
     if (user.role !== 'admin') q = q.eq('agent_id', user.id)
-    q.then(({ data, count, error: err }) => {
-      if (err) throw err
-      setClients((data as unknown as Client[]) ?? [])
-      setTotal(count ?? 0)
-      setLoading(false)
-    }).catch((err: unknown) => {
-      console.error('[crm] Failed to load clients:', err)
-      setError('No se pudieron cargar los clientes. Intentá de nuevo.')
-      setLoading(false)
-    })
+    ;(async () => {
+      try {
+        const { data, count, error: err } = await q
+        if (err) throw err
+        setClients((data as unknown as Client[]) ?? [])
+        setTotal(count ?? 0)
+        setLoading(false)
+      } catch (err: unknown) {
+        console.error('[crm] Failed to load clients:', err)
+        setError('No se pudieron cargar los clientes. Intentá de nuevo.')
+        setLoading(false)
+      }
+    })()
   }, [user, page])
 
   const filtered = clients.filter(c =>
