@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-12T15:50:00Z"
+    "last_updated": "2026-06-12T20:20:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -26,7 +26,7 @@
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "v0.9.2 — Storage uploads fixed (missing SELECT policy)",
+    "current_node": "v0.9.3 — wa-gateway live on Supabase (/health OK); Meta webhook pending (Facebook down)",
     "progress_pct": 100,
     "nodes": [
       {
@@ -93,18 +93,32 @@
         "id": "9.5",
         "name": "Fix storage upload 400: add SELECT policy on storage.objects (upload does INSERT..RETURNING)",
         "status": "complete"
+      },
+      {
+        "id": "9.6",
+        "name": "WhatsApp agent dropdown fix + wa-gateway WA_ANON_KEY override; function deployed via dashboard, /health OK",
+        "status": "complete"
+      },
+      {
+        "id": "9.7",
+        "name": "Meta webhook config (subscribed_apps override_callback_uri) + end-to-end /buscar test",
+        "status": "in_progress"
       }
     ]
   },
   "session_state": {
     "pending_tomorrow": [
-      "Set WA secrets (WA_VERIFY_TOKEN, WA_TOKEN, WA_PHONE_NUMBER_ID) in Supabase Edge Functions",
-      "Point Meta webhook to https://nehfrtedwcmdlmbulhef.supabase.co/functions/v1/wa-gateway",
+      "BLOCKED (Facebook down 2026-06-12): configure Meta webhook — POST /{WABA_ID}/subscribed_apps with override_callback_uri=https://nehfrtedwcmdlmbulhef.supabase.co/functions/v1/wa-gateway and verify_token=WA_VERIFY_TOKEN agreed in session (wa-gateway-rs-2026-k8x4m7q). Via Meta docs API Playground or curl",
+      "Get temp access token + WABA ID from developers.facebook.com > Mis apps > app > WhatsApp > Configuracion de la API (if no app exists: create app type Empresa + add WhatsApp product)",
+      "Verify Supabase Edge Function secrets are set: WA_TOKEN, WA_PHONE_NUMBER_ID, WA_VERIFY_TOKEN, WA_ANON_KEY=sb_publishable_PVLt7BxiUrezs3WigUDGJg_Ot-e1zf9",
+      "User was adding graph.facebook.com to Claude environment network allowlist so Claude can run the webhook setup via curl (user passes token + WABA ID)",
+      "Register test phone number in whatsapp_numbers (is_active=true) before /buscar test",
       "Add https://solernou.netlify.app/reset-password to Supabase Auth redirect URLs",
-      "Merge claude branch to main to deploy dashboard changes on Netlify"
+      "Merge claude branch to main to deploy dashboard changes on Netlify",
+      "Production: replace 24h temp Meta token with permanent system-user token in WA_TOKEN secret"
     ],
     "bugs_known": [],
-    "last_snap": "2026-06-12T15:50:00Z"
+    "last_snap": "2026-06-12T20:20:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",

@@ -1,3 +1,12 @@
 {
-  "queue": []
+  "queue": [
+    {
+      "id": "PS-001",
+      "service": "Meta Graph API (graph.facebook.com)",
+      "reason": "Facebook outage 2026-06-12 ~20:15 UTC — could not configure WABA webhook",
+      "action": "POST /{WABA_ID}/subscribed_apps body {\"override_callback_uri\":\"https://nehfrtedwcmdlmbulhef.supabase.co/functions/v1/wa-gateway\",\"verify_token\":\"wa-gateway-rs-2026-k8x4m7q\"} with Bearer temp token from API Setup",
+      "queued_at": "2026-06-12T20:20:00Z",
+      "retry_with": "REINTENTAR"
+    }
+  ]
 }
