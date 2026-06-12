@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.8.2",
+    "version": "0.9.0",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-12T03:15:00Z"
+    "last_updated": "2026-06-12T14:30:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -26,28 +26,79 @@
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "DEPLOYED — v0.8.2 live in production (solernou.netlify.app)",
+    "current_node": "v0.9.0 — account security + wa-gateway Edge Function deployed",
     "progress_pct": 100,
     "nodes": [
-      { "id": "8.1", "name": "Dashboard → supabase-js direct", "status": "complete" },
-      { "id": "8.2", "name": "Auth → @supabase/ssr + middleware", "status": "complete" },
-      { "id": "8.3", "name": "Supabase Edge Functions", "status": "complete" },
-      { "id": "8.4", "name": "WhatsApp Gateway slim", "status": "complete" },
-      { "id": "8.5", "name": "Creatio design system", "status": "complete" },
-      { "id": "8.6", "name": "Netlify config + env", "status": "complete" },
-      { "id": "8.7", "name": "Debt repair — 5 issues", "status": "complete" },
-      { "id": "8.8", "name": "Production deploy fixes (TS build, supabase-config fallback, auth.tsx recursion, favicon) + F025 export", "status": "complete" }
+      {
+        "id": "8.1",
+        "name": "Dashboard → supabase-js direct",
+        "status": "complete"
+      },
+      {
+        "id": "8.2",
+        "name": "Auth → @supabase/ssr + middleware",
+        "status": "complete"
+      },
+      {
+        "id": "8.3",
+        "name": "Supabase Edge Functions",
+        "status": "complete"
+      },
+      {
+        "id": "8.4",
+        "name": "WhatsApp Gateway slim",
+        "status": "complete"
+      },
+      {
+        "id": "8.5",
+        "name": "Creatio design system",
+        "status": "complete"
+      },
+      {
+        "id": "8.6",
+        "name": "Netlify config + env",
+        "status": "complete"
+      },
+      {
+        "id": "8.7",
+        "name": "Debt repair — 5 issues",
+        "status": "complete"
+      },
+      {
+        "id": "8.8",
+        "name": "Production deploy fixes (TS build, supabase-config fallback, auth.tsx recursion, favicon) + F025 export",
+        "status": "complete"
+      },
+      {
+        "id": "9.1",
+        "name": "Password change (direct + email confirmation) + security banner",
+        "status": "complete"
+      },
+      {
+        "id": "9.2",
+        "name": "WhatsApp gateway → Supabase Edge Function (wa-gateway) + create-agent deployed",
+        "status": "complete"
+      }
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails", "DEUDA TD-006 — remove legacy FastAPI backend + docker-compose cleanup"],
+    "pending_tomorrow": [
+      "Set WA secrets (WA_VERIFY_TOKEN, WA_TOKEN, WA_PHONE_NUMBER_ID) in Supabase Edge Functions",
+      "Point Meta webhook to https://nehfrtedwcmdlmbulhef.supabase.co/functions/v1/wa-gateway",
+      "Add https://solernou.netlify.app/reset-password to Supabase Auth redirect URLs",
+      "Merge claude branch to main to deploy dashboard changes on Netlify"
+    ],
     "bugs_known": [],
-    "last_snap": "2026-06-12T03:15:00Z"
+    "last_snap": "2026-06-12T14:30:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
     "allow_external_flag": "allow_external",
-    "external_llm_authorized_agents": ["rag_legal_agent", "objection_handler_agent", "predictive_report_agent"],
+    "external_llm_authorized_agents": [
+      "rag_legal_agent",
+      "objection_handler_agent",
+      "predictive_report_agent"
+    ],
     "enforce": true
   }
 }

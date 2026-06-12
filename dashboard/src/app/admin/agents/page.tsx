@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import AdminGuard from '@/components/AdminGuard'
 import { StatusBadge } from '@/components/StatusBadge'
 import { createClient } from '@/lib/supabase'
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase-config'
+import { SUPABASE_URL } from '@/lib/supabase-config'
 import { UserPlus, RefreshCw } from 'lucide-react'
 
 interface Agent { id: string; email: string; full_name: string | null; role: string; is_active: boolean; wa_contact_id: string | null; avatar_url: string | null; created_at: string }
@@ -56,9 +56,11 @@ export default function AgentsPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault(); setFormError(null); setSaving(true)
     try {
+      const { data: { session } } = await createClient().auth.getSession()
+      if (!session) throw new Error('Sesión expirada. Volvé a iniciar sesión.')
       const res = await fetch(`${SUPABASE_URL}/functions/v1/create-agent`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify(form),
       })
       if (!res.ok) { const e = await res.json(); throw new Error(e?.error ?? 'Error') }

@@ -1,10 +1,25 @@
 {
   "sessions": [
     {
+      "date": "2026-06-12",
+      "summary": "v0.9.0: Mi cuenta page (password change direct or via email confirmation link), /reset-password recovery page, security recommendation banner, Sidebar link. Fixed create-agent 401 (anon key → user JWT). Ported WhatsApp gateway to wa-gateway Edge Function and deployed it plus create-agent to Supabase. whatsapp-gateway/ marked deprecated (R5).",
+      "nodes_touched": [
+        "9.1",
+        "9.2"
+      ],
+      "commits": [
+        "feat(security+wa): password change w/ email confirmation, wa-gateway edge function"
+      ]
+    },
+    {
       "date": "2025-06-08",
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
-      "nodes_touched": ["all"],
-      "commits": ["feat: initial migration from architect-ai-framework"]
+      "nodes_touched": [
+        "all"
+      ],
+      "commits": [
+        "feat: initial migration from architect-ai-framework"
+      ]
     }
   ]
 }
