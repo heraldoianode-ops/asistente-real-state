@@ -1,7 +1,9 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette, KeyRound } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette, KeyRound, Moon, Sun } from 'lucide-react'
 import { signOut } from '@/lib/auth'
 import { useBranding } from '@/hooks/useBranding'
 
@@ -22,6 +24,10 @@ export function Sidebar({ role }: { role?: string }) {
   const pathname = usePathname()
   const router = useRouter()
   const { branding } = useBranding()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDark = mounted && resolvedTheme === 'dark'
 
   const handleLogout = async () => {
     await signOut()
@@ -49,12 +55,12 @@ export function Sidebar({ role }: { role?: string }) {
               </div>}
           <div>
             <p className="text-white text-sm font-semibold leading-tight">PropTech AI</p>
-            <p className="text-white/40 text-xs">Asistente Real State</p>
+            <p className="text-white/60 text-xs">Asistente Real State</p>
           </div>
         </div>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        <p className="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 mb-2">Principal</p>
+        <p className="text-xs font-semibold text-white/55 uppercase tracking-widest px-3 mb-2">Principal</p>
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} className={linkClass(href)}>
             <Icon className="w-4 h-4 shrink-0" />
@@ -63,7 +69,7 @@ export function Sidebar({ role }: { role?: string }) {
         ))}
         {role === 'admin' && (
           <>
-            <p className="text-xs font-semibold text-white/35 uppercase tracking-widest px-3 mt-5 mb-2">Panel admin</p>
+            <p className="text-xs font-semibold text-white/55 uppercase tracking-widest px-3 mt-5 mb-2">Panel admin</p>
             {ADMIN_ITEMS.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href} className={linkClass(href)}>
                 <Icon className="w-4 h-4 shrink-0" />
@@ -74,6 +80,11 @@ export function Sidebar({ role }: { role?: string }) {
         )}
       </nav>
       <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
+        <button data-testid="btn-theme-toggle" onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-[hsl(var(--sidebar-fg))] hover:bg-[hsl(var(--sidebar-hover))] hover:text-white transition-colors">
+          {isDark ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+          {isDark ? 'Modo claro' : 'Modo oscuro'}
+        </button>
         <Link href="/account" className={linkClass('/account')}>
           <KeyRound className="w-4 h-4 shrink-0" />
           Mi cuenta

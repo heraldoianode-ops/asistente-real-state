@@ -33,6 +33,36 @@
     --status-pending-bg: 38 92% 92%;
     --status-pending-fg: 38 80% 32%;
   }
+
+  .dark {
+    --background: 215 28% 9%;
+    --foreground: 210 30% 92%;
+    --card: 215 25% 13%;
+    --card-foreground: 210 30% 92%;
+    --border: 215 18% 24%;
+    --input: 215 18% 24%;
+    --primary: 207 90% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 22% 16%;
+    --secondary-foreground: 210 25% 82%;
+    --muted: 215 20% 18%;
+    --muted-foreground: 215 15% 68%;
+    --accent: 207 50% 22%;
+    --accent-foreground: 207 90% 78%;
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 207 90% 55%;
+    --sidebar-bg: 215 30% 7%;
+    --sidebar-fg: 210 30% 88%;
+    --sidebar-hover: 215 25% 14%;
+    --sidebar-active: 207 90% 45%;
+    --status-active-bg: 142 50% 16%;
+    --status-active-fg: 142 55% 70%;
+    --status-inactive-bg: 0 50% 18%;
+    --status-inactive-fg: 0 80% 76%;
+    --status-pending-bg: 38 60% 16%;
+    --status-pending-fg: 38 90% 66%;
+  }
 }
 
 @layer base {
@@ -41,9 +71,9 @@
 }
 
 .card-creatio {
-  @apply bg-white rounded-lg border border-border shadow-sm;
+  @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm;
 }
 
 .table-creatio tbody tr:hover {
-  background-color: hsl(220 20% 97%);
+  background-color: hsl(var(--muted));
 }

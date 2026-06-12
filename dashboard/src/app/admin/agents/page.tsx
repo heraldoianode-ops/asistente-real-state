@@ -122,7 +122,7 @@ export default function AgentsPage() {
         </div>
         {showModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <form onSubmit={handleCreate} className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <form onSubmit={handleCreate} className="bg-card text-card-foreground rounded-xl shadow-2xl w-full max-w-md">
               <div className="px-6 py-4 border-b border-[hsl(var(--border))]"><h2 className="text-base font-semibold">Nuevo agente</h2></div>
               <div className="px-6 py-4 space-y-4">
                 {formError && <div className="p-3 rounded-md bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))] text-sm">{formError}</div>}

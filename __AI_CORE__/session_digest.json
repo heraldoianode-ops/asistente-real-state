@@ -2,13 +2,14 @@
   "sessions": [
     {
       "date": "2026-06-12",
-      "summary": "v0.9.0: Mi cuenta page (password change direct or via email confirmation link), /reset-password recovery page, security recommendation banner, Sidebar link. Fixed create-agent 401 (anon key → user JWT). Ported WhatsApp gateway to wa-gateway Edge Function and deployed it plus create-agent to Supabase. whatsapp-gateway/ marked deprecated (R5).",
+      "summary": "v0.9.0: Mi cuenta page (password change direct or via email confirmation link), /reset-password recovery page, security recommendation banner, Sidebar link. Fixed create-agent 401 (anon key → user JWT). Ported WhatsApp gateway to wa-gateway Edge Function and deployed it plus create-agent to Supabase. whatsapp-gateway/ marked deprecated (R5). | v0.9.1: root-caused production 406s — asistente_real_state schema was not exposed to PostgREST and anon/authenticated lacked USAGE/table grants; fixed via migration (grants + pgrst.db_schemas + reload). Added dark mode (tokens, sidebar toggle, card/modal theming) and improved sidebar text contrast.",
       "nodes_touched": [
         "9.1",
         "9.2"
       ],
       "commits": [
-        "feat(security+wa): password change w/ email confirmation, wa-gateway edge function"
+        "feat(security+wa): password change w/ email confirmation, wa-gateway edge function",
+        "fix(api)+feat(ui): expose schema in Data API, dark mode"
       ]
     },
     {
