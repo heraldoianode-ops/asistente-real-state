@@ -20,10 +20,12 @@ const WA_APP_SECRET = Deno.env.get('WA_APP_SECRET') ?? ''
 const WA_API_VERSION = Deno.env.get('WA_API_VERSION') ?? 'v21.0'
 const SCHEMA = Deno.env.get('WA_SCHEMA') ?? 'asistente_real_state'
 
-// Anon key with RLS — never the service role key here
+// Anon key with RLS — never the service role key here.
+// WA_ANON_KEY overrides the injected legacy key (disabled in this project)
+// with the new publishable key.
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_ANON_KEY')!,
+  Deno.env.get('WA_ANON_KEY') ?? Deno.env.get('SUPABASE_ANON_KEY')!,
   { db: { schema: SCHEMA } },
 )
 
