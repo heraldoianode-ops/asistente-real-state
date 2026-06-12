@@ -1,8 +1,9 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard } from 'lucide-react'
+import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette } from 'lucide-react'
 import { signOut } from '@/lib/auth'
+import { useBranding } from '@/hooks/useBranding'
 
 const NAV_ITEMS = [
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
@@ -13,12 +14,14 @@ const NAV_ITEMS = [
 const ADMIN_ITEMS = [
   { href: '/admin/agents', label: 'Agentes', icon: UserCog },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: Phone },
+  { href: '/admin/branding', label: 'Marca', icon: Palette },
   { href: '/admin/export', label: 'Exportar datos', icon: Download },
 ]
 
 export function Sidebar({ role }: { role?: string }) {
   const pathname = usePathname()
   const router = useRouter()
+  const { branding } = useBranding()
 
   const handleLogout = async () => {
     await signOut()
@@ -38,9 +41,12 @@ export function Sidebar({ role }: { role?: string }) {
     <aside className="w-60 flex flex-col min-h-screen shrink-0" style={{ backgroundColor: 'hsl(var(--sidebar-bg))' }}>
       <div className="px-5 py-4 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-md bg-[hsl(var(--primary))] flex items-center justify-center shrink-0">
-            <LayoutDashboard className="w-4 h-4 text-white" />
-          </div>
+          {branding.logo_url
+            ? /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={branding.logo_url} alt="Logo" className="w-8 h-8 rounded-md object-contain bg-white shrink-0" />
+            : <div className="w-8 h-8 rounded-md bg-[hsl(var(--primary))] flex items-center justify-center shrink-0">
+                <LayoutDashboard className="w-4 h-4 text-white" />
+              </div>}
           <div>
             <p className="text-white text-sm font-semibold leading-tight">PropTech AI</p>
             <p className="text-white/40 text-xs">Asistente Real State</p>
