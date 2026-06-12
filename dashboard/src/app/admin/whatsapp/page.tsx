@@ -7,9 +7,18 @@ import { Plus, RefreshCw } from 'lucide-react'
 
 interface WANumber { id: string; agent_id: string; phone_number: string; phone_number_id: string; display_name: string | null; is_active: boolean }
 interface CreateForm { agent_id: string; phone_number: string; phone_number_id: string; display_name: string }
+interface Agent { id: string; full_name: string | null; email: string }
+
+const FIELD_LABELS: Record<keyof CreateForm, string> = {
+  agent_id: 'Agente',
+  phone_number: 'Número de teléfono',
+  phone_number_id: 'Phone Number ID (Meta)',
+  display_name: 'Nombre visible',
+}
 
 export default function WhatsAppPage() {
   const [numbers, setNumbers] = useState<WANumber[]>([])
+  const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState<CreateForm>({ agent_id: '', phone_number: '', phone_number_id: '', display_name: '' })
@@ -23,7 +32,17 @@ export default function WhatsAppPage() {
     setLoading(false)
   }
 
-  useEffect(() => { loadNumbers() }, [])
+  async function loadAgents() {
+    const { data } = await createClient().from('users').select('id,full_name,email').order('full_name')
+    setAgents(data ?? [])
+  }
+
+  useEffect(() => { loadNumbers(); loadAgents() }, [])
+
+  const agentLabel = (id: string) => {
+    const a = agents.find(a => a.id === id)
+    return a ? (a.full_name ?? a.email) : id.slice(0, 8) + '…'
+  }
 
   async function handleToggle(n: WANumber) {
     await createClient().from('whatsapp_numbers').update({ is_active: !n.is_active }).eq('id', n.id)
@@ -62,7 +81,7 @@ export default function WhatsAppPage() {
           : numbers.length===0 ? <div className="text-center py-16 text-sm text-[hsl(var(--muted-foreground))]">No hay números registrados</div>
           : <table className="w-full text-sm">
               <thead><tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--secondary))]">
-                {['Número','Phone ID','Nombre','Agent ID','Estado','Acción'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{h}</th>)}
+                {['Número','Phone ID','Nombre','Agente','Estado','Acción'].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{h}</th>)}
               </tr></thead>
               <tbody className="divide-y divide-[hsl(var(--border))]">
                 {numbers.map(n=>(
@@ -70,7 +89,7 @@ export default function WhatsAppPage() {
                     <td className="px-4 py-3 font-medium">{n.phone_number}</td>
                     <td className="px-4 py-3 font-mono text-xs text-[hsl(var(--muted-foreground))]">{n.phone_number_id}</td>
                     <td className="px-4 py-3">{n.display_name??'—'}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-[hsl(var(--muted-foreground))]">{n.agent_id.slice(0,8)}…</td>
+                    <td className="px-4 py-3 text-xs text-[hsl(var(--muted-foreground))]">{agentLabel(n.agent_id)}</td>
                     <td className="px-4 py-3"><StatusBadge label={n.is_active?'Activo':'Inactivo'} active={n.is_active} /></td>
                     <td className="px-4 py-3"><button data-testid={`toggle-wa-${n.id}`} onClick={()=>handleToggle(n)} className="text-xs font-medium text-[hsl(var(--primary))] hover:underline">{n.is_active?'Deshabilitar':'Habilitar'}</button></td>
                   </tr>
@@ -84,11 +103,21 @@ export default function WhatsAppPage() {
               <div className="px-6 py-4 border-b border-[hsl(var(--border))]"><h2 className="text-base font-semibold">Registrar número WhatsApp</h2></div>
               <div className="px-6 py-4 space-y-4">
                 {formError && <div className="p-3 rounded-md bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))] text-sm">{formError}</div>}
-                {(['agent_id','phone_number','phone_number_id','display_name'] as const).map(field=>(
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">{FIELD_LABELS.agent_id}<span className="text-red-500 ml-0.5">*</span></label>
+                  <select value={form.agent_id} onChange={e=>setForm({...form,agent_id:e.target.value})} required
+                    className="w-full border border-[hsl(var(--border))] bg-transparent rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent">
+                    <option value="" disabled>Seleccionar agente…</option>
+                    {agents.map(a=>(
+                      <option key={a.id} value={a.id}>{a.full_name ?? a.email}</option>
+                    ))}
+                  </select>
+                </div>
+                {(['phone_number','phone_number_id','display_name'] as const).map(field=>(
                   <div key={field}>
-                    <label className="block text-sm font-medium mb-1.5 capitalize">{field.replace(/_/g,' ')}{field!=='display_name'&&<span className="text-red-500 ml-0.5">*</span>}</label>
+                    <label className="block text-sm font-medium mb-1.5">{FIELD_LABELS[field]}{field!=='display_name'&&<span className="text-red-500 ml-0.5">*</span>}</label>
                     <input type="text" value={form[field]} onChange={e=>setForm({...form,[field]:e.target.value})}
-                      className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent"
+                      className="w-full border border-[hsl(var(--border))] bg-transparent rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent"
                       required={field!=='display_name'} />
                   </div>
                 ))}
