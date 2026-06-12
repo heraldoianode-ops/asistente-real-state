@@ -3,7 +3,7 @@
     "project": "Asistente-de-Real-State",
     "version": "0.9.2",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-12T17:00:00Z"
+    "last_updated": "2026-06-12T15:50:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -26,7 +26,7 @@
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "v0.9.2 — PostCSS config fix (Tailwind never compiled in prod)",
+    "current_node": "v0.9.2 — Storage uploads fixed (missing SELECT policy)",
     "progress_pct": 100,
     "nodes": [
       {
@@ -88,6 +88,11 @@
         "id": "9.4",
         "name": "Add missing postcss.config.js — Tailwind utilities/preflight were absent from every build",
         "status": "complete"
+      },
+      {
+        "id": "9.5",
+        "name": "Fix storage upload 400: add SELECT policy on storage.objects (upload does INSERT..RETURNING)",
+        "status": "complete"
       }
     ]
   },
@@ -99,7 +104,7 @@
       "Merge claude branch to main to deploy dashboard changes on Netlify"
     ],
     "bugs_known": [],
-    "last_snap": "2026-06-12T17:00:00Z"
+    "last_snap": "2026-06-12T15:50:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
