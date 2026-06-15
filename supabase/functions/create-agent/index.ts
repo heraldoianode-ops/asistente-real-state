@@ -19,7 +19,8 @@ Deno.serve(async (req) => {
     if (!email || !password) return new Response(JSON.stringify({ error: 'email and password required' }), { status: 400, headers: corsHeaders })
     const { data: authUser, error: authErr } = await supabase.auth.admin.createUser({ email, password, email_confirm: true })
     if (authErr) throw authErr
-    const { error: insertErr } = await supabase.from('users').insert({ auth_user_id: authUser.user.id, email, full_name: full_name || null, wa_contact_id: wa_contact_id || null, role: 'agent', is_active: true })
+    // id must equal the Supabase Auth uid so RLS agent-scoping (`<fk> = auth.uid()`) matches (TD-007)
+    const { error: insertErr } = await supabase.from('users').insert({ id: authUser.user.id, auth_user_id: authUser.user.id, email, full_name: full_name || null, wa_contact_id: wa_contact_id || null, role: 'agent', is_active: true })
     if (insertErr) throw insertErr
     return new Response(JSON.stringify({ ok: true, id: authUser.user.id }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (err) {

@@ -2,9 +2,9 @@
   "sessions": [
     {
       "date": "2026-06-15",
-      "summary": "TD-006 resolved: removed legacy FastAPI backend/ (91 files), old gateway/ (8), docker-compose.yml and dead dashboard code; README + .env.example aligned to Fase 8. Confirmed admin user already exists (abuelo.pro@gmail.com) — left Auth/password untouched per user. Synced is_admin() repo migration (07) to production logic (auth_user_id = auth.uid()). Logged TD-007: remaining agent-scoping RLS policies still compare users.id FKs vs auth.uid() (latent until first agent).",
+      "summary": "TD-006 resolved: removed legacy FastAPI backend/ (91 files), old gateway/ (8), docker-compose.yml and dead dashboard code; README + .env.example aligned to Fase 8. Confirmed admin already exists (abuelo.pro@gmail.com) — left Auth/password untouched per user. Synced is_admin() repo migration (07) to production (auth_user_id = auth.uid()). TD-007 resolved (Option A, migration 08): realigned users.id = auth_user_id in production + repointed whatsapp_numbers FK + BEFORE INSERT trigger + create-agent fix; verified all_ids_aligned, 0 orphans. Health back to 100/100, zero open debt.",
       "nodes_touched": ["8.7"],
-      "commits": ["chore: remove legacy FastAPI backend and align repo to Fase 8 (TD-006)", "fix(db): sync is_admin() migration to auth_user_id; log TD-007"]
+      "commits": ["chore: remove legacy FastAPI backend and align repo to Fase 8 (TD-006)", "fix(db): sync is_admin() migration to auth_user_id; log TD-007", "fix(db): align users.id with auth uid to restore agent RLS scoping (TD-007)"]
     },
     {
       "date": "2025-06-08",
