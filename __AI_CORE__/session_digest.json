@@ -1,6 +1,12 @@
 {
   "sessions": [
     {
+      "date": "2026-06-15",
+      "summary": "TD-006 resolved. Audited consumers, then removed legacy FastAPI backend/ (91 files), old gateway/ (8), docker-compose.yml and dead dashboard code (api.ts + /api proxy). README + .env.example aligned to Fase 8. Health 100/100, zero open debt.",
+      "nodes_touched": ["8.7"],
+      "commits": ["chore: remove legacy FastAPI backend and align repo to Fase 8 (TD-006)"]
+    },
+    {
       "date": "2025-06-08",
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
       "nodes_touched": ["all"],

@@ -1,16 +1,16 @@
 {
-  "debts": [
+  "debts": [],
+  "resolved": [
     {
       "id": "TD-006",
       "title": "Legacy FastAPI backend unused by dashboard",
       "severity": "LOW",
       "detected": "2026-06-10",
-      "status": "OPEN",
-      "affected": ["backend/"],
-      "description_es": "El backend FastAPI completo sigue en el repo pero el dashboard usa supabase-js directo y Edge Functions desde la Fase 8. Su capa de auth no aplica scoping multi-tenant. Candidato a borrado o archivado tras confirmar que ningún servicio (gateway, cron, scraper) lo consume.",
-      "description_en": "Full FastAPI backend remains in the repo but the dashboard uses supabase-js directly and Edge Functions since Fase 8. Its auth layer lacks multi-tenant scoping. Candidate for deletion or archiving after confirming no service (gateway, cron, scraper) consumes it.",
-      "proposed_fix_es": "Auditar consumidores → archivar o eliminar backend/ → limpiar docker-compose y ENV asociadas.",
-      "proposed_fix_en": "Audit consumers → archive or delete backend/ → clean docker-compose and related ENV vars."
+      "status": "RESOLVED",
+      "resolved_date": "2026-06-15",
+      "affected": ["backend/", "gateway/", "docker-compose.yml", "dashboard/src/lib/api.ts", "dashboard/next.config.js"],
+      "resolution_es": "Auditoría confirmó que ningún servicio vivo consume el backend FastAPI (prod = Netlify + Supabase Edge Functions + whatsapp-gateway slim). Eliminados backend/ (91 archivos), gateway/ viejo (8), código muerto del dashboard (api.ts + proxy /api en next.config.js) y docker-compose.yml. Actualizados README.md y .env.example a la arquitectura Fase 8.",
+      "resolution_en": "Audit confirmed no live service consumes the FastAPI backend (prod = Netlify + Supabase Edge Functions + slim whatsapp-gateway). Removed backend/ (91 files), legacy gateway/ (8), dashboard dead code (api.ts + /api proxy in next.config.js) and docker-compose.yml. Updated README.md and .env.example to Fase 8 architecture."
     }
   ]
 }
