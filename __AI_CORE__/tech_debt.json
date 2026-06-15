@@ -1,5 +1,18 @@
 {
-  "debts": [],
+  "debts": [
+    {
+      "id": "TD-007",
+      "title": "Agent-scoping RLS policies compare users.id FKs against auth.uid()",
+      "severity": "MEDIUM",
+      "detected": "2026-06-15",
+      "status": "OPEN",
+      "affected": ["db/migrations/04_rls_policies.sql", "supabase/functions/create-agent/index.ts"],
+      "description_es": "is_admin() ya se corrigió a auth_user_id (TD fix 2026-06-15), pero el resto de políticas de scoping de agentes siguen usando `<fk> = auth.uid()` (p. ej. listing_agent_id, assigned_agent_id, agent_id), donde esas FKs apuntan a users.id. create-agent inserta users.id = gen_random_uuid() ≠ auth_user_id, así que para un agente users.id ≠ auth.uid() y esas políticas nunca coinciden: un agente no vería sus propios datos. Latente hoy (solo existe el admin, 0 propiedades/clientes).",
+      "description_en": "is_admin() is now fixed to auth_user_id (fix 2026-06-15), but the remaining agent-scoping policies still use `<fk> = auth.uid()` (e.g. listing_agent_id, assigned_agent_id, agent_id) where those FKs reference users.id. create-agent inserts users.id = gen_random_uuid() ≠ auth_user_id, so for an agent users.id ≠ auth.uid() and those policies never match: an agent would not see their own data. Latent today (only the admin exists, 0 properties/clients).",
+      "proposed_fix_es": "Decidir modelo canónico: (A) alinear users.id = auth_user_id (y que create-agent inserte id = auth uid), o (B) reescribir las políticas para resolver el agente vía users.auth_user_id = auth.uid(). Aplicar antes de crear el primer agente real.",
+      "proposed_fix_en": "Decide canonical model: (A) align users.id = auth_user_id (and have create-agent insert id = auth uid), or (B) rewrite policies to resolve the agent via users.auth_user_id = auth.uid(). Apply before the first real agent is created."
+    }
+  ],
   "resolved": [
     {
       "id": "TD-006",

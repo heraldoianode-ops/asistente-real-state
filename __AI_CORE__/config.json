@@ -3,7 +3,7 @@
     "project": "Asistente-de-Real-State",
     "version": "0.8.3",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-15T00:20:00Z"
+    "last_updated": "2026-06-15T00:35:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -40,9 +40,9 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails"],
+    "pending_tomorrow": ["TD-007: align agent-scoping RLS (users.id vs auth.uid) before creating first real agent"],
     "bugs_known": [],
-    "last_snap": "2026-06-15T00:20:00Z"
+    "last_snap": "2026-06-15T00:35:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
