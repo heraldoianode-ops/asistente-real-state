@@ -4,7 +4,8 @@ import { createClient } from '@/lib/supabase'
 import { Sidebar } from '@/components/Sidebar'
 import { StatusBadge } from '@/components/StatusBadge'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
-import { Search, Building2, ExternalLink, UserCog } from 'lucide-react'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase-config'
+import { Search, Building2, ExternalLink, UserCog, FileText } from 'lucide-react'
 
 interface Property {
   id: string
@@ -58,6 +59,27 @@ export default function PropertiesPage() {
   const [ownerForm, setOwnerForm] = useState<OwnerForm>(EMPTY_OWNER)
   const [ownerErr, setOwnerErr] = useState<string | null>(null)
   const [savingOwner, setSavingOwner] = useState(false)
+
+  const [reportBusy, setReportBusy] = useState<string | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+
+  async function sendOwnerReport(p: Property) {
+    setReportBusy(p.id); setToast(null)
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/owner-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ property_id: p.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error ?? 'Error')
+      setToast(data.ok ? `Reporte enviado a ${data.sent}/${data.recipients} propietario(s).` : `No se envió: ${data.reason ?? 'sin teléfono de propietario'}`)
+    } catch (err: unknown) {
+      setToast(err instanceof Error ? err.message : 'Error al enviar el reporte')
+    } finally {
+      setReportBusy(null)
+    }
+  }
 
   const load = useCallback(async () => {
     if (!user) return
@@ -166,6 +188,7 @@ export default function PropertiesPage() {
           </div>
         </div>
         {error && <div className="rounded-md bg-destructive/10 border border-destructive/20 p-4 text-sm text-destructive mb-4">{error}</div>}
+        {toast && <div className="rounded-md bg-[hsl(var(--accent))] p-3 text-sm mb-4">{toast}</div>}
         <div className="card-creatio overflow-hidden">
           {loading
             ? <div className="flex items-center justify-center py-16"><div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" /></div>
@@ -174,7 +197,7 @@ export default function PropertiesPage() {
               : <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--secondary))]">
-                      {['Dirección', 'Zona', 'Tipo', 'Operación', 'Precio', 'Link', 'Propietario'].map(h => (
+                      {['Dirección', 'Zona', 'Tipo', 'Operación', 'Precio', 'Link', 'Acciones'].map(h => (
                         <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">{h}</th>
                       ))}
                     </tr>
@@ -191,8 +214,12 @@ export default function PropertiesPage() {
                           ? <a href={p.source_url} target="_blank" rel="noreferrer" className="text-[hsl(var(--primary))] hover:underline inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" /> Ver</a>
                           : <span className="text-[hsl(var(--muted-foreground))]">—</span>}</td>
                         <td className="px-4 py-3">
-                          <button data-testid={`owner-${p.id}`} onClick={() => { setOwnerFor(p); setOwnerForm(EMPTY_OWNER); setOwnerErr(null) }}
-                            className="text-xs font-medium text-[hsl(var(--primary))] hover:underline inline-flex items-center gap-1"><UserCog className="w-3.5 h-3.5" /> Asignar</button>
+                          <div className="flex items-center gap-3">
+                            <button data-testid={`owner-${p.id}`} onClick={() => { setOwnerFor(p); setOwnerForm(EMPTY_OWNER); setOwnerErr(null) }}
+                              className="text-xs font-medium text-[hsl(var(--primary))] hover:underline inline-flex items-center gap-1"><UserCog className="w-3.5 h-3.5" /> Propietario</button>
+                            <button data-testid={`report-${p.id}`} onClick={() => sendOwnerReport(p)} disabled={reportBusy === p.id}
+                              className="text-xs font-medium text-[hsl(var(--primary))] hover:underline inline-flex items-center gap-1 disabled:opacity-50"><FileText className="w-3.5 h-3.5" /> {reportBusy === p.id ? 'Enviando…' : 'Reporte'}</button>
+                          </div>
                         </td>
                       </tr>
                     ))}
