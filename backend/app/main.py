@@ -7,7 +7,7 @@ from app.core.database import engine, Base
 from app.routers import (
     health, properties, clients, events,
     agent, analytics, crm, matching, predictions,
-    rag, scraping, feedback
+    rag, scraping, feedback, modules
 )
 from app.routers import auth as auth_router
 from app.routers import admin as admin_router
@@ -51,3 +51,4 @@ app.include_router(predictions.router, prefix="/predictions")
 app.include_router(rag.router, prefix="/rag")
 app.include_router(scraping.router, prefix="/scraping")
 app.include_router(feedback.router, prefix="/feedback")
+app.include_router(modules.router, prefix="/modules")

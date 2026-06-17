@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette } from 'lucide-react'
+import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette, Blocks } from 'lucide-react'
 import { signOut } from '@/lib/auth'
 import { useBranding } from '@/hooks/useBranding'
 
@@ -15,6 +15,7 @@ const ADMIN_ITEMS = [
   { href: '/admin/agents', label: 'Agentes', icon: UserCog },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: Phone },
   { href: '/admin/branding', label: 'Marca', icon: Palette },
+  { href: '/admin/modules', label: 'Módulos', icon: Blocks },
   { href: '/admin/export', label: 'Exportar datos', icon: Download },
 ]
 

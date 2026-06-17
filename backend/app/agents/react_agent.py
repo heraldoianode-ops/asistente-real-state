@@ -3,11 +3,7 @@ from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 from app.core.llm import get_llm
 from app.core.redis import get_session, set_session
-from app.agents.tools.search_properties import search_properties_tool
-from app.agents.tools.get_client_history import get_client_history_tool
-from app.agents.tools.schedule_event import schedule_event_tool
-from app.agents.tools.send_whatsapp import send_whatsapp_tool, escalate_to_human_tool
-from app.core.database import AsyncSessionLocal
+from app.agents.tools.registry import discover_tools
 import json
 
 SYSTEM_PROMPT = """Sos un asistente inmobiliario profesional para Argentina. Tu objetivo es ayudar a los clientes a encontrar propiedades, agendar visitas y responder consultas.
@@ -27,7 +23,9 @@ Final Answer: respuesta al usuario
 Pregunta: {input}
 {agent_scratchpad}"""
 
-TOOLS = [search_properties_tool, get_client_history_tool, schedule_event_tool, send_whatsapp_tool, escalate_to_human_tool]
+# Tools are auto-discovered from the app.agents.tools package (registry pattern):
+# dropping a new tool file in that folder registers it without editing this agent.
+TOOLS = discover_tools()
 
 
 async def run_agent(wa_contact_id: str, message: str, db) -> dict:

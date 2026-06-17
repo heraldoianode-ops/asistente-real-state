@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, text
+from sqlalchemy import select, func, text, Integer
 from app.models.client import Client, LeadStage
 from app.models.interaction import Interaction
 from app.models.event import Event, EventStatus
