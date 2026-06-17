@@ -12,17 +12,34 @@ const CARDS: { kind: Kind; title: string; hint: string; preview: string }[] = [
   { kind: 'banner', title: 'Banner', hint: 'Imagen apaisada (ej: 1200×300). Se muestra en la pantalla de ingreso', preview: 'h-28 w-full object-cover' },
 ]
 
+type ColorKey = 'theme_primary' | 'theme_accent'
+const COLOR_FIELDS: { key: ColorKey; title: string; hint: string; fallback: string }[] = [
+  { key: 'theme_primary', title: 'Color primario', hint: 'Botones, enlaces y barra lateral activa', fallback: '#0070cc' },
+  { key: 'theme_accent', title: 'Color de acento', hint: 'Fondos suaves y resaltados', fallback: '#d6ebfb' },
+]
+
 export default function BrandingPage() {
   const [urls, setUrls] = useState<Record<Kind, string | null>>({ logo: null, banner: null })
+  const [colors, setColors] = useState<Record<ColorKey, string | null>>({ theme_primary: null, theme_accent: null })
   const [busy, setBusy] = useState<Kind | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const inputs = { logo: useRef<HTMLInputElement>(null), banner: useRef<HTMLInputElement>(null) }
 
   async function load() {
-    const { data } = await createClient().from('app_settings').select('key,value').in('key', ['logo_url', 'banner_url'])
+    const { data } = await createClient().from('app_settings').select('key,value').in('key', ['logo_url', 'banner_url', 'theme_primary', 'theme_accent'])
     const map = Object.fromEntries((data ?? []).map(r => [r.key, r.value]))
     setUrls({ logo: map.logo_url ?? null, banner: map.banner_url ?? null })
+    setColors({ theme_primary: map.theme_primary ?? null, theme_accent: map.theme_accent ?? null })
+  }
+
+  async function saveColor(key: ColorKey, value: string) {
+    setError(null); setSaved(null)
+    setColors(prev => ({ ...prev, [key]: value }))
+    const { error: upErr } = await createClient().from('app_settings')
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+    if (upErr) { setError(upErr.message); return }
+    setSaved('Color actualizado — recargá para verlo aplicado en toda la interfaz')
   }
 
   useEffect(() => { load() }, [])
@@ -100,6 +117,25 @@ export default function BrandingPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="card-creatio p-5 mt-4">
+          <h2 className="text-sm font-semibold mb-1">Colores de la interfaz</h2>
+          <p className="text-xs text-[hsl(var(--muted-foreground))] mb-4">Elegí los colores de tu inmobiliaria. Se aplican a toda la interfaz.</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {COLOR_FIELDS.map(({ key, title, hint, fallback }) => (
+              <div key={key} className="flex items-center gap-3">
+                <input type="color" data-testid={`color-${key}`} value={colors[key] ?? fallback}
+                  onChange={e => saveColor(key, e.target.value)}
+                  className="w-12 h-12 rounded-md border border-[hsl(var(--border))] cursor-pointer bg-transparent p-0.5" />
+                <div>
+                  <p className="text-sm font-medium">{title}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">{hint}</p>
+                  <p className="text-xs font-mono text-[hsl(var(--muted-foreground))]">{colors[key] ?? fallback}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </AdminGuard>
