@@ -9,8 +9,8 @@ import { Building2, Users, MessageSquare, TrendingUp } from 'lucide-react'
 
 interface MatchRow {
   id: string
-  explanation: string
-  similarity_score: number
+  match_explanation: string
+  match_score: number
   status: string
   created_at: string
   properties: { address: string | null; neighborhood: string | null } | { address: string | null; neighborhood: string | null }[] | null
@@ -31,7 +31,7 @@ export default function AnalyticsPage() {
 
     let recentQuery = supabase
       .from('cross_agent_matches')
-      .select('id, explanation, similarity_score, status, created_at, properties(address, neighborhood)')
+      .select('id, match_explanation, match_score, status, created_at, properties(address, neighborhood)')
       .order('created_at', { ascending: false })
       .limit(5)
     if (!isAdmin) recentQuery = recentQuery.eq('listing_agent_id', user.id)
@@ -40,7 +40,7 @@ export default function AnalyticsPage() {
       supabase.from('properties').select('id', { count: 'exact', head: true }),
       isAdmin
         ? supabase.from('clients').select('id', { count: 'exact', head: true })
-        : supabase.from('clients').select('id', { count: 'exact', head: true }).eq('agent_id', user.id),
+        : supabase.from('clients').select('id', { count: 'exact', head: true }).eq('assigned_agent_id', user.id),
       isAdmin
         ? supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true })
         : supabase.from('cross_agent_matches').select('id', { count: 'exact', head: true }).eq('listing_agent_id', user.id),
@@ -116,8 +116,8 @@ export default function AnalyticsPage() {
                     {recent.map(m => (
                       <tr key={m.id} className="hover:bg-[hsl(var(--secondary))] transition-colors">
                         <td className="px-4 py-3 font-medium">{getPropLabel(m.properties)}</td>
-                        <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.explanation}</td>
-                        <td className="px-4 py-3">{(m.similarity_score * 100).toFixed(0)}%</td>
+                        <td className="px-4 py-3 text-[hsl(var(--muted-foreground))] max-w-xs truncate">{m.match_explanation}</td>
+                        <td className="px-4 py-3">{(m.match_score * 100).toFixed(0)}%</td>
                         <td className="px-4 py-3">
                           <StatusBadge
                             label={m.status === 'pending' ? 'Pendiente' : m.status === 'accepted' ? 'Aceptado' : 'Rechazado'}
