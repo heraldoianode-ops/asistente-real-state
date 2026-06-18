@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/Sidebar'
 import { createClient } from '@/lib/supabase'
 import { SUPABASE_URL } from '@/lib/supabase-config'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
-import { Calendar, CheckCircle2 } from 'lucide-react'
+import { Calendar, CheckCircle2, Cpu, Zap } from 'lucide-react'
 
 export default function SettingsPage() {
   const { user } = useCurrentUser()
@@ -12,6 +12,30 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const [llm, setLlm] = useState<string>('local')
+  const [llmBusy, setLlmBusy] = useState(false)
+
+  const loadLlm = useCallback(async () => {
+    const { data } = await createClient().from('app_settings').select('value').eq('key', 'llm_provider').limit(1)
+    setLlm(data && data.length && data[0].value ? String(data[0].value) : 'local')
+  }, [])
+
+  async function saveLlm(provider: string) {
+    setLlmBusy(true); setMsg(null)
+    const prev = llm
+    setLlm(provider)
+    try {
+      const { error } = await createClient().from('app_settings')
+        .upsert({ key: 'llm_provider', value: provider, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+      if (error) throw new Error(error.message)
+      setMsg(provider === 'anthropic' ? '✅ Motor cambiado a Claude (Anthropic).' : '✅ Motor cambiado a Local (Ollama, gratis).')
+    } catch (err: unknown) {
+      setLlm(prev)
+      setMsg(err instanceof Error ? err.message : 'Error')
+    } finally {
+      setLlmBusy(false)
+    }
+  }
 
   const loadStatus = useCallback(async () => {
     if (!user) return
@@ -32,6 +56,7 @@ export default function SettingsPage() {
   }, [])
 
   useEffect(() => { loadStatus() }, [loadStatus])
+  useEffect(() => { if (user?.role === 'admin') loadLlm() }, [user, loadLlm])
 
   async function connect() {
     setBusy(true); setMsg(null)
@@ -106,6 +131,37 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {user?.role === 'admin' && (
+          <div className="card-creatio p-5 max-w-xl mt-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-md bg-[hsl(var(--accent))] flex items-center justify-center shrink-0">
+                <Cpu className="w-5 h-5 text-[hsl(var(--primary))]" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-sm font-semibold">Motor de IA</h2>
+                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">
+                  Elegí qué modelo responde. Solo el administrador puede cambiarlo.
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 max-w-sm">
+                  <button data-testid="llm-local" onClick={() => saveLlm('local')} disabled={llmBusy}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium border transition-colors disabled:opacity-50 ${llm === 'local' ? 'bg-[hsl(var(--primary))] text-white border-transparent' : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]'}`}>
+                    <Cpu className="w-4 h-4" /> Local · gratis
+                  </button>
+                  <button data-testid="llm-anthropic" onClick={() => saveLlm('anthropic')} disabled={llmBusy}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium border transition-colors disabled:opacity-50 ${llm === 'anthropic' ? 'bg-[hsl(var(--primary))] text-white border-transparent' : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]'}`}>
+                    <Zap className="w-4 h-4" /> Claude · Anthropic
+                  </button>
+                </div>
+                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-2">
+                  {llm === 'anthropic'
+                    ? 'Activo: Claude (Anthropic). Mejor calidad — se cobra por uso mientras esté activo.'
+                    : 'Activo: Local (Ollama). Gratis. Cambiá a Claude si los resultados son pobres.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   )
