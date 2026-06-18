@@ -31,3 +31,4 @@ class Event(Base, UUIDMixin, TimestampMixin):
     status: Mapped[str] = mapped_column(String(30), default=EventStatus.scheduled)
     scheduled_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     notes: Mapped[str | None] = mapped_column(Text)
+    google_event_id: Mapped[str | None] = mapped_column(Text)

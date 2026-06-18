@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette, Blocks, Building2 } from 'lucide-react'
+import { BarChart3, Users, LogOut, UserCog, Phone, Download, LayoutDashboard, Palette, Blocks, Building2, Settings } from 'lucide-react'
 import { signOut } from '@/lib/auth'
 import { useBranding } from '@/hooks/useBranding'
 
@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/crm', label: 'CRM — Clientes', icon: Users },
   { href: '/properties', label: 'Inmuebles', icon: Building2 },
+  { href: '/settings', label: 'Ajustes', icon: Settings },
   { href: '/admin', label: 'Administración', icon: LayoutDashboard },
 ]
 
