@@ -50,4 +50,7 @@ class Property(Base, UUIDMixin, TimestampMixin):
     source_url: Mapped[str | None] = mapped_column(String(500))
     source_id: Mapped[str | None] = mapped_column(String(100))
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Multi-tenant attribution + conversation context (added by migration 03_multitenant.sql)
+    listing_agent_id: Mapped[uuid.UUID | None] = mapped_column()
+    conversation_summary: Mapped[str | None] = mapped_column(Text)
     embedding: Mapped[list | None] = mapped_column(Vector(768))

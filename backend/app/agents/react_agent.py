@@ -4,6 +4,7 @@ from langchain_core.prompts import PromptTemplate
 from app.core.llm import get_llm
 from app.core.redis import get_session, set_session
 from app.agents.tools.registry import discover_tools
+from app.models.message import Message  # noqa: F401 — register model for metadata/create_all
 import json
 
 SYSTEM_PROMPT = """Sos un asistente inmobiliario profesional para Argentina. Tu objetivo es ayudar a los clientes a encontrar propiedades, agendar visitas y responder consultas.
@@ -58,5 +59,10 @@ async def run_agent(wa_contact_id: str, message: str, db) -> dict:
     # Persist session
     history.append({"human": message, "ai": reply})
     await set_session(wa_contact_id, json.dumps(history[-20:]))
+
+    # Persist the turn to Postgres + refresh the rolling conversation summary
+    # (best-effort; never breaks the reply).
+    from app.services.conversations import record_conversation
+    await record_conversation(db, wa_contact_id, message, reply)
 
     return {"reply": reply, "escalated": escalated}

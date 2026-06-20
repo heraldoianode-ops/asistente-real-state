@@ -33,4 +33,6 @@ class Client(Base, UUIDMixin, TimestampMixin):
     min_bedrooms: Mapped[int | None] = mapped_column(Integer)
     notes: Mapped[str | None] = mapped_column(Text)
     assigned_agent_id: Mapped[uuid.UUID | None] = mapped_column()
+    # Rolling LLM summary of the client's WhatsApp conversation (added by migration 09)
+    conversation_summary: Mapped[str | None] = mapped_column(Text)
     preference_embedding: Mapped[list | None] = mapped_column(Vector(768))

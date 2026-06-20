@@ -18,6 +18,11 @@ def build_preference_text(client: Client) -> str:
         parts.append(f"mínimo {client.min_bedrooms} dormitorios")
     if client.notes:
         parts.append(client.notes)
+    # Free-text matching (Phase 2.2): fold the rolling conversation summary into the
+    # embedded text so WhatsApp chatter — not just the structured form — drives matches.
+    summary = getattr(client, "conversation_summary", None)
+    if summary:
+        parts.append(summary)
     return ". ".join(parts) or "cliente sin preferencias definidas"
 
 
