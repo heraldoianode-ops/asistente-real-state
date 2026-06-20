@@ -12,6 +12,7 @@ celery_app = Celery(
         "app.workers.tasks.matching",
         "app.workers.tasks.analytics",
         "app.workers.tasks.meta_learning",
+        "app.workers.tasks.work_planner",
     ]
 )
 
@@ -27,6 +28,10 @@ celery_app.conf.beat_schedule = {
     "reminders-every-15min": {
         "task": "app.workers.tasks.reminders.send_appointment_reminders",
         "schedule": 15 * 60,
+    },
+    "work-planner-every-4h": {
+        "task": "app.workers.tasks.work_planner.plan_next_steps",
+        "schedule": 4 * 3600,
     },
 }
 celery_app.conf.timezone = "America/Argentina/Buenos_Aires"

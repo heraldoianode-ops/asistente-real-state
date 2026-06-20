@@ -19,3 +19,5 @@ class User(Base, UUIDMixin, TimestampMixin):
     role: Mapped[str] = mapped_column(String(20), default=UserRole.agent)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     wa_contact_id: Mapped[str | None] = mapped_column(String(50))
+    # When true, the work planner executes follow-ups automatically (added by migration 10)
+    autonomous_mode: Mapped[bool] = mapped_column(Boolean, default=False)
