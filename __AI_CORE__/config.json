@@ -41,7 +41,7 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails"],
+    "pending_tomorrow": [],
     "bugs_known": [],
     "last_snap": "2026-06-21T00:00:00Z"
   },

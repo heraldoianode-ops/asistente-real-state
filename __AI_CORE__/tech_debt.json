@@ -7,13 +7,25 @@
       "detected": "2026-06-10",
       "status": "RESOLVED",
       "resolved": "2026-06-21",
-      "resolution_es": "Auditado: ningún servicio en producción (dashboard Netlify ni whatsapp-gateway slim) consume el backend. Archivado en tag git 'legacy-fastapi-backend'. Eliminados del árbol: backend/, gateway/ (viejo), docker-compose.yml, dashboard/src/lib/api.ts (muerto) y rewrite de next.config. Decisión D016.",
-      "resolution_en": "Audited: no production service (Netlify dashboard nor slim whatsapp-gateway) consumes the backend. Archived under git tag 'legacy-fastapi-backend'. Removed from tree: backend/, gateway/ (old), docker-compose.yml, dead dashboard/src/lib/api.ts and the next.config rewrite. See decision D016.",
+      "resolution_es": "Auditado: ningún servicio en producción (dashboard Netlify ni whatsapp-gateway slim) consume el backend. Archivado en remoto como rama 'archive/legacy-fastapi-backend' @ a41aba6 (el proxy git del entorno rechaza push de tags con 403; existe además el tag local 'legacy-fastapi-backend'). Eliminados del árbol: backend/, gateway/ (viejo), docker-compose.yml, dashboard/src/lib/api.ts (muerto) y rewrite de next.config. Decisión D016.",
+      "resolution_en": "Audited: no production service (Netlify dashboard nor slim whatsapp-gateway) consumes the backend. Archived on the remote as branch 'archive/legacy-fastapi-backend' @ a41aba6 (the environment git proxy rejects tag pushes with 403; a local tag 'legacy-fastapi-backend' also exists). Removed from tree: backend/, gateway/ (old), docker-compose.yml, dead dashboard/src/lib/api.ts and the next.config rewrite. See decision D016.",
       "affected": ["backend/"],
       "description_es": "El backend FastAPI completo sigue en el repo pero el dashboard usa supabase-js directo y Edge Functions desde la Fase 8. Su capa de auth no aplica scoping multi-tenant. Candidato a borrado o archivado tras confirmar que ningún servicio (gateway, cron, scraper) lo consume.",
       "description_en": "Full FastAPI backend remains in the repo but the dashboard uses supabase-js directly and Edge Functions since Fase 8. Its auth layer lacks multi-tenant scoping. Candidate for deletion or archiving after confirming no service (gateway, cron, scraper) consumes it.",
       "proposed_fix_es": "Auditar consumidores → archivar o eliminar backend/ → limpiar docker-compose y ENV asociadas.",
       "proposed_fix_en": "Audit consumers → archive or delete backend/ → clean docker-compose and related ENV vars."
+    },
+    {
+      "id": "TD-007",
+      "title": "Schema drift — repo migrations don't reflect live users table",
+      "severity": "LOW",
+      "detected": "2026-06-21",
+      "status": "OPEN",
+      "affected": ["db/init/02_schema.sql", "db/migrations/"],
+      "description_es": "La tabla 'users' en producción (schema asistente_real_state) tiene columnas 'auth_user_id' (uuid) y 'avatar_url' (text) y ya NO tiene 'hashed_password', pero ninguna migración versionada en el repo añade auth_user_id/avatar_url ni elimina hashed_password. El esquema vivo se modificó fuera del control de migraciones (Fase 7/8 Supabase Auth). Riesgo: un entorno nuevo recreado desde el repo no coincidiría con producción.",
+      "description_en": "The production 'users' table (schema asistente_real_state) has columns 'auth_user_id' (uuid) and 'avatar_url' (text) and no longer has 'hashed_password', but no versioned migration in the repo adds auth_user_id/avatar_url or drops hashed_password. The live schema was changed outside migration control (Fase 7/8 Supabase Auth). Risk: a fresh environment rebuilt from the repo would not match production.",
+      "proposed_fix_es": "Crear migración que reconcilie: ADD COLUMN auth_user_id, avatar_url; DROP COLUMN hashed_password; idempotente (IF EXISTS / IF NOT EXISTS). Verificar contra producción con information_schema.",
+      "proposed_fix_en": "Add a reconciliation migration: ADD COLUMN auth_user_id, avatar_url; DROP COLUMN hashed_password; idempotent (IF EXISTS / IF NOT EXISTS). Verify against production via information_schema."
     }
   ]
 }
