@@ -1,6 +1,12 @@
 {
   "sessions": [
     {
+      "date": "2026-06-21",
+      "summary": "TD-006 resolved: audited consumers (none in prod), archived legacy FastAPI backend + old gateway + docker-compose under git tag legacy-fastapi-backend. Cleaned dead api.ts, next.config rewrite, README. v0.8.3. Health 100, debt 0.",
+      "nodes_touched": ["8.9"],
+      "commits": ["chore(td-006): archive legacy FastAPI backend + docker-compose cleanup"]
+    },
+    {
       "date": "2025-06-08",
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
       "nodes_touched": ["all"],

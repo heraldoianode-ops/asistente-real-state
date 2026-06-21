@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-12T03:15:00Z"
+    "last_updated": "2026-06-21T00:00:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -36,13 +36,14 @@
       { "id": "8.5", "name": "Creatio design system", "status": "complete" },
       { "id": "8.6", "name": "Netlify config + env", "status": "complete" },
       { "id": "8.7", "name": "Debt repair — 5 issues", "status": "complete" },
-      { "id": "8.8", "name": "Production deploy fixes (TS build, supabase-config fallback, auth.tsx recursion, favicon) + F025 export", "status": "complete" }
+      { "id": "8.8", "name": "Production deploy fixes (TS build, supabase-config fallback, auth.tsx recursion, favicon) + F025 export", "status": "complete" },
+      { "id": "8.9", "name": "TD-006 — archive legacy FastAPI backend + old gateway + docker-compose (tag legacy-fastapi-backend)", "status": "complete" }
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails", "DEUDA TD-006 — remove legacy FastAPI backend + docker-compose cleanup"],
+    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails"],
     "bugs_known": [],
-    "last_snap": "2026-06-12T03:15:00Z"
+    "last_snap": "2026-06-21T00:00:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
