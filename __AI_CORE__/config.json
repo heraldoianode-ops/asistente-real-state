@@ -38,8 +38,8 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M1 — Conversational Channel (F110+F111+F112 DONE; F113/F114 derivations + F115 meta-learning next)",
-    "progress_pct": 53,
+    "current_node": "M1 — Conversational Channel (F110-F114 DONE; F115 meta-learning is the last piece)",
+    "progress_pct": 57,
     "modules": [
       { "id": "M0", "name": "Platform Core (infra)", "status": "done" },
       { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "in_progress" },
