@@ -56,7 +56,8 @@
         { "id": "F130", "name": "Owner reports — programmable periods", "status": "TODO" },
         { "id": "F131", "name": "Advisor activity reports + personalized stats tips", "status": "TODO" },
         { "id": "F132", "name": "Admin/Martillera/Marketing on-demand consolidated lists", "status": "TODO" },
-        { "id": "F133", "name": "Central calendar + weekly automated WhatsApp schedule report", "status": "TODO" }
+        { "id": "F133", "name": "Central calendar + weekly automated WhatsApp schedule report", "status": "TODO" },
+        { "id": "F134", "name": "Deals-in-process report (solo/team) with current state", "status": "DONE", "evidence": ["supabase/functions/deals-in-process/index.ts"], "note": "Detects operations advisors are trying to close — solo vs equipo vs entrelazado — from active events, cross-agent matches and active interlinks; reports operation + current state. Optional agent_id filter. Deterministic, free." }
       ]
     },
     {

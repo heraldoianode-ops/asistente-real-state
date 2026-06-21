@@ -1,6 +1,18 @@
 {
   "debts": [
     {
+      "id": "TD-010",
+      "title": "match-properties writes wrong cross_agent_matches columns",
+      "severity": "MEDIUM",
+      "detected": "2026-06-21",
+      "status": "OPEN",
+      "affected": ["supabase/functions/match-properties/index.ts"],
+      "description_es": "match-properties inserta columnas client_id/client_agent_id/similarity_score/explanation que NO existen en cross_agent_matches (schema real: buyer_client_id/buyer_agent_id/match_score/match_explanation; status pending|contacted|closed). El insert fallaría en runtime. Detectado al construir F134.",
+      "description_en": "match-properties inserts client_id/client_agent_id/similarity_score/explanation which do NOT exist on cross_agent_matches (real schema: buyer_client_id/buyer_agent_id/match_score/match_explanation; status pending|contacted|closed). The insert would fail at runtime. Found while building F134.",
+      "proposed_fix_es": "Mapear a las columnas reales y al set de status correcto; idealmente unificar con interlink_matches/F121.",
+      "proposed_fix_en": "Map to the real columns and correct status set; ideally unify with interlink_matches/F121."
+    },
+    {
       "id": "TD-006",
       "title": "Legacy FastAPI/Celery/Redis stack still in repo",
       "severity": "MEDIUM",
