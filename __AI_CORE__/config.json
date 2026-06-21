@@ -38,8 +38,8 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M1 — Conversational Channel COMPLETE; next M2 — Alarms & Matching",
-    "progress_pct": 60,
+    "current_node": "M2 — Alarms & Matching (F121 active interlink matching DONE; F120/F122/F123 next)",
+    "progress_pct": 64,
     "modules": [
       { "id": "M0", "name": "Platform Core (infra)", "status": "done" },
       { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "done" },
