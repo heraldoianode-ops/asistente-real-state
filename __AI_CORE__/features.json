@@ -260,9 +260,11 @@
           "name": "Advisor activity reports + personalized stats tips",
           "status": "DONE",
           "evidence": [
-            "supabase/functions/advisor-report/index.ts"
+            "supabase/functions/advisor-report/index.ts",
+            "supabase/functions/goals/index.ts",
+            "db/migrations/15_advisor_goals.sql"
           ],
-          "note": "Advisor metrics (listings, clients, visits by status) vs team average; deterministic personalized tips; optional free-tier (Ollama) narrative — zero Claude tokens. On-demand."
+          "note": "Advisor metrics vs team average AND vs configurable monthly goals (D024: captaciones/ventas/alquileres; defaults app_settings + per-advisor advisor_goals; admin/martillero configurable via goals fn). Reports how close/far from objective. Optional free-tier (Ollama) narrative. Zero Claude tokens."
         },
         {
           "id": "F132",

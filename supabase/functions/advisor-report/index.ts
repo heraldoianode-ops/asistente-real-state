@@ -50,6 +50,43 @@ Deno.serve(async (req) => {
       else if (e.status === 'scheduled') bump(e.agent_id, 'visits_scheduled')
     }
 
+    // --- Monthly goals vs actuals (D024) -------------------------------------
+    const monthStart = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString() })()
+    const goalKeys = { captaciones_mes: 'goal_captaciones_mes', ventas_mes: 'goal_ventas_mes', alquileres_mes: 'goal_alquileres_mes' }
+    const { data: gset } = await supabase.from('app_settings').select('key, value').in('key', Object.values(goalKeys))
+    const gmap = new Map<string, string>((gset ?? []).map((r: { key: string; value: string }) => [r.key, r.value]))
+    const { data: gov } = await supabase.from('advisor_goals')
+      .select('captaciones_mes, ventas_mes, alquileres_mes').eq('agent_id', agent_id).maybeSingle()
+    const goalOf = (k: keyof typeof goalKeys) => {
+      const o = gov?.[k]; if (o != null) return Number(o)
+      const d = gmap.get(goalKeys[k]); return d != null ? Number(d) : null
+    }
+
+    // Current-month actuals for the target advisor (status != available = closed proxy).
+    const { data: myProps } = await supabase.from('properties')
+      .select('operation_type, status, created_at, updated_at').eq('listing_agent_id', agent_id).limit(5000)
+    const inMonth = (iso?: string) => !!iso && iso >= monthStart
+    let captaciones = 0, ventas = 0, alquileres = 0
+    for (const p of (myProps ?? [])) {
+      if (inMonth(p.created_at)) captaciones++
+      const closed = p.status && p.status !== 'available'
+      if (closed && inMonth(p.updated_at)) {
+        if (/venta/i.test(p.operation_type ?? '')) ventas++
+        else if (/alqui/i.test(p.operation_type ?? '')) alquileres++
+      }
+    }
+    const goalLine = (label: string, actual: number, goal: number | null) => {
+      if (goal == null || goal <= 0) return { label, actual, goal, status: 'sin objetivo definido' }
+      const pct = Math.round((actual / goal) * 100)
+      const gap = Math.max(0, goal - actual)
+      return { label, actual, goal, pct, gap, status: actual >= goal ? `objetivo cumplido (${actual}/${goal})` : `${actual}/${goal} (${pct}%), faltan ${gap} para la meta` }
+    }
+    const goals = {
+      captaciones: goalLine('captaciones', captaciones, goalOf('captaciones_mes')),
+      ventas: goalLine('ventas', ventas, goalOf('ventas_mes')),
+      alquileres: goalLine('alquileres', alquileres, goalOf('alquileres_mes')),
+    }
+
     const mine = per.get(agent_id) ?? empty()
     const n = Math.max(1, agentIds.size)
     const sum = empty()
@@ -65,18 +102,24 @@ Deno.serve(async (req) => {
     if (mine.clients > avg.clients * 1.3) tips.push('Tenés muchos clientes activos — priorizá los de mayor avance para no diluir la atención.')
     if (tips.length === 0) tips.push('Tus métricas están en línea con el equipo. ¡Seguí así!')
 
+    // Goal-based tips (cerca/lejos del objetivo).
+    for (const g of [goals.captaciones, goals.ventas, goals.alquileres]) {
+      if ('gap' in g && g.gap! > 0) tips.push(`${g.label}: ${g.status}.`)
+      else if ('goal' in g && g.goal && g.actual >= (g.goal ?? 0)) tips.push(`${g.label}: ¡objetivo del mes cumplido! 🎯`)
+    }
+
     let report = null
     if (narrative) {
       const result = await runLLM({
         messages: [{ role: 'user', content:
-          `Asesor: ${targetName}\nMétricas: ${JSON.stringify(mine)}\nPromedio equipo: ${JSON.stringify(avg)}\nTips: ${tips.join(' | ')}\n\nRedactá un informe breve y motivador para el asesor.` }],
+          `Asesor: ${targetName}\nMétricas: ${JSON.stringify(mine)}\nPromedio equipo: ${JSON.stringify(avg)}\nObjetivos del mes: ${JSON.stringify(goals)}\nTips: ${tips.join(' | ')}\n\nRedactá un informe breve y motivador para el asesor, mencionando qué tan cerca está de sus objetivos.` }],
         system: 'Sos un coach inmobiliario. Informe breve (máx 6 líneas), concreto, sin inventar datos.',
         complexity: 'simple', maxTokens: 300,
       })
       report = result.text
     }
 
-    return json({ agent_id, advisor: targetName, metrics: mine, team_avg: avg, tips, report })
+    return json({ agent_id, advisor: targetName, metrics: mine, team_avg: avg, goals, tips, report })
   } catch (err) {
     return json({ error: err instanceof Error ? err.message : 'Internal error' }, 500)
   }
