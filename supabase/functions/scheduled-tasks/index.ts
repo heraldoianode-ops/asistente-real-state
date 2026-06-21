@@ -13,6 +13,7 @@
 // auth path can be wired and tested end-to-end now.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders, json, requireInternalKey } from '../_shared/auth.ts'
+import { detectAlarms } from '../_shared/compliance.ts'
 
 type JobResult = { job: string; status: 'ok' | 'pending'; detail?: string }
 type Job = (supabase: ReturnType<typeof createClient>) => Promise<JobResult>
@@ -30,12 +31,11 @@ const JOBS: Record<string, Job> = {
     status: 'pending',
     detail: 'Awaiting M3/F130 implementation.',
   }),
-  // M2/F120 — advisor non-compliance alarms to the auctioneer.
-  compliance_alarms: async () => ({
-    job: 'compliance_alarms',
-    status: 'pending',
-    detail: 'Awaiting M2/F120 implementation.',
-  }),
+  // M2/F120 — non-compliance alarms to the martillero.
+  compliance_alarms: async (supabase) => {
+    const raised = await detectAlarms(supabase)
+    return { job: 'compliance_alarms', status: 'ok', detail: `${raised.length} alarma(s) nueva(s).` }
+  },
 }
 
 Deno.serve(async (req) => {
