@@ -5,7 +5,8 @@
     "debt": { "critical": 0, "high": 0, "medium": 0, "low": 1 },
     "alerts": [
       "TD-009 (LOW): secret-key guard uses plain comparison — optional timing-safe hardening",
-      "Re-baseline v0.9.0: M0 F100+F101 DONE; M1-M5 pending (progress 33%)"
+      "v0.9.0: M0 COMPLETE; M1 in progress (F110+F111+F112 DONE, F113/F114/F115 pending); M2-M5 pending (progress 53%)",
+      "Deploy pending: apply migrations 07+08 + set Edge Function/GH secrets"
     ]
   },
   "last_check": "2026-06-21",
