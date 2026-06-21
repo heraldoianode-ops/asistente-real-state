@@ -268,7 +268,13 @@
         {
           "id": "F133",
           "name": "Central calendar + weekly automated WhatsApp schedule report",
-          "status": "TODO"
+          "status": "DONE",
+          "evidence": [
+            "supabase/functions/_shared/calendar.ts",
+            "supabase/functions/calendar/index.ts",
+            "supabase/functions/scheduled-tasks/index.ts"
+          ],
+          "note": "Central calendar (agenda by range/agent) + weekly_report that compiles each advisor's next-7-days agenda and sends it via the gateway /send (advisor phone from whatsapp_numbers). Wired to the weekly_calendar_report scheduler job (F101). Free, no LLM."
         },
         {
           "id": "F134",

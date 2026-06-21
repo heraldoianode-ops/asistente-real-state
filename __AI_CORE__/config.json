@@ -38,8 +38,8 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M2 — Alarms & Matching COMPLETE (F120-F123 + D022 scoring + F134); next M3 — Reports & Agenda",
-    "progress_pct": 80,
+    "current_node": "M3 — Reports & Agenda (F133 calendar + F134 deals-in-process DONE; F130/F131/F132 next)",
+    "progress_pct": 84,
     "modules": [
       {
         "id": "M0",

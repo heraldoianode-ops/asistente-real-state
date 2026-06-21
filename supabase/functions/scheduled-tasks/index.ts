@@ -14,17 +14,17 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders, json, requireInternalKey } from '../_shared/auth.ts'
 import { detectAlarms } from '../_shared/compliance.ts'
+import { runWeeklyReport } from '../_shared/calendar.ts'
 
 type JobResult = { job: string; status: 'ok' | 'pending'; detail?: string }
 type Job = (supabase: ReturnType<typeof createClient>) => Promise<JobResult>
 
 const JOBS: Record<string, Job> = {
-  // M3/F133 — weekly visit schedule broadcast to the whole team via WhatsApp.
-  weekly_calendar_report: async () => ({
-    job: 'weekly_calendar_report',
-    status: 'pending',
-    detail: 'Awaiting M3/F133 implementation.',
-  }),
+  // M3/F133 — weekly schedule sent to each advisor via WhatsApp.
+  weekly_calendar_report: async (supabase) => {
+    const r = await runWeeklyReport(supabase)
+    return { job: 'weekly_calendar_report', status: 'ok', detail: `${r.sent} agenda(s) enviada(s).` }
+  },
   // M3/F130 — programmable-period owner reports.
   owner_period_reports: async () => ({
     job: 'owner_period_reports',
