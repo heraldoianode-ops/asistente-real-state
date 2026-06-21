@@ -38,8 +38,8 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M0 — Platform Core (LLM router + scheduler + chat summarization)",
-    "progress_pct": 22,
+    "current_node": "M0 — Platform Core (F100 LLM router DONE; scheduler + chat summarization next)",
+    "progress_pct": 28,
     "modules": [
       { "id": "M0", "name": "Platform Core (infra)", "status": "in_progress" },
       { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "pending" },
@@ -61,9 +61,9 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "M0: implement LLM router (Ollama default → DeepSeek → Claude on admin-request)",
-      "M0: build secret-key scheduler (GitHub Actions / Cron-Job.org → Edge Fn)",
-      "M0: chat ingestion + summarization pipeline (F102)"
+      "M0/F101: build secret-key scheduler (GitHub Actions / Cron-Job.org → Edge Fn)",
+      "M0/F102: chat ingestion + summarization pipeline",
+      "M0/F103: listing-link verifier (no web crawl)"
     ],
     "bugs_known": [],
     "last_snap": "2026-06-21T00:00:00Z"

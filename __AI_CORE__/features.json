@@ -24,7 +24,7 @@
     {
       "id": "M0", "name": "Platform Core", "status": "IN_PROGRESS",
       "features": [
-        { "id": "F100", "name": "LLM Router (Ollama free → DeepSeek → Claude admin-only)", "status": "TODO" },
+        { "id": "F100", "name": "LLM Router (Ollama free → DeepSeek → Claude admin-only)", "status": "DONE", "evidence": ["supabase/functions/_shared/llm-router.ts", "supabase/functions/llm-route/index.ts"], "note": "Free-first complexity routing; Claude hard-gated behind adminRequest (D016). Raw Messages API wire format. Endpoint secret-key protected (P008)." },
         { "id": "F101", "name": "Secret-key Scheduler (GitHub Actions / Cron-Job.org → Edge Fn)", "status": "TODO" },
         { "id": "F102", "name": "Chat ingestion + context-preserving summarization into Supabase", "status": "TODO" },
         { "id": "F103", "name": "Listing-link verifier (no web crawl; verify a consulted URL is a property)", "status": "TODO" }
