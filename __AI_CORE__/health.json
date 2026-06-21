@@ -1,11 +1,10 @@
 {
-  "status": "ATTENTION",
-  "score": 84,
+  "status": "HEALTHY",
+  "score": 92,
   "dimensions": {
-    "debt": { "critical": 0, "high": 0, "medium": 2, "low": 0 },
+    "debt": { "critical": 0, "high": 0, "medium": 0, "low": 0 },
     "alerts": [
-      "TD-006/TD-008 (MEDIUM): legacy FastAPI/Celery stack + duplicate gateway pending removal",
-      "Re-baseline v0.9.0: M1-M5 modules pending implementation (progress 22%)"
+      "Re-baseline v0.9.0: M1-M5 modules pending implementation (progress 22%) — no open debt"
     ]
   },
   "last_check": "2026-06-21",

@@ -1,33 +1,11 @@
 version: '3.9'
 
+# PropTech AI Platform v0.9.0 — serverless-aligned compose.
+# DB + backend = Supabase (cloud). Dashboard = Netlify (no container).
+# This file only deploys the slim WhatsApp gateway and a free-first Ollama
+# LLM host (Hetzner CX11). Legacy FastAPI/Celery/Redis/Postgres removed.
+
 services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
   ollama:
     image: ollama/ollama:latest
     restart: unless-stopped
@@ -46,59 +24,12 @@ services:
       OLLAMA_HOST: http://ollama:11434
     restart: on-failure
 
-  backend:
-    build: ./backend
+  whatsapp-gateway:
+    build: ./whatsapp-gateway
     restart: unless-stopped
     env_file: .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      ollama:
-        condition: service_started
-    ports:
-      - "8000:8000"
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-  celery-worker:
-    build: ./backend
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - backend
-      - redis
-    command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
-
-  celery-beat:
-    build: ./backend
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - backend
-      - redis
-    command: celery -A app.workers.celery_app beat --loglevel=info
-
-  gateway:
-    build: ./gateway
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - backend
-      - redis
     ports:
       - "3000:3000"
 
-  dashboard:
-    build: ./dashboard
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - backend
-    ports:
-      - "3001:3000"
-
 volumes:
-  postgres_data:
-  redis_data:
   ollama_data:

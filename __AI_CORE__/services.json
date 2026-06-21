@@ -19,7 +19,7 @@
 
     { "id": "redis", "name": "Redis", "status": "deprecated", "note": "Removed with Celery/FastAPI stack (D018/D020)." },
     { "id": "celery", "name": "Celery Worker", "status": "deprecated", "note": "Superseded by Edge Functions + secret-key scheduler (D014/D018)." },
-    { "id": "gateway_legacy", "name": "WhatsApp Gateway (FastAPI-coupled)", "status": "deprecated", "note": "Legacy gateway/ calls FastAPI backend:8000. To remove (TD-006)." },
+    { "id": "whatsapp_gateway_slim", "name": "WhatsApp Gateway (slim, supabase-js)", "status": "active", "host": "gateway:3000", "note": "Sole gateway. Dockerized; deployed on Hetzner CX11." },
     { "id": "openai", "name": "OpenAI", "status": "optional", "host": "api.openai.com" },
     { "id": "google_drive", "name": "Google Drive", "status": "deprecated", "note": "Excel sync out of scope; admin data load via CSV/backup upload." }
   ]
