@@ -1,10 +1,11 @@
 {
   "status": "HEALTHY",
-  "score": 92,
+  "score": 91,
   "dimensions": {
-    "debt": { "critical": 0, "high": 0, "medium": 0, "low": 0 },
+    "debt": { "critical": 0, "high": 0, "medium": 0, "low": 1 },
     "alerts": [
-      "Re-baseline v0.9.0: M1-M5 modules pending implementation (progress 22%) — no open debt"
+      "TD-009 (LOW): secret-key guard uses plain comparison — optional timing-safe hardening",
+      "Re-baseline v0.9.0: M0 F100+F101 DONE; M1-M5 pending (progress 33%)"
     ]
   },
   "last_check": "2026-06-21",

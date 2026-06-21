@@ -30,6 +30,18 @@
       "proposed_fix_en": "Remove the backend rewrite and output:'standalone' (Netlify + @netlify/plugin-nextjs handles it)."
     },
     {
+      "id": "TD-009",
+      "title": "Secret-key guard uses plain string comparison",
+      "severity": "LOW",
+      "detected": "2026-06-21",
+      "status": "OPEN",
+      "affected": ["supabase/functions/_shared/auth.ts"],
+      "description_es": "requireInternalKey compara x-internal-key con !== (no timing-safe). Riesgo bajo: la llave es un secreto interno largo entre el scheduler y las Edge Functions, no expuesto a usuarios. Endurecer con comparación de tiempo constante.",
+      "description_en": "requireInternalKey compares x-internal-key with !== (not timing-safe). Low risk: the key is a long internal secret between the scheduler and Edge Functions, not user-facing. Harden with a constant-time comparison.",
+      "proposed_fix_es": "Comparar con un algoritmo de tiempo constante (longitud + XOR acumulado) o crypto.subtle.timingSafeEqual.",
+      "proposed_fix_en": "Use a constant-time comparison (length + accumulated XOR) or crypto.subtle.timingSafeEqual."
+    },
+    {
       "id": "TD-008",
       "title": "Duplicate WhatsApp gateways",
       "severity": "MEDIUM",

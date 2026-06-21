@@ -1,0 +1,46 @@
+# PropTech AI Platform — F101 secret-key scheduler (decision D018)
+# Fires scheduled jobs against the secret-key-protected `scheduled-tasks` Edge
+# Function. Replaces Celery Beat — no self-hosted workers.
+#
+# Required GitHub secrets:
+#   SUPABASE_FUNCTIONS_URL  e.g. https://nehfrtedwcmdlmbulhef.supabase.co/functions/v1
+#   INTERNAL_API_KEY        same value set via `supabase secrets set INTERNAL_API_KEY=...`
+#
+# Alternative to GitHub Actions: Cron-Job.org — create a job per schedule that
+# POSTs to <SUPABASE_FUNCTIONS_URL>/scheduled-tasks with header
+# `x-internal-key: <INTERNAL_API_KEY>` and body {"job":"<name>"}.
+
+name: scheduled-tasks
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'   # weekly calendar report — Mondays 08:00 ART (UTC-3)
+    - cron: '0 12 * * *'   # daily owner-period reports — 09:00 ART
+    - cron: '0 * * * *'    # hourly compliance alarm sweep
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job name to run manually'
+        required: true
+        default: 'weekly_calendar_report'
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve job from schedule
+        id: pick
+        run: |
+          case "${{ github.event.schedule }}" in
+            '0 11 * * 1') echo "job=weekly_calendar_report" >> "$GITHUB_OUTPUT" ;;
+            '0 12 * * *') echo "job=owner_period_reports"   >> "$GITHUB_OUTPUT" ;;
+            '0 * * * *')  echo "job=compliance_alarms"      >> "$GITHUB_OUTPUT" ;;
+            *)            echo "job=${{ github.event.inputs.job }}" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Trigger Edge Function
+        run: |
+          curl -fsS -X POST "${{ secrets.SUPABASE_FUNCTIONS_URL }}/scheduled-tasks" \
+            -H "content-type: application/json" \
+            -H "x-internal-key: ${{ secrets.INTERNAL_API_KEY }}" \
+            -d "{\"job\":\"${{ steps.pick.outputs.job }}\"}"
