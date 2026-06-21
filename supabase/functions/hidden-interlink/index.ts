@@ -1,13 +1,15 @@
-// PropTech AI Platform — F122 Hidden interlinked-business detection (M2)
+// PropTech AI Platform — F122 Hidden interlinked-business detection (M2, D021)
 //
-// Surfaces LATENT interlinks nobody is working: a person (by phone) who owns
-// 2+ agency properties is a hidden deal chain (selling one could fund buying/
-// holding another). Discards pairs already recorded as ACTIVE (F121 handles
-// those), records the rest as link_type='hidden' (status 'candidate' — analyze
-// before validate), and emits notifications for the martillero + the listing
-// advisors of both properties. Deterministic, zero LLM cost. Secret-key (P008).
+// Sweeps properties, deduces offer↔demand interlinks (same matcher as F121),
+// keeps the HIDDEN ones (a real opt1/opt3 crossing that nobody is working),
+// DISCARDS the active ones (handled by F121), records them as link_type='hidden'
+// (status 'candidate'), and emits notifications for the martillero + the listing
+// advisors of both offer sides. Secret-key protected (P008). No web access.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders, json, requireInternalKey } from '../_shared/auth.ts'
+import { matchInterlinksForProperty } from '../_shared/interlink.ts'
+
+const SWEEP_LIMIT = 100
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -15,72 +17,52 @@ Deno.serve(async (req) => {
   if (denied) return denied
 
   try {
+    const { property_id } = await req.json().catch(() => ({}))
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       { db: { schema: 'asistente_real_state' } },
     )
 
-    // Owners with multiple agency properties → latent chains.
-    const { data: contacts } = await supabase.from('property_owner_contacts')
-      .select('phone, owner_name, property_id').not('phone', 'is', null)
-
-    const byPhone = new Map<string, { name?: string; props: Set<string> }>()
-    for (const c of (contacts ?? [])) {
-      const e = byPhone.get(c.phone) ?? { name: c.owner_name, props: new Set<string>() }
-      e.props.add(c.property_id)
-      byPhone.set(c.phone, e)
-    }
-
-    // Existing ACTIVE pairs to discard (unordered).
-    const { data: actives } = await supabase.from('interlink_matches')
-      .select('property_id, linked_property_id').eq('link_type', 'active')
-    const activePairs = new Set<string>()
-    for (const a of (actives ?? [])) {
-      activePairs.add([a.property_id, a.linked_property_id].sort().join('|'))
+    // Seed set: a single property, or a bounded sweep of available listings.
+    let seeds: string[]
+    if (property_id) {
+      seeds = [property_id]
+    } else {
+      const { data: props } = await supabase.from('properties')
+        .select('id').eq('status', 'available')
+        .not('embedding', 'is', null).limit(SWEEP_LIMIT)
+      seeds = (props ?? []).map((p: { id: string }) => p.id)
     }
 
     const martillera = (await supabase.from('app_settings')
       .select('value').eq('key', 'wa_martillera').maybeSingle()).data?.value ?? null
 
     const hidden = []
-    for (const [phone, info] of byPhone) {
-      const props = [...info.props]
-      if (props.length < 2) continue
-      const primary = props[0]
-      for (const linked of props.slice(1)) {
-        if (activePairs.has([primary, linked].sort().join('|'))) continue // discard active
+    for (const pid of seeds) {
+      const candidates = (await matchInterlinksForProperty(supabase, pid))
+        .filter((c) => !c.active) // DISCARD active (F121 handles those)
 
-        const explanation =
-          `Entrelazamiento OCULTO: ${info.name ?? 'un propietario'} (tel ${phone}) posee ` +
-          `${props.length} propiedades en la agencia; posible cadena de negocio no trabajada.`
+      for (const c of candidates) {
+        const { data: ins } = await supabase.from('interlink_matches').upsert({
+          a_phone: c.a_phone, b_phone: c.b_phone, match_option: c.match_option,
+          a_offer_property_id: c.a_offer_property_id, b_offer_property_id: c.b_offer_property_id,
+          link_type: 'hidden', similarity: c.similarity, explanation: c.explanation,
+          status: 'candidate',
+        }, { onConflict: 'a_phone,b_phone,link_type' }).select('id').single()
+        if (!ins) continue
 
-        const { data: inserted } = await supabase.from('interlink_matches')
-          .upsert({
-            property_id: primary,
-            client_id: null,
-            linked_property_id: linked,
-            link_type: 'hidden',
-            similarity: null,
-            explanation,
-            status: 'candidate',
-          }, { onConflict: 'property_id,client_id,linked_property_id' })
-          .select('id').single()
-        if (!inserted) continue
-
-        // Notification targets: martillero + listing advisors of both properties.
+        const offerIds = [c.a_offer_property_id, c.b_offer_property_id].filter(Boolean)
         const { data: agents } = await supabase.from('properties')
-          .select('listing_agent_id').in('id', [primary, linked])
+          .select('listing_agent_id').in('id', offerIds)
         const advisor_ids = [...new Set((agents ?? [])
-          .map((a: { listing_agent_id: string | null }) => a.listing_agent_id)
-          .filter(Boolean))]
+          .map((a: { listing_agent_id: string | null }) => a.listing_agent_id).filter(Boolean))]
 
         hidden.push({
-          interlink_id: inserted.id,
-          property_id: primary,
-          linked_property_id: linked,
-          explanation,
-          notify: { martillera, advisor_ids, message: explanation },
+          interlink_id: ins.id, match_option: c.match_option,
+          a_offer_property_id: c.a_offer_property_id, b_offer_property_id: c.b_offer_property_id,
+          explanation: c.explanation,
+          notify: { martillera, advisor_ids, message: c.explanation },
         })
       }
     }

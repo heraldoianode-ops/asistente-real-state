@@ -1,16 +1,12 @@
-// PropTech AI Platform — F121 Active interlinked-business matching (M2)
+// PropTech AI Platform — F121 Active interlinked-business matching (M2, D021)
 //
-// ADDITIVE, FREE discovery layer: pgvector semantic match (find_cross_agent_matches,
-// Ollama embeddings — zero Claude tokens) widens candidate buyers; on top of that
-// we detect interlinked business — a candidate buyer who ALSO owns another agency
-// property (matched by phone) is an ACTIVE interlink (a deal chain).
-//
-// "Analizar la coincidencia antes de validar": rows are stored as 'candidate';
-// nothing is auto-validated. Secret-key protected (P008). No web access (D019).
+// Deduces interlinks for a seed property by SEARCHING offer↔demand crossings
+// (pgvector additive, free — zero Claude tokens) and records the ACTIVE ones
+// (counterparty already being worked on this property). 'candidate' status —
+// analyze before validate. Secret-key protected (P008). No web access (D019).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders, json, requireInternalKey } from '../_shared/auth.ts'
-
-const THRESHOLD = 0.72
+import { matchInterlinksForProperty } from '../_shared/interlink.ts'
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders })
@@ -27,60 +23,21 @@ Deno.serve(async (req) => {
       { db: { schema: 'asistente_real_state' } },
     )
 
-    const { data: prop } = await supabase.from('properties')
-      .select('id, listing_agent_id, neighborhood, price, embedding')
-      .eq('id', property_id).maybeSingle()
-    if (!prop) return json({ error: 'property not found' }, 404)
-    if (!prop.embedding) return json({ candidates: [], note: 'property has no embedding yet' })
+    const candidates = (await matchInterlinksForProperty(supabase, property_id))
+      .filter((c) => c.active)
 
-    // Additive pgvector layer (free): cross-agent candidate buyers.
-    const { data: matches } = await supabase.rpc('find_cross_agent_matches', {
-      p_property_id: property_id,
-      p_embedding: prop.embedding,
-      p_listing_agent_id: prop.listing_agent_id,
-      p_threshold: THRESHOLD,
-    })
-
-    const candidates = []
-    for (const m of (matches ?? [])) {
-      // Resolve the candidate buyer's phone to detect an interlink.
-      const { data: client } = await supabase.from('clients')
-        .select('id, phone, wa_contact_id').eq('id', m.client_id).maybeSingle()
-      const phone = client?.phone ?? client?.wa_contact_id
-      if (!phone) continue
-
-      // Interlink: is this buyer ALSO an owner of another agency property?
-      const { data: ownerOf } = await supabase.from('property_owner_contacts')
-        .select('property_id').eq('phone', phone).neq('property_id', property_id)
-      for (const link of (ownerOf ?? [])) {
-        const explanation =
-          `Negocio entrelazado ACTIVO: ${m.client_name} (interesado en propiedad de ${prop.neighborhood ?? 'zona'}) ` +
-          `también es dueño de otra propiedad de la agencia. Similitud comprador: ${(m.similarity * 100).toFixed(0)}%.`
-        const { data: inserted } = await supabase.from('interlink_matches')
-          .upsert({
-            property_id,
-            client_id: m.client_id,
-            linked_property_id: link.property_id,
-            link_type: 'active',
-            similarity: m.similarity,
-            explanation,
-            status: 'candidate',
-          }, { onConflict: 'property_id,client_id,linked_property_id' })
-          .select('id').single()
-        if (inserted) {
-          candidates.push({
-            interlink_id: inserted.id,
-            client_id: m.client_id,
-            client_name: m.client_name,
-            linked_property_id: link.property_id,
-            similarity: m.similarity,
-            explanation,
-          })
-        }
-      }
+    const recorded = []
+    for (const c of candidates) {
+      const { data: ins } = await supabase.from('interlink_matches').upsert({
+        a_phone: c.a_phone, b_phone: c.b_phone, match_option: c.match_option,
+        a_offer_property_id: c.a_offer_property_id, b_offer_property_id: c.b_offer_property_id,
+        link_type: 'active', similarity: c.similarity, explanation: c.explanation,
+        status: 'candidate',
+      }, { onConflict: 'a_phone,b_phone,link_type' }).select('id').single()
+      if (ins) recorded.push({ interlink_id: ins.id, ...c })
     }
 
-    return json({ candidates, total: candidates.length })
+    return json({ candidates: recorded, total: recorded.length })
   } catch (err) {
     return json({ error: err instanceof Error ? err.message : 'Internal error' }, 500)
   }
