@@ -3,20 +3,51 @@
     {
       "date": "2025-06-08",
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
-      "nodes_touched": ["all"],
-      "commits": ["feat: initial migration from architect-ai-framework"]
+      "nodes_touched": [
+        "all"
+      ],
+      "commits": [
+        "feat: initial migration from architect-ai-framework"
+      ]
     },
     {
       "date": "2026-06-12",
       "summary": "Fase 8 production deploy (Netlify+Supabase), auth recursion fix, supabase config fallback, F025 export, branding/avatars/admin-user.",
-      "nodes_touched": ["8.x"],
-      "commits": ["chore(snap): production deploy live", "feat(branding): logo/banner/avatars"]
+      "nodes_touched": [
+        "8.x"
+      ],
+      "commits": [
+        "chore(snap): production deploy live",
+        "feat(branding): logo/banner/avatars"
+      ]
     },
     {
       "date": "2026-06-21",
       "summary": "AUDITAR PROYECTO + re-baseline to v0.9.0 PropTech AI Platform. Audit found inflated health (100→78), legacy stack still consumed, undocumented F026, stale registries. Re-scoped to modular roadmap M0-M5, free-first LLM routing, secret-key scheduler, no web access, Adinco scraper dropped, pgvector kept as additive free layer.",
-      "nodes_touched": ["__AI_CORE__", "Fase 9"],
-      "commits": ["refactor(core): re-baseline to PropTech AI Platform v0.9.0"]
+      "nodes_touched": [
+        "__AI_CORE__",
+        "Fase 9"
+      ],
+      "commits": [
+        "refactor(core): re-baseline to PropTech AI Platform v0.9.0"
+      ]
+    },
+    {
+      "date": "2026-06-21",
+      "summary": "Reforma v0.9.0 PropTech AI Platform ejecutada. Legacy stack eliminado (backend/, gateway/, docker-compose limpio; TD-006/007/008). M0 completo (F100 LLM router free-first, F101 scheduler secret-key, F102 chat+resumen, F103 verificador de link). M1 completo (F110 clasificador 5 contextos, F111 reporte dueños, F112 asesoría+visita con confirmación, F113/F114 derivaciones, F115 meta-learning). M2 completo (F120 alarmas incumplimiento, F121 entrelazado activo, F122 oculto, F123 docs con escalamiento asesor->martillero, +scoring D022 con filtros obligatorios/permuta/pedido-de-datos P010, interlink oferta/demanda D021). M3 en progreso (F133 calendario+reporte semanal, F134 negocios en proceso, F131 reporte asesores+objetivos D024, F136 ciclo de vida de operación con cierre D025). TD-010 corregido (match-properties). Progreso 89%.",
+      "decisions": [
+        "D016-D025"
+      ],
+      "commits": [
+        "multiple — see git log on claude/cool-gates-p2lfkg"
+      ],
+      "pending_next": [
+        "M3: F130 reportes a dueños programables, F132 listas consolidadas",
+        "M4 RBAC 4 niveles (N1 Propiedades/N2 Dueños/N3 Martillero/N4 Admin) — habilita escritura de objetivos por martillero",
+        "M5 Panel de asesores",
+        "Deploy: aplicar migraciones 07-16 + cargar secrets (INTERNAL_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, SUPABASE_FUNCTIONS_URL)",
+        "Deuda abierta: TD-009 (LOW) guard timing-safe"
+      ]
     }
   ]
 }
