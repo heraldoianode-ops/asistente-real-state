@@ -258,7 +258,11 @@
         {
           "id": "F131",
           "name": "Advisor activity reports + personalized stats tips",
-          "status": "TODO"
+          "status": "DONE",
+          "evidence": [
+            "supabase/functions/advisor-report/index.ts"
+          ],
+          "note": "Advisor metrics (listings, clients, visits by status) vs team average; deterministic personalized tips; optional free-tier (Ollama) narrative — zero Claude tokens. On-demand."
         },
         {
           "id": "F132",
