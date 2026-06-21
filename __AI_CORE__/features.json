@@ -46,7 +46,7 @@
       "features": [
         { "id": "F120", "name": "Incumplimiento alarms (visit/docs/report) → martillero", "status": "TODO" },
         { "id": "F121", "name": "Active interlinked-business matching (chat + pgvector additive, free)", "status": "DONE", "evidence": ["db/migrations/10_interlink_matches.sql", "supabase/functions/interlink-match/index.ts"], "note": "pgvector additive layer (find_cross_agent_matches, Ollama embeddings, zero Claude) + interlink detection (buyer who also owns an agency property). Stored as 'candidate' — analyze before validate. Reuses existing RPC." },
-        { "id": "F122", "name": "Hidden interlink detection (discard active; notify martillero + advisors)", "status": "TODO" },
+        { "id": "F122", "name": "Hidden interlink detection (discard active; notify martillero + advisors)", "status": "DONE", "evidence": ["supabase/functions/hidden-interlink/index.ts"], "note": "Detects latent chains (owner of 2+ agency properties), discards pairs already 'active' (F121), records as link_type='hidden' candidate, emits notify payload (martillero + both listing advisors) for the gateway to send. Reuses interlink_matches table." },
         { "id": "F123", "name": "Capture documentation management (auto-request → forward to martillero for validation)", "status": "TODO" }
       ]
     },
