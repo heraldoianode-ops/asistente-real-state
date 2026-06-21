@@ -31,14 +31,14 @@
       ]
     },
     {
-      "id": "M1", "name": "Conversational Channel — 5 contexts", "status": "TODO",
+      "id": "M1", "name": "Conversational Channel — 5 contexts", "status": "DONE",
       "features": [
         { "id": "F110", "name": "Context classifier/router (5 contexts)", "status": "DONE", "evidence": ["supabase/functions/classify-context/index.ts", "db/migrations/08_channel_settings.sql"], "note": "Free-tier (Ollama) classify with heuristic fallback; persists context; resolves derive targets (wa_martillera/wa_alquileres) for tramites/inquilinos. Zero Claude tokens (P006)." },
         { "id": "F111", "name": "Ventas/Dueños — on-demand property status reports", "status": "DONE", "evidence": ["supabase/functions/owner-report/index.ts"], "note": "Owner identified by their own phone (property_owner_contacts). Real metrics: days on market, visits by status, cross-agent matches. Summarized on free tier (Ollama) — zero Claude tokens." },
         { "id": "F112", "name": "Compras/Interesados — advisory + visit scheduling w/ explicit advisor confirmation", "status": "DONE", "evidence": ["supabase/functions/buyer-advisory/index.ts", "supabase/functions/confirm-visit/index.ts"], "note": "Grounded advisory on free tier (Ollama). Visit requests stored as events.status='pending_advisor'; booking happens ONLY in confirm-visit on explicit advisor confirmation (P009). Reuses events table." },
         { "id": "F113", "name": "Trámites varios — derive to martillera personal WhatsApp", "status": "DONE", "evidence": ["supabase/functions/derive-context/index.ts"], "note": "Deterministic handoff to wa_martillera; gateway performs the send. Zero cost." },
         { "id": "F114", "name": "Inquilinos/Arrendatarios — derive to rentals area WhatsApp", "status": "DONE", "evidence": ["supabase/functions/derive-context/index.ts"], "note": "Deterministic handoff to wa_alquileres; shares the derive-context handler with F113." },
-        { "id": "F115", "name": "Independent IA + meta-learning (free LLM) — success/failure analysis, assertive-comms tips", "status": "TODO" }
+        { "id": "F115", "name": "Independent IA + meta-learning (free LLM) — success/failure analysis, assertive-comms tips", "status": "DONE", "evidence": ["db/migrations/09_meta_learning.sql", "supabase/functions/meta-learning/index.ts"], "note": "analyze mode (free Ollama) stores insights; digest mode is FREE by default and escalates to Claude ONLY on adminRequest (D016) — the admin-requested powerful analysis." }
       ]
     },
     {

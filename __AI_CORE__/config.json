@@ -38,12 +38,12 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M1 — Conversational Channel (F110-F114 DONE; F115 meta-learning is the last piece)",
-    "progress_pct": 57,
+    "current_node": "M1 — Conversational Channel COMPLETE; next M2 — Alarms & Matching",
+    "progress_pct": 60,
     "modules": [
       { "id": "M0", "name": "Platform Core (infra)", "status": "done" },
-      { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "in_progress" },
-      { "id": "M2", "name": "Alarms & Matching", "status": "pending" },
+      { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "done" },
+      { "id": "M2", "name": "Alarms & Matching", "status": "in_progress" },
       { "id": "M3", "name": "Reports & Agenda Engine", "status": "pending" },
       { "id": "M4", "name": "Permission Matrix (4 levels)", "status": "pending" },
       { "id": "M5", "name": "Advisor Panel", "status": "pending" }
@@ -61,9 +61,9 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "Apply migrations 07_chat_storage.sql + 08_channel_settings.sql to Supabase",
+      "Apply migrations 07+08+09 to Supabase",
       "Set Edge Function secrets + GH secrets (INTERNAL_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, SUPABASE_FUNCTIONS_URL)",
-      "M1/F111 Ventas reports, F112 Compras advisory+visits, F113/F114 derivations, F115 meta-learning"
+      "M2/F120 incumplimiento alarms; F121 active interlinked matching (pgvector additive, free); F122 hidden interlink; F123 capture docs"
     ],
     "bugs_known": [],
     "last_snap": "2026-06-21T00:00:00Z"
