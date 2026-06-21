@@ -15,6 +15,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders, json, requireInternalKey } from '../_shared/auth.ts'
 import { detectAlarms } from '../_shared/compliance.ts'
 import { runWeeklyReport } from '../_shared/calendar.ts'
+import { runPostVisitFollowup, runReservationFollowup } from '../_shared/followups.ts'
 
 type JobResult = { job: string; status: 'ok' | 'pending'; detail?: string }
 type Job = (supabase: ReturnType<typeof createClient>) => Promise<JobResult>
@@ -35,6 +36,15 @@ const JOBS: Record<string, Job> = {
   compliance_alarms: async (supabase) => {
     const raised = await detectAlarms(supabase)
     return { job: 'compliance_alarms', status: 'ok', detail: `${raised.length} alarma(s) nueva(s).` }
+  },
+  // M3/F136 — end-of-day deal follow-ups.
+  post_visit_followup: async (supabase) => {
+    const r = await runPostVisitFollowup(supabase)
+    return { job: 'post_visit_followup', status: 'ok', detail: `${r.asked} consulta(s) post-visita.` }
+  },
+  reservation_followup: async (supabase) => {
+    const r = await runReservationFollowup(supabase)
+    return { job: 'reservation_followup', status: 'ok', detail: `${r.asked} confirmación(es) de reserva.` }
   },
 }
 

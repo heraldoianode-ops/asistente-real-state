@@ -2,6 +2,7 @@
 //
 // Builds the agenda from the events table and the automated weekly report,
 // delivered to each advisor via the WhatsApp gateway /send endpoint. Free, no LLM.
+import { sendViaGateway } from './notify.ts'
 
 export interface AgendaEntry {
   agent_id: string | null
@@ -47,20 +48,6 @@ export async function weeklySchedule(supabase: any, fromIso: string, toIso: stri
       property_label: pr?.title ?? pr?.address ?? 'propiedad',
     }
   })
-}
-
-async function sendViaGateway(to: string, message: string): Promise<boolean> {
-  const gw = Deno.env.get('WHATSAPP_GATEWAY_URL')
-  if (!gw || !to) return false
-  try {
-    const r = await fetch(`${gw}/send`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ to, message }),
-    })
-    return r.ok
-  } catch {
-    return false
-  }
 }
 
 // deno-lint-ignore no-explicit-any

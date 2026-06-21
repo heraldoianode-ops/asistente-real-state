@@ -17,6 +17,8 @@ on:
     - cron: '0 11 * * 1'   # weekly calendar report — Mondays 08:00 ART (UTC-3)
     - cron: '0 12 * * *'   # daily owner-period reports — 09:00 ART
     - cron: '0 * * * *'    # hourly compliance alarm sweep
+    - cron: '0 1 * * *'    # end-of-day post-visit follow-up — 22:00 ART
+    - cron: '30 1 * * *'   # end-of-day reservation follow-up — 22:30 ART
   workflow_dispatch:
     inputs:
       job:
@@ -35,6 +37,8 @@ jobs:
             '0 11 * * 1') echo "job=weekly_calendar_report" >> "$GITHUB_OUTPUT" ;;
             '0 12 * * *') echo "job=owner_period_reports"   >> "$GITHUB_OUTPUT" ;;
             '0 * * * *')  echo "job=compliance_alarms"      >> "$GITHUB_OUTPUT" ;;
+            '0 1 * * *')  echo "job=post_visit_followup"    >> "$GITHUB_OUTPUT" ;;
+            '30 1 * * *') echo "job=reservation_followup"   >> "$GITHUB_OUTPUT" ;;
             *)            echo "job=${{ github.event.inputs.job }}" >> "$GITHUB_OUTPUT" ;;
           esac
 

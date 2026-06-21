@@ -62,18 +62,21 @@ Deno.serve(async (req) => {
       const d = gmap.get(goalKeys[k]); return d != null ? Number(d) : null
     }
 
-    // Current-month actuals for the target advisor (status != available = closed proxy).
+    // Captaciones = propiedades cargadas este mes por el asesor.
     const { data: myProps } = await supabase.from('properties')
-      .select('operation_type, status, created_at, updated_at').eq('listing_agent_id', agent_id).limit(5000)
+      .select('created_at').eq('listing_agent_id', agent_id).limit(5000)
     const inMonth = (iso?: string) => !!iso && iso >= monthStart
-    let captaciones = 0, ventas = 0, alquileres = 0
-    for (const p of (myProps ?? [])) {
-      if (inMonth(p.created_at)) captaciones++
-      const closed = p.status && p.status !== 'available'
-      if (closed && inMonth(p.updated_at)) {
-        if (/venta/i.test(p.operation_type ?? '')) ventas++
-        else if (/alqui/i.test(p.operation_type ?? '')) alquileres++
-      }
+    let captaciones = 0
+    for (const p of (myProps ?? [])) if (inMonth(p.created_at)) captaciones++
+
+    // Ventas/Alquileres = operaciones CERRADAS este mes (D025: won), reales.
+    const { data: wonOps } = await supabase.from('operations')
+      .select('operation_type, closed_at').eq('agent_id', agent_id).eq('status', 'won')
+      .gte('closed_at', monthStart).limit(5000)
+    let ventas = 0, alquileres = 0
+    for (const o of (wonOps ?? [])) {
+      if (/venta/i.test(o.operation_type ?? '')) ventas++
+      else if (/alqui/i.test(o.operation_type ?? '')) alquileres++
     }
     const goalLine = (label: string, actual: number, goal: number | null) => {
       if (goal == null || goal <= 0) return { label, actual, goal, status: 'sin objetivo definido' }

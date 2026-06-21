@@ -290,6 +290,18 @@
             "supabase/functions/deals-in-process/index.ts"
           ],
           "note": "Detects operations advisors are trying to close — solo vs equipo vs entrelazado — from active events, cross-agent matches and active interlinks; reports operation + current state. Optional agent_id filter. Deterministic, free."
+        },
+        {
+          "id": "F136",
+          "name": "Deal lifecycle & closing tracking (post-visit → reserva → aceptación)",
+          "status": "DONE",
+          "evidence": [
+            "db/migrations/16_operations.sql",
+            "supabase/functions/operations/index.ts",
+            "supabase/functions/_shared/followups.ts",
+            "supabase/functions/scheduled-tasks/index.ts"
+          ],
+          "note": "D025: operations table tracks client↔property to closing. VENTA=reserva+aceptada; ALQUILER=reserva. after_visit asks how it went; visit_result sigue/descartado; reservation_meeting; confirm_reservation; confirm_acceptance. End-of-day scheduler follow-ups (post_visit_followup, reservation_followup). Feeds exact ventas/alquileres counts to F131 goals."
         }
       ]
     },

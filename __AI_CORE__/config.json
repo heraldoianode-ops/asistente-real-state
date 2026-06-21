@@ -38,8 +38,8 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M3 — Reports & Agenda (F131+F133+F134 DONE; F130 owner-period reports + F132 consolidated lists next)",
-    "progress_pct": 87,
+    "current_node": "M3 — Reports & Agenda (F131+F133+F134+F136 deal-closing DONE; F130 owner-period + F132 consolidated lists next)",
+    "progress_pct": 89,
     "modules": [
       {
         "id": "M0",
@@ -85,7 +85,7 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "Apply migrations 07-14 to Supabase",
+      "Apply migrations 07-16 to Supabase",
       "Set Edge Function secrets + GH secrets (INTERNAL_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, SUPABASE_FUNCTIONS_URL)",
       "M3: F130 owner period reports, F131 advisor reports, F132 consolidated lists, F133 weekly calendar report"
     ],
