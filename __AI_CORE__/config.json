@@ -38,15 +38,39 @@
   ],
   "roadmap": {
     "current_phase": "Fase 9 — PropTech AI Platform (re-baseline modular)",
-    "current_node": "M2 — Alarms & Matching (F120/F121/F122 + D022 scoring DONE; F123 last M2 piece) + F134 deals-in-process report added",
-    "progress_pct": 75,
+    "current_node": "M2 — Alarms & Matching COMPLETE (F120-F123 + D022 scoring + F134); next M3 — Reports & Agenda",
+    "progress_pct": 80,
     "modules": [
-      { "id": "M0", "name": "Platform Core (infra)", "status": "done" },
-      { "id": "M1", "name": "Conversational Channel (5 contexts)", "status": "done" },
-      { "id": "M2", "name": "Alarms & Matching", "status": "in_progress" },
-      { "id": "M3", "name": "Reports & Agenda Engine", "status": "pending" },
-      { "id": "M4", "name": "Permission Matrix (4 levels)", "status": "pending" },
-      { "id": "M5", "name": "Advisor Panel", "status": "pending" }
+      {
+        "id": "M0",
+        "name": "Platform Core (infra)",
+        "status": "done"
+      },
+      {
+        "id": "M1",
+        "name": "Conversational Channel (5 contexts)",
+        "status": "done"
+      },
+      {
+        "id": "M2",
+        "name": "Alarms & Matching",
+        "status": "done"
+      },
+      {
+        "id": "M3",
+        "name": "Reports & Agenda Engine",
+        "status": "in_progress"
+      },
+      {
+        "id": "M4",
+        "name": "Permission Matrix (4 levels)",
+        "status": "pending"
+      },
+      {
+        "id": "M5",
+        "name": "Advisor Panel",
+        "status": "pending"
+      }
     ],
     "reused_foundation": [
       "Supabase migration + multi-tenant schema + RLS (F015/F016/F017)",
@@ -61,9 +85,9 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "Apply migrations 07+08+09 to Supabase",
+      "Apply migrations 07-13 to Supabase",
       "Set Edge Function secrets + GH secrets (INTERNAL_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, SUPABASE_FUNCTIONS_URL)",
-      "M2/F120 incumplimiento alarms; F121 active interlinked matching (pgvector additive, free); F122 hidden interlink; F123 capture docs"
+      "M3: F130 owner period reports, F131 advisor reports, F132 consolidated lists, F133 weekly calendar report"
     ],
     "bugs_known": [],
     "last_snap": "2026-06-21T00:00:00Z"
