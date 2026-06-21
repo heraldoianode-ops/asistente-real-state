@@ -35,7 +35,7 @@
       "features": [
         { "id": "F110", "name": "Context classifier/router (5 contexts)", "status": "DONE", "evidence": ["supabase/functions/classify-context/index.ts", "db/migrations/08_channel_settings.sql"], "note": "Free-tier (Ollama) classify with heuristic fallback; persists context; resolves derive targets (wa_martillera/wa_alquileres) for tramites/inquilinos. Zero Claude tokens (P006)." },
         { "id": "F111", "name": "Ventas/Dueños — on-demand property status reports", "status": "TODO" },
-        { "id": "F112", "name": "Compras/Interesados — advisory + visit scheduling w/ explicit advisor confirmation", "status": "TODO" },
+        { "id": "F112", "name": "Compras/Interesados — advisory + visit scheduling w/ explicit advisor confirmation", "status": "DONE", "evidence": ["supabase/functions/buyer-advisory/index.ts", "supabase/functions/confirm-visit/index.ts"], "note": "Grounded advisory on free tier (Ollama). Visit requests stored as events.status='pending_advisor'; booking happens ONLY in confirm-visit on explicit advisor confirmation (P009). Reuses events table." },
         { "id": "F113", "name": "Trámites varios — derive to martillera personal WhatsApp", "status": "TODO" },
         { "id": "F114", "name": "Inquilinos/Arrendatarios — derive to rentals area WhatsApp", "status": "TODO" },
         { "id": "F115", "name": "Independent IA + meta-learning (free LLM) — success/failure analysis, assertive-comms tips", "status": "TODO" }
