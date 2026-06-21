@@ -65,9 +65,7 @@
       "DEUDA TD-006: remove legacy FastAPI backend + gateway/ + docker-compose celery/redis/postgres",
       "M0: build secret-key scheduler (GitHub Actions / Cron-Job.org → Edge Fn)"
     ],
-    "bugs_known": [
-      "next.config.js still proxies /api/* → FastAPI backend:8000 and sets output:standalone (see TD-007)"
-    ],
+    "bugs_known": [],
     "last_snap": "2026-06-21T00:00:00Z"
   },
   "ai_policy": {

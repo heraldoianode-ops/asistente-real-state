@@ -1,14 +1,8 @@
 /** @type {import('next').NextConfig} */
+// Netlify (@netlify/plugin-nextjs) handles the build target.
+// No FastAPI proxy: the dashboard talks to Supabase directly (supabase-js).
 const nextConfig = {
-  output: 'standalone',
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.BACKEND_URL || 'http://backend:8000'}/:path*`,
-      },
-    ]
-  },
+  reactStrictMode: true,
 }
 
 module.exports = nextConfig
