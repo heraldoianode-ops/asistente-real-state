@@ -45,6 +45,8 @@ Deno.serve(async (req) => {
         property_id: p.id,
         score: r.score,
         classification: r.classification,
+        confidence: r.confidence,
+        gaps: r.gaps,
         permuta_possible: r.permuta_possible,
         explanation: r.explanation,
       })

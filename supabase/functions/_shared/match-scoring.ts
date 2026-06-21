@@ -37,6 +37,11 @@ export interface Offer {
 }
 
 export type Classification = 'match' | 'ajuste_parcial' | 'parcial'
+export type Confidence = 'alta' | 'media' | 'baja'
+
+// A missing attribute that lowered scoring confidence — routed to the advisor
+// who can complete it (offer gaps -> listing agent; demand gaps -> assigned agent).
+export interface DataGap { side: 'demand' | 'offer'; label: string }
 
 export interface ScoreResult {
   passes: boolean
@@ -45,6 +50,8 @@ export interface ScoreResult {
   classification: Classification | null
   met: string[]
   unmet: string[]
+  gaps: DataGap[]
+  confidence: Confidence
   permuta_possible: boolean
   explanation: string
 }
@@ -99,27 +106,37 @@ export function scoreMatch(demand: Demand, offer: Offer): ScoreResult {
   if (fail.length) {
     return {
       passes: false, fail_reasons: fail, score: 0, classification: null,
-      met, unmet, permuta_possible: !!offer.accepts_permuta,
+      met, unmet, gaps: [], confidence: 'baja', permuta_possible: !!offer.accepts_permuta,
       explanation: `Descartada: ${fail.join('; ')}.`,
     }
   }
 
   // --- 2) Affinity score ----------------------------------------------------
   const comps: { w: number; v: number }[] = []
+  const gaps: DataGap[] = []
 
+  // m² (weight 40). Missing data on either side becomes an advisor request.
   if (demand.target_sqm && demand.target_sqm > 0 && offer.sqm_total && offer.sqm_total > 0) {
     const v = Math.max(0, 1 - Math.abs(demand.target_sqm - offer.sqm_total) / demand.target_sqm)
     comps.push({ w: 0.40, v })
     if (v >= 0.85) met.push('m² acordes'); else unmet.push('m² alejados de lo buscado')
+  } else {
+    if (!(demand.target_sqm && demand.target_sqm > 0)) gaps.push({ side: 'demand', label: 'm² buscados' })
+    if (!(offer.sqm_total && offer.sqm_total > 0)) gaps.push({ side: 'offer', label: 'm² de la propiedad' })
   }
 
+  // Ambientes / dormitorios (weight 35).
   if (demand.min_bedrooms && offer.bedrooms != null) {
     const v = offer.bedrooms >= demand.min_bedrooms ? 1 : offer.bedrooms / demand.min_bedrooms
     comps.push({ w: 0.35, v })
     if (offer.bedrooms >= demand.min_bedrooms) met.push('dormitorios suficientes')
     else unmet.push(`menos dormitorios (${offer.bedrooms}/${demand.min_bedrooms})`)
+  } else {
+    if (!demand.min_bedrooms) gaps.push({ side: 'demand', label: 'dormitorios buscados' })
+    if (offer.bedrooms == null) gaps.push({ side: 'offer', label: 'dormitorios de la propiedad' })
   }
 
+  // Amenidades (weight 25).
   const desired = demand.desired_amenities ?? []
   if (desired.length) {
     const matched = desired.filter((a) => has(offer.amenities, a))
@@ -127,6 +144,8 @@ export function scoreMatch(demand: Demand, offer: Offer): ScoreResult {
     if (matched.length) met.push(`amenidades: ${matched.join(', ')}`)
     const missing = desired.filter((a) => !has(offer.amenities, a))
     if (missing.length) unmet.push(`sin ${missing.join(', ')}`)
+  } else {
+    gaps.push({ side: 'demand', label: 'amenidades buscadas' })
   }
 
   let score: number
@@ -137,6 +156,9 @@ export function scoreMatch(demand: Demand, offer: Offer): ScoreResult {
     score = 70 // passes mandatory filters but no comparable attributes
   }
 
+  // Confidence from how many scoring components had data (3 = full, 0-1 = low).
+  const confidence: Confidence = comps.length >= 3 ? 'alta' : comps.length === 2 ? 'media' : 'baja'
+
   // --- 3) Classification + permuta ------------------------------------------
   const classification: Classification =
     unmet.length === 0 ? 'match' : score >= 75 ? 'ajuste_parcial' : 'parcial'
@@ -145,10 +167,11 @@ export function scoreMatch(demand: Demand, offer: Offer): ScoreResult {
   const metTxt = met.length ? `Cumple: ${met.join(', ')}` : 'Cumple los filtros obligatorios'
   const unmetTxt = unmet.length ? `; requiere aceptar: ${unmet.join(', ')}` : ''
   const tag = classification === 'ajuste_parcial' ? ' [Oportunidad de Ajuste Parcial]' : ''
-  const explanation = `Match del ${score}% — ${label}. ${metTxt}${unmetTxt}.${tag}`
+  const gapTxt = gaps.length ? ` Confianza ${confidence} — faltan datos: ${gaps.map((g) => g.label).join(', ')}.` : ''
+  const explanation = `Match del ${score}% — ${label}. ${metTxt}${unmetTxt}.${tag}${gapTxt}`
 
   return {
     passes: true, fail_reasons: [], score, classification, met, unmet,
-    permuta_possible: !!offer.accepts_permuta, explanation,
+    gaps, confidence, permuta_possible: !!offer.accepts_permuta, explanation,
   }
 }
