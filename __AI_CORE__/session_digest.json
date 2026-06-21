@@ -5,6 +5,18 @@
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
       "nodes_touched": ["all"],
       "commits": ["feat: initial migration from architect-ai-framework"]
+    },
+    {
+      "date": "2026-06-12",
+      "summary": "Fase 8 production deploy (Netlify+Supabase), auth recursion fix, supabase config fallback, F025 export, branding/avatars/admin-user.",
+      "nodes_touched": ["8.x"],
+      "commits": ["chore(snap): production deploy live", "feat(branding): logo/banner/avatars"]
+    },
+    {
+      "date": "2026-06-21",
+      "summary": "AUDITAR PROYECTO + re-baseline to v0.9.0 PropTech AI Platform. Audit found inflated health (100→78), legacy stack still consumed, undocumented F026, stale registries. Re-scoped to modular roadmap M0-M5, free-first LLM routing, secret-key scheduler, no web access, Adinco scraper dropped, pgvector kept as additive free layer.",
+      "nodes_touched": ["__AI_CORE__", "Fase 9"],
+      "commits": ["refactor(core): re-baseline to PropTech AI Platform v0.9.0"]
     }
   ]
 }

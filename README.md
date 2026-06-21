@@ -1,40 +1,61 @@
-# Asistente Real State
+# PropTech AI Platform
 
-PropTech AI platform — WhatsApp-first real estate assistant with LangChain ReAct agents, pgvector semantic search, XGBoost lead scoring, and a Next.js 14 dashboard.
+Plataforma inmobiliaria **multi-tenant, modular y escalable**. Asistente WhatsApp-first para
+dueños, interesados, asesores y martillero/broker. Serverless sobre **Supabase + Netlify**, con
+ruteo de LLM **free-first** (Ollama → DeepSeek → Claude solo a pedido del admin).
+
+> Re-baseline **v0.9.0** del proyecto antes llamado *Asistente de Real State*.
+> Plan completo: [`docs/PLAN-v0.9-PropTech-AI-Platform.md`](docs/PLAN-v0.9-PropTech-AI-Platform.md)
+
+## Objetivo
+
+Vender más propiedades, captar más inmuebles, mejorar la experiencia de usuario y **reducir
+drásticamente la carga de asesores, secretarias y el martillero**.
 
 ## Stack
 
-| Layer | Technology |
+| Capa | Tecnología |
 |---|---|
-| Backend | FastAPI + Python 3.12 |
-| Database | PostgreSQL 16 + pgvector |
-| Cache / Sessions | Redis 7 |
-| LLM (local-first) | Ollama (llama3) |
-| Agent framework | LangChain ReAct |
-| ML | XGBoost + LightGBM + SHAP |
-| Task queue | Celery + Celery Beat |
-| WhatsApp gateway | Node.js / Express |
-| Dashboard | Next.js 14 + Tailwind |
-| Infra | Docker Compose |
+| Frontend | Next.js 14 (Netlify) |
+| Backend + DB | Supabase (PostgreSQL + pgvector + Edge Functions Deno) |
+| Auth | Supabase Auth + `@supabase/ssr` + RLS multi-tenant |
+| Canal | WhatsApp Cloud API (gateway slim Node.js) |
+| Tareas programadas | GitHub Actions / Cron-Job.org → Edge Functions con llave secreta |
+| LLM | Ollama (gratis) · DeepSeek (media) · Claude (heavy, solo a pedido del admin) |
 
-## Roadmap
+## Módulos (roadmap v0.9.0)
 
-| Phase | Node | Status |
-|---|---|---|
-| 1 | Core backend + DB schema | COMPLETE |
-| 2 | ReAct agent + WhatsApp gateway | COMPLETE |
-| 3 | ML pipeline (XGBoost lead scoring) | COMPLETE |
-| 4 | RAG + semantic property search | COMPLETE |
-| 5 | Analytics dashboard + scraping | COMPLETE |
-| 6 | Meta-learning + production hardening | COMPLETE |
+- **M0** Platform Core — LLM router · scheduler con llave secreta · resumen de chats · verificador de links.
+- **M1** Canal Conversacional — 5 contextos (Ventas, Compras, Trámites, Inquilinos, IA meta-aprendizaje).
+- **M2** Alarmas & Matching — incumplimiento · entrelazado activo · entrelazado oculto · docs de captura.
+- **M3** Reportes & Agenda — propietarios · asesores · admin/marketing · calendario semanal.
+- **M4** Permisos — 4 niveles (N1 Propiedades · N2 Dueños · N3 Martillero · N4 Admin).
+- **M5** Panel de Asesores — datos, horarios de disponibilidad, reportes a demanda.
 
-## Quick start
+## Principios
 
-```bash
-cp .env.example .env
-# fill in .env values
-docker compose up -d
+- **Free-first**: chat, matching, resumen y meta-aprendizaje cuestan **cero tokens de Claude**.
+- **Sin acceso web**: solo se verifica el link de aviso consultado para confirmar que es una propiedad.
+- **Modular y escalable**: cada módulo se añade sin tocar los demás.
+
+## Estructura
+
+```
+dashboard/          Next.js 14 (Netlify)
+supabase/functions/ Edge Functions (Deno)
+whatsapp-gateway/   Gateway slim (supabase-js directo)
+db/                 Schema + migraciones (multi-tenant, RLS, branding)
+__AI_CORE__/        Estado del proyecto (config, features, decisions, roadmap)
+docs/               Plan de trabajo
 ```
 
-Backend: http://localhost:8000/docs  
-Dashboard: http://localhost:3001
+## Quick start (dashboard)
+
+```bash
+cp .env.example .env   # completar valores de Supabase
+cd dashboard && npm install && npm run dev
+```
+
+---
+*Nota: el stack legacy (FastAPI/Celery/Redis, scraper Adinco, RAG, XGBoost) está deprecado y en proceso de
+remoción — ver `__AI_CORE__/tech_debt.json` (TD-006/007/008).*

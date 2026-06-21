@@ -1,34 +1,85 @@
 {
-  "features": [
-    { "id": "F001", "name": "WhatsApp inbound handler", "status": "DONE", "node": "2" },
-    { "id": "F002", "name": "ReAct agent with Redis memory", "status": "DONE", "node": "2" },
-    { "id": "F003", "name": "Property CRUD + search", "status": "DONE", "node": "1" },
-    { "id": "F004", "name": "Client CRM + lead stages", "status": "DONE", "node": "1" },
-    { "id": "F005", "name": "Event scheduling (visits/calls)", "status": "DONE", "node": "2" },
-    { "id": "F006", "name": "XGBoost lead scoring", "status": "DONE", "node": "3" },
-    { "id": "F007", "name": "RAG document ingestion", "status": "DONE", "node": "4" },
-    { "id": "F008", "name": "Semantic property matching (pgvector)", "status": "DONE", "node": "4" },
-    { "id": "F009", "name": "Adinco scraper (Playwright)", "status": "DONE", "node": "5" },
-    { "id": "F010", "name": "Google Drive Excel sync", "status": "DONE", "node": "5" },
-    { "id": "F011", "name": "Analytics dashboard (Plotly)", "status": "DONE", "node": "5" },
-    { "id": "F012", "name": "WhatsApp appointment reminders", "status": "DONE", "node": "5" },
-    { "id": "F013", "name": "Meta-learning feedback loop", "status": "DONE", "node": "6.1" },
-    { "id": "F014", "name": "Production hardening + Sentry", "status": "DONE", "node": "6.2" },
-    { "id": "F015", "name": "Supabase migration (replace local PostgreSQL)", "status": "DONE", "node": "7.1", "evidence": ["db/init/02_schema.sql", "dashboard/src/lib/supabase.ts", "supabase/functions/"] },
-    { "id": "F016", "name": "Multi-tenant schema (listing_agent_id, client_type, property_owner_contacts, whatsapp_numbers, cross_agent_matches)", "status": "DONE", "node": "7.1", "evidence": ["db/migrations/03_multitenant.sql"] },
-    { "id": "F017", "name": "Row Level Security policies (admin bypass, agent scoping)", "status": "DONE", "node": "7.1", "evidence": ["db/migrations/04_rls_policies.sql"] },
-    { "id": "F018", "name": "RBAC + Supabase Auth (admin / agent roles)", "status": "DONE", "node": "7.2", "evidence": ["dashboard/src/middleware.ts", "dashboard/src/lib/auth.ts", "dashboard/src/components/AdminGuard.tsx", "supabase/functions/create-agent/index.ts"] },
-    { "id": "F019", "name": "WhatsApp number admin panel (enable/disable per agent)", "status": "DONE", "node": "7.2", "evidence": ["dashboard/src/app/admin/whatsapp/page.tsx"] },
-    { "id": "F020", "name": "Privacy enforcement layer (RLS at DB layer — FastAPI layer superseded by Fase 8)", "status": "DONE", "node": "7.3", "evidence": ["db/migrations/04_rls_policies.sql"], "note": "Original spec said 'in FastAPI'; enforcement moved to Supabase RLS. FastAPI backend is legacy and not used by dashboard." },
-    { "id": "F021", "name": "Cross-agent match notifications (name + explanation)", "status": "DONE", "node": "7.4", "evidence": ["supabase/functions/match-properties/index.ts", "supabase/functions/notify-agent/index.ts"] },
-    { "id": "F022", "name": "Admin dashboard (global view + search)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/admin/page.tsx", "dashboard/src/app/admin/agents/page.tsx"] },
-    { "id": "F023", "name": "Agent dashboard (own clients, catalog, matches)", "status": "DONE", "node": "7.5", "evidence": ["dashboard/src/app/analytics/page.tsx", "dashboard/src/app/crm/page.tsx"] },
-    { "id": "F024", "name": "WhatsApp /buscar command", "status": "DONE", "node": "7.6", "evidence": ["whatsapp-gateway/index.js"] },
-    { "id": "F025", "name": "DB export by section (admin tool)", "status": "DONE", "node": "7.6", "evidence": ["dashboard/src/app/admin/export/page.tsx"], "completed": "2026-06-10" }
+  "rebaseline": {
+    "version": "0.9.0",
+    "date": "2026-06-21",
+    "note": "Re-baselined on PropTech AI Platform spec. Foundation features (F0xx) carried over as DONE; new platform modules (F1xx) added as roadmap M0-M5; legacy advanced stack deprecated."
+  },
+  "foundation_reused": [
+    { "id": "F003", "name": "Property CRUD + search", "status": "DONE" },
+    { "id": "F004", "name": "Client CRM + lead stages", "status": "DONE" },
+    { "id": "F005", "name": "Event scheduling (visits/calls)", "status": "DONE" },
+    { "id": "F008", "name": "Semantic property matching (pgvector)", "status": "DONE", "note": "KEPT as additive, free (Ollama) search layer — analyze match before validating." },
+    { "id": "F015", "name": "Supabase migration", "status": "DONE" },
+    { "id": "F016", "name": "Multi-tenant schema", "status": "DONE" },
+    { "id": "F017", "name": "Row Level Security policies", "status": "DONE" },
+    { "id": "F018", "name": "RBAC + Supabase Auth (admin/agent)", "status": "DONE", "note": "To EXTEND to 4 levels in M4 (F140)." },
+    { "id": "F019", "name": "WhatsApp number admin panel", "status": "DONE" },
+    { "id": "F021", "name": "Cross-agent match notifications", "status": "DONE", "note": "Base for M2 alarms (F121/F122)." },
+    { "id": "F022", "name": "Admin dashboard (global view)", "status": "DONE" },
+    { "id": "F023", "name": "Agent dashboard", "status": "DONE" },
+    { "id": "F025", "name": "DB export by section (CSV)", "status": "DONE" },
+    { "id": "F026", "name": "Branding (logo/banner/avatars)", "status": "DONE", "note": "Documented in this re-baseline (was undocumented)." }
   ],
-  "last_audit": {
-    "date": "2026-06-10",
-    "method": "code verification against repo",
-    "result": "F015-F024 verified DONE; F025 implemented 2026-06-10 — backlog complete"
-  }
+  "modules": [
+    {
+      "id": "M0", "name": "Platform Core", "status": "IN_PROGRESS",
+      "features": [
+        { "id": "F100", "name": "LLM Router (Ollama free → DeepSeek → Claude admin-only)", "status": "TODO" },
+        { "id": "F101", "name": "Secret-key Scheduler (GitHub Actions / Cron-Job.org → Edge Fn)", "status": "TODO" },
+        { "id": "F102", "name": "Chat ingestion + context-preserving summarization into Supabase", "status": "TODO" },
+        { "id": "F103", "name": "Listing-link verifier (no web crawl; verify a consulted URL is a property)", "status": "TODO" }
+      ]
+    },
+    {
+      "id": "M1", "name": "Conversational Channel — 5 contexts", "status": "TODO",
+      "features": [
+        { "id": "F110", "name": "Context classifier/router (5 contexts)", "status": "TODO" },
+        { "id": "F111", "name": "Ventas/Dueños — on-demand property status reports", "status": "TODO" },
+        { "id": "F112", "name": "Compras/Interesados — advisory + visit scheduling w/ explicit advisor confirmation", "status": "TODO" },
+        { "id": "F113", "name": "Trámites varios — derive to martillera personal WhatsApp", "status": "TODO" },
+        { "id": "F114", "name": "Inquilinos/Arrendatarios — derive to rentals area WhatsApp", "status": "TODO" },
+        { "id": "F115", "name": "Independent IA + meta-learning (free LLM) — success/failure analysis, assertive-comms tips", "status": "TODO" }
+      ]
+    },
+    {
+      "id": "M2", "name": "Alarms & Matching", "status": "TODO",
+      "features": [
+        { "id": "F120", "name": "Incumplimiento alarms (visit/docs/report) → martillero", "status": "TODO" },
+        { "id": "F121", "name": "Active interlinked-business matching (chat + pgvector additive, free)", "status": "TODO" },
+        { "id": "F122", "name": "Hidden interlink detection (discard active; notify martillero + advisors)", "status": "TODO" },
+        { "id": "F123", "name": "Capture documentation management (auto-request → forward to martillero for validation)", "status": "TODO" }
+      ]
+    },
+    {
+      "id": "M3", "name": "Reports & Agenda Engine", "status": "TODO",
+      "features": [
+        { "id": "F130", "name": "Owner reports — programmable periods", "status": "TODO" },
+        { "id": "F131", "name": "Advisor activity reports + personalized stats tips", "status": "TODO" },
+        { "id": "F132", "name": "Admin/Martillera/Marketing on-demand consolidated lists", "status": "TODO" },
+        { "id": "F133", "name": "Central calendar + weekly automated WhatsApp schedule report", "status": "TODO" }
+      ]
+    },
+    {
+      "id": "M4", "name": "Permission Matrix — 4 levels", "status": "TODO",
+      "features": [
+        { "id": "F140", "name": "RBAC N1 Propiedades / N2 Dueños / N3 Martillero / N4 Admin + RLS scoping", "status": "TODO" }
+      ]
+    },
+    {
+      "id": "M5", "name": "Advisor Panel", "status": "TODO",
+      "features": [
+        { "id": "F150", "name": "Advisor self-service: profile, weekly availability, on-demand reports", "status": "TODO" }
+      ]
+    }
+  ],
+  "deprecated": [
+    { "id": "F002", "name": "ReAct agent (LangChain) + Redis memory", "reason": "Replaced by serverless context router + free-first LLM. No Redis." },
+    { "id": "F006", "name": "XGBoost/LightGBM/SHAP lead scoring", "reason": "Out of new spec scope; superseded by LLM meta-learning. Archive as optional future module." },
+    { "id": "F007", "name": "RAG document ingestion", "reason": "Not in new spec scope. Archive as optional future module." },
+    { "id": "F009", "name": "Adinco scraper (Playwright)", "reason": "Removed by request — no external web scraping." },
+    { "id": "F010", "name": "Google Drive Excel sync", "reason": "Not in new spec; admin data load via CSV/backup upload instead." },
+    { "id": "F011", "name": "Analytics dashboard (Plotly)", "reason": "Replaced by M3 Reports Engine. Keep only lightweight counts." },
+    { "id": "F012", "name": "Celery-based reminders", "reason": "Replaced by secret-key scheduler (F101) + M3 calendar report (F133)." },
+    { "id": "F013", "name": "ML meta-learning (XGBoost feedback)", "reason": "Reframed as LLM chat meta-learning (F115)." }
+  ]
 }

@@ -2,15 +2,40 @@
   "debts": [
     {
       "id": "TD-006",
-      "title": "Legacy FastAPI backend unused by dashboard",
-      "severity": "LOW",
+      "title": "Legacy FastAPI/Celery/Redis stack still in repo",
+      "severity": "MEDIUM",
       "detected": "2026-06-10",
+      "updated": "2026-06-21",
       "status": "OPEN",
-      "affected": ["backend/"],
-      "description_es": "El backend FastAPI completo sigue en el repo pero el dashboard usa supabase-js directo y Edge Functions desde la Fase 8. Su capa de auth no aplica scoping multi-tenant. Candidato a borrado o archivado tras confirmar que ningún servicio (gateway, cron, scraper) lo consume.",
-      "description_en": "Full FastAPI backend remains in the repo but the dashboard uses supabase-js directly and Edge Functions since Fase 8. Its auth layer lacks multi-tenant scoping. Candidate for deletion or archiving after confirming no service (gateway, cron, scraper) consumes it.",
-      "proposed_fix_es": "Auditar consumidores → archivar o eliminar backend/ → limpiar docker-compose y ENV asociadas.",
-      "proposed_fix_en": "Audit consumers → archive or delete backend/ → clean docker-compose and related ENV vars."
+      "affected": ["backend/", "gateway/", "docker-compose.yml"],
+      "description_es": "El backend FastAPI, el gateway legacy (gateway/, llama a backend:8000) y los servicios celery/redis/postgres de docker-compose siguen en el repo. La auditoría confirmó que backend/ SÍ es consumido por gateway/src/webhook.js y por el proxy de next.config.js, por lo que el borrado estaba bloqueado. Con la reforma v0.9.0 (Supabase+Netlify+scheduler) quedan fuera de alcance.",
+      "description_en": "FastAPI backend, legacy gateway (gateway/ → backend:8000) and docker-compose celery/redis/postgres remain. Audit confirmed backend/ IS consumed by gateway/src/webhook.js and the next.config.js proxy, which blocked deletion. With the v0.9.0 re-baseline they are out of scope.",
+      "proposed_fix_es": "1) Fijar TD-007 (next.config). 2) Eliminar gateway/ legacy (usar whatsapp-gateway/ slim). 3) Borrar backend/. 4) Limpiar docker-compose (celery/redis/postgres/backend).",
+      "proposed_fix_en": "1) Fix TD-007 (next.config). 2) Remove legacy gateway/ (use slim whatsapp-gateway/). 3) Delete backend/. 4) Clean docker-compose (celery/redis/postgres/backend)."
+    },
+    {
+      "id": "TD-007",
+      "title": "next.config.js contradicts Fase 8/9 (FastAPI proxy + standalone)",
+      "severity": "HIGH",
+      "detected": "2026-06-21",
+      "status": "OPEN",
+      "affected": ["dashboard/next.config.js"],
+      "description_es": "next.config.js mantiene output:'standalone' (D007 SUPERSEDED) y reescribe /api/* → http://backend:8000 (FastAPI). El commit 0c013ae decía 'drop legacy BACKEND_URL' pero sigue presente. Riesgo en producción: rutas /api podrían apuntar a un backend inexistente en Netlify.",
+      "description_en": "next.config.js keeps output:'standalone' (D007 SUPERSEDED) and rewrites /api/* → http://backend:8000 (FastAPI). Commit 0c013ae claimed it was dropped but it remains. Production risk: /api routes could target a non-existent backend on Netlify.",
+      "proposed_fix_es": "Quitar el rewrite a backend y output:'standalone' (Netlify + @netlify/plugin-nextjs lo maneja).",
+      "proposed_fix_en": "Remove the backend rewrite and output:'standalone' (Netlify + @netlify/plugin-nextjs handles it)."
+    },
+    {
+      "id": "TD-008",
+      "title": "Duplicate WhatsApp gateways",
+      "severity": "MEDIUM",
+      "detected": "2026-06-21",
+      "status": "OPEN",
+      "affected": ["gateway/", "whatsapp-gateway/"],
+      "description_es": "Coexisten gateway/ (legacy, FastAPI) y whatsapp-gateway/ (slim, supabase-js). docker-compose construye el legacy. Consolidar en el slim.",
+      "description_en": "gateway/ (legacy, FastAPI) and whatsapp-gateway/ (slim, supabase-js) coexist. docker-compose builds the legacy one. Consolidate on the slim gateway.",
+      "proposed_fix_es": "Eliminar gateway/ y apuntar el deploy al gateway slim.",
+      "proposed_fix_en": "Delete gateway/ and point deploy to the slim gateway."
     }
   ]
 }

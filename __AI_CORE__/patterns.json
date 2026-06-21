@@ -1,10 +1,12 @@
 {
   "reinforced_checks": [
     { "id": "P001", "active": true, "rule": "Never commit .env or *.private.json" },
-    { "id": "P002", "active": true, "rule": "All new endpoints require JWT auth unless explicitly public" },
-    { "id": "P003", "active": true, "rule": "AI_POLICY env var controls LLM selection — never hardcode model" },
-    { "id": "P004", "active": true, "rule": "pgvector queries must have ivfflat index and cosine distance" },
-    { "id": "P005", "active": true, "rule": "Celery tasks must be idempotent" },
-    { "id": "P006", "active": true, "rule": "RAG chunks: size=1800, overlap=360 (20%)" }
+    { "id": "P002", "active": true, "rule": "All new endpoints/Edge Functions require JWT auth unless explicitly public" },
+    { "id": "P003", "active": true, "rule": "LLM selection via router (D016): Ollama free default → DeepSeek → Claude ONLY on admin request. Never hardcode a heavy model." },
+    { "id": "P004", "active": true, "rule": "pgvector queries must have ivfflat index and cosine distance; embeddings run on Ollama (free)." },
+    { "id": "P006", "active": true, "rule": "Matching/summarization/meta-learning must cost zero Claude tokens." },
+    { "id": "P007", "active": true, "rule": "No external web search/scraping. Only fetch a consulted listing URL to verify it is a property (D019)." },
+    { "id": "P008", "active": true, "rule": "Scheduled jobs go through secret-key-protected Edge Functions (D018). Never expose the trigger without the secret." },
+    { "id": "P009", "active": true, "rule": "Visit scheduling requires explicit advisor confirmation before booking (M1/F112)." }
   ]
 }

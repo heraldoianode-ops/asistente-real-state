@@ -1,19 +1,26 @@
 {
   "decisions": [
-    { "id": "D001", "title": "Local-first LLM via Ollama", "status": "ACTIVE", "rationale": "Privacy + zero API cost. Cloud fallback via AI_POLICY." },
-    { "id": "D002", "title": "pgvector for embeddings", "status": "ACTIVE", "rationale": "Avoid separate vector DB. PostgreSQL handles OLTP + vector search." },
-    { "id": "D003", "title": "LangChain ReAct agent", "status": "ACTIVE", "rationale": "Tool-use pattern fits real estate Q&A. Reasoning trace is auditable." },
-    { "id": "D004", "title": "WhatsApp Cloud API (Meta)", "status": "ACTIVE", "rationale": "Primary channel for Argentine market. No third-party BSP cost." },
-    { "id": "D005", "title": "XGBoost for lead scoring", "status": "ACTIVE", "rationale": "Tabular data, interpretable via SHAP, fast inference, no GPU required." },
-    { "id": "D006", "title": "Celery + Redis for task queue", "status": "SUPERSEDED", "superseded_by": "D014", "rationale": "Replaced by Supabase Edge Functions in Fase 8." },
-    { "id": "D007", "title": "Next.js 14 standalone Docker output", "status": "SUPERSEDED", "superseded_by": "D015", "rationale": "Replaced by Netlify deploy in Fase 8." },
-    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Continuous improvement of agent, matching, ML scoring from real interactions." },
-    { "id": "D009", "title": "Supabase as primary DB", "status": "ACTIVE", "rationale": "Cloud PostgreSQL + pgvector + RLS. Admin can snapshot locally." },
-    { "id": "D010", "title": "Multi-tenant via agent_id scoping + RLS", "status": "ACTIVE", "rationale": "Single DB. Privacy enforced at Supabase RLS layer." },
-    { "id": "D011", "title": "Property catalog public; owner contacts private", "status": "ACTIVE", "rationale": "Owner contact visible only to listing agent. conversation_summary visible to all." },
-    { "id": "D012", "title": "Cross-agent match: share client name + explanation only", "status": "ACTIVE", "rationale": "Listing agent sees buyer name + reason. No other buyer data exposed." },
-    { "id": "D013", "title": "WhatsApp numbers managed by admin", "status": "ACTIVE", "rationale": "Admin controls onboarding. Each agent gets one phone_number_id." },
-    { "id": "D014", "title": "Supabase Edge Functions replace Celery workers", "status": "ACTIVE", "rationale": "Serverless Deno functions handle async matching + notifications. No Redis, no self-hosted workers." },
-    { "id": "D015", "title": "Netlify for dashboard hosting", "status": "ACTIVE", "rationale": "Next.js 14 on Netlify via @netlify/plugin-nextjs. Already paid plan. No Docker for frontend." }
+    { "id": "D002", "title": "pgvector for embeddings", "status": "ACTIVE", "rationale": "Kept as ADDITIVE free matching layer (Ollama embeddings) to widen business-match discovery before validation." },
+    { "id": "D004", "title": "WhatsApp Cloud API (Meta)", "status": "ACTIVE", "rationale": "Primary channel. Slim gateway uses supabase-js directly." },
+    { "id": "D008", "title": "Meta-learning feedback loop", "status": "ACTIVE", "rationale": "Reframed as LLM chat-based meta-learning (free) — success/failure analysis + assertive-comms tips." },
+    { "id": "D009", "title": "Supabase as primary DB + backend", "status": "ACTIVE", "rationale": "Cloud PostgreSQL + pgvector + RLS + Edge Functions. No self-hosted backend." },
+    { "id": "D010", "title": "Multi-tenant via agent_id scoping + RLS", "status": "ACTIVE" },
+    { "id": "D011", "title": "Property catalog public; owner contacts private", "status": "ACTIVE" },
+    { "id": "D012", "title": "Cross-agent match: share client name + explanation only", "status": "ACTIVE", "rationale": "Base for M2 hidden/active interlink alarms." },
+    { "id": "D013", "title": "WhatsApp numbers managed by admin", "status": "ACTIVE" },
+    { "id": "D015", "title": "Netlify for dashboard hosting", "status": "ACTIVE" },
+
+    { "id": "D001", "title": "Local-first LLM via Ollama (sole default)", "status": "SUPERSEDED", "superseded_by": "D016", "rationale": "Replaced by free-first complexity routing." },
+    { "id": "D003", "title": "LangChain ReAct agent", "status": "SUPERSEDED", "superseded_by": "D017", "rationale": "Replaced by serverless 5-context router + free-first LLM." },
+    { "id": "D005", "title": "XGBoost for lead scoring", "status": "SUPERSEDED", "superseded_by": "D008", "rationale": "Out of new spec scope; LLM meta-learning instead. Archived as optional module." },
+    { "id": "D006", "title": "Celery + Redis for task queue", "status": "SUPERSEDED", "superseded_by": "D018" },
+    { "id": "D007", "title": "Next.js standalone Docker output", "status": "SUPERSEDED", "superseded_by": "D015" },
+    { "id": "D014", "title": "Supabase Edge Functions replace Celery workers", "status": "ACTIVE", "rationale": "Async matching + notifications as serverless Deno functions." },
+
+    { "id": "D016", "title": "Free-first complexity LLM routing", "status": "ACTIVE", "rationale": "Ollama (free, default) → DeepSeek API (medium) → Claude API ONLY on explicit admin request for heavy analysis/reports. Routine chat, matching and summarization cost zero Claude tokens." },
+    { "id": "D017", "title": "Serverless 5-context conversational router", "status": "ACTIVE", "rationale": "Classify WhatsApp messages into Ventas, Compras, Trámites, Inquilinos, IA-meta. Derive Trámites/Inquilinos to dedicated personal WhatsApp numbers." },
+    { "id": "D018", "title": "Secret-key scheduler (GitHub Actions / Cron-Job.org)", "status": "ACTIVE", "rationale": "Scheduled jobs hit secret-key-protected Edge Functions. Replaces Celery Beat. No self-hosted workers." },
+    { "id": "D019", "title": "No external web access", "status": "ACTIVE", "rationale": "No web search/scraping. Only fetch a consulted listing URL to verify it is a property. Adinco scraper removed." },
+    { "id": "D020", "title": "Deprecate legacy FastAPI/Celery/Redis stack", "status": "ACTIVE", "rationale": "backend/, gateway/ (legacy), docker-compose celery/redis/postgres to be removed (TD-006/TD-007)." }
   ]
 }

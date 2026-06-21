@@ -8,17 +8,19 @@
       "project_id": "nehfrtedwcmdlmbulhef",
       "schema": "asistente_real_state",
       "region": "sa-east-1",
-      "note": "Platform DB. Each project = one schema. Never use public schema for app tables."
+      "note": "Platform DB + backend (Edge Functions + pgvector). Each project = one schema. Never use public schema for app tables."
     },
-    { "id": "redis", "name": "Redis", "status": "active", "host": "redis:6379" },
-    { "id": "ollama", "name": "Ollama LLM", "status": "active", "host": "ollama:11434" },
-    { "id": "whatsapp", "name": "WhatsApp Cloud API", "status": "active", "host": "graph.facebook.com" },
-    { "id": "anthropic", "name": "Anthropic Claude", "status": "optional", "host": "api.anthropic.com" },
-    { "id": "openai", "name": "OpenAI", "status": "optional", "host": "api.openai.com" },
-    { "id": "google_drive", "name": "Google Drive", "status": "active", "host": "drive.google.com" },
-    { "id": "resend", "name": "Resend Email", "status": "optional", "host": "api.resend.com" },
+    { "id": "whatsapp", "name": "WhatsApp Cloud API", "status": "active", "host": "graph.facebook.com", "note": "Slim gateway, supabase-js direct." },
+    { "id": "ollama", "name": "Ollama LLM (free default)", "status": "active", "host": "ollama:11434", "note": "Default for chat, matching, summarization, meta-learning. Zero token cost." },
+    { "id": "deepseek", "name": "DeepSeek API (medium tier)", "status": "active", "host": "api.deepseek.com", "note": "Mid-complexity tasks per LLM router (D016)." },
+    { "id": "anthropic", "name": "Anthropic Claude (heavy tier)", "status": "on_demand", "host": "api.anthropic.com", "note": "ONLY on explicit admin request for heavy analysis/reports. Never routine." },
+    { "id": "scheduler", "name": "GitHub Actions / Cron-Job.org", "status": "active", "host": "github.com / cron-job.org", "note": "Secret-key-protected scheduled triggers to Edge Functions (D018)." },
     { "id": "sentry", "name": "Sentry", "status": "active", "host": "sentry.io" },
-    { "id": "celery", "name": "Celery Worker", "status": "active", "host": "internal" },
-    { "id": "gateway", "name": "WhatsApp Gateway (Node.js)", "status": "active", "host": "gateway:3000" }
+
+    { "id": "redis", "name": "Redis", "status": "deprecated", "note": "Removed with Celery/FastAPI stack (D018/D020)." },
+    { "id": "celery", "name": "Celery Worker", "status": "deprecated", "note": "Superseded by Edge Functions + secret-key scheduler (D014/D018)." },
+    { "id": "gateway_legacy", "name": "WhatsApp Gateway (FastAPI-coupled)", "status": "deprecated", "note": "Legacy gateway/ calls FastAPI backend:8000. To remove (TD-006)." },
+    { "id": "openai", "name": "OpenAI", "status": "optional", "host": "api.openai.com" },
+    { "id": "google_drive", "name": "Google Drive", "status": "deprecated", "note": "Excel sync out of scope; admin data load via CSV/backup upload." }
   ]
 }
