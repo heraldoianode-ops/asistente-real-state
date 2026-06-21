@@ -85,7 +85,7 @@
   },
   "session_state": {
     "pending_tomorrow": [
-      "Apply migrations 07-13 to Supabase",
+      "Apply migrations 07-14 to Supabase",
       "Set Edge Function secrets + GH secrets (INTERNAL_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, SUPABASE_FUNCTIONS_URL)",
       "M3: F130 owner period reports, F131 advisor reports, F132 consolidated lists, F133 weekly calendar report"
     ],

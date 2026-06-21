@@ -238,9 +238,10 @@
           "status": "DONE",
           "evidence": [
             "db/migrations/13_capture_documents.sql",
+            "db/migrations/14_capture_docs_escalation.sql",
             "supabase/functions/capture-docs/index.ts"
           ],
-          "note": "Tracks required docs per property (required→requested→received→validated/rejected). request asks the owner for missing docs; receive forwards to martillero notify; validate sets the verdict. Required list configurable via app_settings.required_capture_docs."
+          "note": "D023 escalation: bot asks the ADVISOR first; after 3 failed asks escalates to martillero for permission (authorize accept/decline); on accept the bot requests the owner; if still missing, notifies martillero to take measures. States asesor->await_martillero->bot->measures->done. receive forwards to martillero to validate."
         }
       ]
     },
