@@ -33,7 +33,7 @@
     {
       "id": "M1", "name": "Conversational Channel — 5 contexts", "status": "TODO",
       "features": [
-        { "id": "F110", "name": "Context classifier/router (5 contexts)", "status": "TODO" },
+        { "id": "F110", "name": "Context classifier/router (5 contexts)", "status": "DONE", "evidence": ["supabase/functions/classify-context/index.ts", "db/migrations/08_channel_settings.sql"], "note": "Free-tier (Ollama) classify with heuristic fallback; persists context; resolves derive targets (wa_martillera/wa_alquileres) for tramites/inquilinos. Zero Claude tokens (P006)." },
         { "id": "F111", "name": "Ventas/Dueños — on-demand property status reports", "status": "TODO" },
         { "id": "F112", "name": "Compras/Interesados — advisory + visit scheduling w/ explicit advisor confirmation", "status": "TODO" },
         { "id": "F113", "name": "Trámites varios — derive to martillera personal WhatsApp", "status": "TODO" },
