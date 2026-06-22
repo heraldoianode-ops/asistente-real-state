@@ -5,6 +5,14 @@
 -- Properties: read all, write own listing.
 -- ============================================================
 
+-- ── Fase 7: align users table with Supabase Auth ──────────────
+-- Password auth (hashed_password from 02_schema) is replaced by Supabase Auth.
+-- auth_user_id links a profile row to its auth.users record and MUST exist
+-- before migration 05, whose storage policies reference users.auth_user_id.
+-- Idempotent so it is a no-op on environments already migrated (e.g. prod).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_user_id UUID;
+ALTER TABLE users DROP COLUMN IF EXISTS hashed_password;
+
 -- Enable RLS
 ALTER TABLE users                  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE properties             ENABLE ROW LEVEL SECURITY;

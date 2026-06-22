@@ -1,15 +1,16 @@
 {
   "status": "HEALTHY",
-  "score": 100,
+  "score": 96,
   "dimensions": {
-    "debt": { "critical": 0, "high": 0, "medium": 0, "low": 1 },
-    "alerts": []
+    "debt": { "critical": 0, "high": 0, "medium": 1, "low": 0 },
+    "alerts": ["TD-008 (MEDIUM): RLS keys off users.id but app links via auth_user_id — latent, no current agents"]
   },
   "last_check": "2026-06-21",
   "last_repair": {
     "date": "2026-06-21",
     "fixed": [
-      "TD-006: legacy FastAPI backend + old gateway + docker-compose archived (tag legacy-fastapi-backend)"
+      "TD-006: legacy FastAPI backend + old gateway + docker-compose archived (branch archive/legacy-fastapi-backend)",
+      "TD-007: users.auth_user_id add + hashed_password drop reconciled in 04 (fixes clean-build failure at 05)"
     ]
   }
 }

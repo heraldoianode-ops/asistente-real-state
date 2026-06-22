@@ -20,12 +20,27 @@
       "title": "Schema drift — repo migrations don't reflect live users table",
       "severity": "LOW",
       "detected": "2026-06-21",
+      "status": "RESOLVED",
+      "resolved": "2026-06-21",
+      "affected": ["db/init/02_schema.sql", "db/migrations/04_rls_policies.sql"],
+      "description_es": "La tabla 'users' en producción tiene 'auth_user_id' (uuid) y ya NO tiene 'hashed_password', pero ninguna migración versionada lo reflejaba. Peor aún: la migración 05 referencia users.auth_user_id en políticas de storage, por lo que una build limpia fallaba (la columna no existía hasta ese punto). 'avatar_url' SÍ estaba cubierto por 05 (no era drift).",
+      "description_en": "The production 'users' table has 'auth_user_id' (uuid) and no longer has 'hashed_password', but no versioned migration reflected it. Worse: migration 05 references users.auth_user_id in storage policies, so a clean build failed (the column did not exist yet). 'avatar_url' WAS already covered by 05 (not drift).",
+      "resolution_es": "Añadido a 04_rls_policies.sql (antes de las políticas y de 05), idempotente: ADD COLUMN IF NOT EXISTS auth_user_id UUID; DROP COLUMN IF EXISTS hashed_password. Verificado contra producción vía information_schema: coincide (no-op en prod).",
+      "resolution_en": "Added to 04_rls_policies.sql (before the policies and before 05), idempotent: ADD COLUMN IF NOT EXISTS auth_user_id UUID; DROP COLUMN IF EXISTS hashed_password. Verified against production via information_schema: matches (no-op on prod).",
+      "proposed_fix_es": "Migración idempotente de reconciliación ubicada antes de las dependencias.",
+      "proposed_fix_en": "Idempotent reconciliation migration placed before its dependents."
+    },
+    {
+      "id": "TD-008",
+      "title": "RLS policies key off users.id = auth.uid() but app links via users.auth_user_id",
+      "severity": "MEDIUM",
+      "detected": "2026-06-21",
       "status": "OPEN",
-      "affected": ["db/init/02_schema.sql", "db/migrations/"],
-      "description_es": "La tabla 'users' en producción (schema asistente_real_state) tiene columnas 'auth_user_id' (uuid) y 'avatar_url' (text) y ya NO tiene 'hashed_password', pero ninguna migración versionada en el repo añade auth_user_id/avatar_url ni elimina hashed_password. El esquema vivo se modificó fuera del control de migraciones (Fase 7/8 Supabase Auth). Riesgo: un entorno nuevo recreado desde el repo no coincidiría con producción.",
-      "description_en": "The production 'users' table (schema asistente_real_state) has columns 'auth_user_id' (uuid) and 'avatar_url' (text) and no longer has 'hashed_password', but no versioned migration in the repo adds auth_user_id/avatar_url or drops hashed_password. The live schema was changed outside migration control (Fase 7/8 Supabase Auth). Risk: a fresh environment rebuilt from the repo would not match production.",
-      "proposed_fix_es": "Crear migración que reconcilie: ADD COLUMN auth_user_id, avatar_url; DROP COLUMN hashed_password; idempotente (IF EXISTS / IF NOT EXISTS). Verificar contra producción con information_schema.",
-      "proposed_fix_en": "Add a reconciliation migration: ADD COLUMN auth_user_id, avatar_url; DROP COLUMN hashed_password; idempotent (IF EXISTS / IF NOT EXISTS). Verify against production via information_schema."
+      "affected": ["db/migrations/04_rls_policies.sql", "supabase/functions/create-agent/index.ts"],
+      "description_es": "is_admin() y todas las políticas RLS comparan 'id = auth.uid()' (o FKs *_agent_id = auth.uid(), que referencian users.id). Pero create-agent inserta agentes con 'id' aleatorio (gen_random_uuid) y enlaza la identidad por 'auth_user_id'; el dashboard también resuelve el usuario por auth_user_id. Para el admin actual funciona SOLO porque su id == auth_user_id (mismo uuid por el seed). Para cualquier agente creado vía create-agent, id != auth.uid(), por lo que is_admin() es false (ok) PERO el scoping por *_agent_id = auth.uid() nunca matchearía → un agente no vería sus propios clientes/eventos/propiedades. Sin impacto actual: solo existe el usuario admin.",
+      "description_en": "is_admin() and every RLS policy compare 'id = auth.uid()' (or FKs *_agent_id = auth.uid(), which reference users.id). But create-agent inserts agents with a random 'id' (gen_random_uuid) and links identity via 'auth_user_id'; the dashboard also resolves the user by auth_user_id. It works for the current admin ONLY because its id == auth_user_id (same uuid from the seed). For any agent created via create-agent, id != auth.uid(), so is_admin() is false (fine) BUT scoping via *_agent_id = auth.uid() would never match → an agent would not see their own clients/events/properties. No current impact: only the admin user exists.",
+      "proposed_fix_es": "Decidir una sola convención: (A) que users.id sea el auth uid (create-agent setea id = authUser.user.id y se elimina auth_user_id), o (B) mantener auth_user_id y reescribir is_admin() y las políticas para resolver el id interno desde auth_user_id (p.ej. helper current_app_user_id()). Requiere validación cuidadosa antes de tocar RLS en prod.",
+      "proposed_fix_en": "Pick one convention: (A) make users.id the auth uid (create-agent sets id = authUser.user.id and drop auth_user_id), or (B) keep auth_user_id and rewrite is_admin() and policies to resolve the internal id from auth_user_id (e.g. a current_app_user_id() helper). Needs careful validation before touching prod RLS."
     }
   ]
 }
