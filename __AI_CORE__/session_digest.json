@@ -1,6 +1,12 @@
 {
   "sessions": [
     {
+      "date": "2026-06-22",
+      "summary": "SALUD + AUDITAR PROYECTO. Live repo↔prod coherence audit. Resolved TD-008 as a false alarm: prod trigger enforce_user_id_equals_auth forces users.id=auth_user_id, so id==auth_user_id==auth.uid() for all; scoping via current_agent_id(). Found major drift: prod RLS consolidated + helpers + set_updated_at triggers + an undocumented Google Calendar/OAuth integration (agent_google_credentials, google_oauth_states) — none in repo. Captured live state in idempotent migration 07_reconcile_with_prod.sql (no-op on prod; nothing run against prod). Logged F026, D017/D018, TD-009 (resolved) + TD-010 (governance, open). Wrote docs/AUDIT-2026-06-22.md. v0.8.4, health 97.",
+      "nodes_touched": ["8.10"],
+      "commits": ["chore(audit): reconcile repo with prod schema/RLS + capture Google integration (TD-008/009)"]
+    },
+    {
       "date": "2026-06-21",
       "summary": "TD-006 resolved: archived legacy FastAPI backend + old gateway + docker-compose to remote branch archive/legacy-fastapi-backend (@a41aba6; tag push blocked by proxy 403). Cleaned dead api.ts, next.config rewrite, README. Verified initial admin abuelo.pro@gmail.com already exists (Auth + profile role=admin, has signed in) — no action. TD-007 resolved: added auth_user_id + dropped hashed_password in migration 04 (a clean build failed at 05, which references users.auth_user_id; verified prod already matches). Found & logged TD-008 (MEDIUM): RLS keys off users.id=auth.uid() but app links via auth_user_id — latent (only admin exists, whose id==auth_user_id). v0.8.3.",
       "nodes_touched": ["8.9"],

@@ -35,12 +35,42 @@
       "title": "RLS policies key off users.id = auth.uid() but app links via users.auth_user_id",
       "severity": "MEDIUM",
       "detected": "2026-06-21",
-      "status": "OPEN",
+      "status": "RESOLVED",
+      "resolved": "2026-06-22",
       "affected": ["db/migrations/04_rls_policies.sql", "supabase/functions/create-agent/index.ts"],
-      "description_es": "is_admin() y todas las políticas RLS comparan 'id = auth.uid()' (o FKs *_agent_id = auth.uid(), que referencian users.id). Pero create-agent inserta agentes con 'id' aleatorio (gen_random_uuid) y enlaza la identidad por 'auth_user_id'; el dashboard también resuelve el usuario por auth_user_id. Para el admin actual funciona SOLO porque su id == auth_user_id (mismo uuid por el seed). Para cualquier agente creado vía create-agent, id != auth.uid(), por lo que is_admin() es false (ok) PERO el scoping por *_agent_id = auth.uid() nunca matchearía → un agente no vería sus propios clientes/eventos/propiedades. Sin impacto actual: solo existe el usuario admin.",
-      "description_en": "is_admin() and every RLS policy compare 'id = auth.uid()' (or FKs *_agent_id = auth.uid(), which reference users.id). But create-agent inserts agents with a random 'id' (gen_random_uuid) and links identity via 'auth_user_id'; the dashboard also resolves the user by auth_user_id. It works for the current admin ONLY because its id == auth_user_id (same uuid from the seed). For any agent created via create-agent, id != auth.uid(), so is_admin() is false (fine) BUT scoping via *_agent_id = auth.uid() would never match → an agent would not see their own clients/events/properties. No current impact: only the admin user exists.",
-      "proposed_fix_es": "Decidir una sola convención: (A) que users.id sea el auth uid (create-agent setea id = authUser.user.id y se elimina auth_user_id), o (B) mantener auth_user_id y reescribir is_admin() y las políticas para resolver el id interno desde auth_user_id (p.ej. helper current_app_user_id()). Requiere validación cuidadosa antes de tocar RLS en prod.",
-      "proposed_fix_en": "Pick one convention: (A) make users.id the auth uid (create-agent sets id = authUser.user.id and drop auth_user_id), or (B) keep auth_user_id and rewrite is_admin() and policies to resolve the internal id from auth_user_id (e.g. a current_app_user_id() helper). Needs careful validation before touching prod RLS."
+      "description_es": "Sospecha (contra el repo): is_admin() y el scoping usarían 'id = auth.uid()' mientras la app enlaza por 'auth_user_id', rompiendo el scoping para agentes con id != auth_user_id.",
+      "description_en": "Suspicion (against the repo): is_admin() and scoping would use 'id = auth.uid()' while the app links via 'auth_user_id', breaking scoping for agents whose id != auth_user_id.",
+      "resolution_es": "FALSO en producción. Un trigger BEFORE INSERT (enforce_user_id_equals_auth) fuerza users.id := auth_user_id, por lo que id == auth_user_id == auth.uid() para todos. Además prod usa el helper current_agent_id() para el scoping. No hay bug. La discrepancia era del repo (migración 04 vieja), reconciliado en 07. Decisión D017. Sin cambios en prod.",
+      "resolution_en": "FALSE in production. A BEFORE INSERT trigger (enforce_user_id_equals_auth) forces users.id := auth_user_id, so id == auth_user_id == auth.uid() for everyone. Prod also scopes via the current_agent_id() helper. No bug. The discrepancy was in the repo (stale migration 04), reconciled in 07. Decision D017. No prod changes.",
+      "proposed_fix_es": "—",
+      "proposed_fix_en": "—"
+    },
+    {
+      "id": "TD-009",
+      "title": "Repo↔prod drift: RLS, triggers and Google integration only in production",
+      "severity": "MEDIUM",
+      "detected": "2026-06-22",
+      "status": "RESOLVED",
+      "resolved": "2026-06-22",
+      "affected": ["db/migrations/", "__AI_CORE__/features.json"],
+      "description_es": "Producción evolucionó fuera de las migraciones: is_admin()/current_agent_id, trigger de identidad, set_updated_at en 11 tablas, RLS consolidado, y la integración Google (agent_google_credentials, google_oauth_states) — nada en el repo ni en features.json. Un entorno recreado desde el repo no reproduciría prod.",
+      "description_en": "Production drifted out of migrations: is_admin()/current_agent_id, identity trigger, set_updated_at on 11 tables, consolidated RLS, and the Google integration (agent_google_credentials, google_oauth_states) — none in the repo or features.json. A rebuild from the repo would not reproduce prod.",
+      "resolution_es": "Capturado el estado vivo en migración idempotente 07_reconcile_with_prod.sql; F026 registrada; ver docs/AUDIT-2026-06-22.md. No-op sobre prod.",
+      "resolution_en": "Live state captured in idempotent migration 07_reconcile_with_prod.sql; F026 logged; see docs/AUDIT-2026-06-22.md. No-op on prod.",
+      "proposed_fix_es": "—",
+      "proposed_fix_en": "—"
+    },
+    {
+      "id": "TD-010",
+      "title": "Governance: changes applied directly to prod without versioned migrations",
+      "severity": "LOW",
+      "detected": "2026-06-22",
+      "status": "OPEN",
+      "affected": ["process"],
+      "description_es": "La causa raíz de TD-007/008/009 fue aplicar DDL/RLS y features directo en Supabase sin migración versionada (viola R7). Riesgo recurrente de drift.",
+      "description_en": "Root cause of TD-007/008/009 was applying DDL/RLS and features directly in Supabase without a versioned migration (violates R7). Recurring drift risk.",
+      "proposed_fix_es": "Disciplina: toda evolución de esquema/RLS entra primero como migración en db/migrations/ y luego se aplica; auditoría periódica repo↔prod.",
+      "proposed_fix_en": "Discipline: every schema/RLS change lands first as a migration in db/migrations/ then is applied; periodic repo↔prod audit."
     }
   ]
 }

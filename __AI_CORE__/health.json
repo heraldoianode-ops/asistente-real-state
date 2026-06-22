@@ -1,16 +1,19 @@
 {
   "status": "HEALTHY",
-  "score": 96,
+  "score": 97,
   "dimensions": {
-    "debt": { "critical": 0, "high": 0, "medium": 1, "low": 0 },
-    "alerts": ["TD-008 (MEDIUM): RLS keys off users.id but app links via auth_user_id — latent, no current agents"]
+    "debt": { "critical": 0, "high": 0, "medium": 0, "low": 1 },
+    "alerts": ["TD-010 (LOW): enforce migration discipline — prod changed out-of-band; periodic repo↔prod audit recommended"]
   },
-  "last_check": "2026-06-21",
+  "last_check": "2026-06-22",
+  "last_audit": "2026-06-22",
   "last_repair": {
-    "date": "2026-06-21",
+    "date": "2026-06-22",
     "fixed": [
       "TD-006: legacy FastAPI backend + old gateway + docker-compose archived (branch archive/legacy-fastapi-backend)",
-      "TD-007: users.auth_user_id add + hashed_password drop reconciled in 04 (fixes clean-build failure at 05)"
+      "TD-007: users.auth_user_id add + hashed_password drop reconciled in migration 04",
+      "TD-008: false alarm — prod trigger enforces users.id==auth_user_id; coherent (D017)",
+      "TD-009: repo↔prod drift (RLS, triggers, Google integration) captured in migration 07; F026 logged"
     ]
   }
 }
