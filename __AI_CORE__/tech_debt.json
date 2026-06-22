@@ -71,6 +71,18 @@
       "description_en": "Root cause of TD-007/008/009 was applying DDL/RLS and features directly in Supabase without a versioned migration (violates R7). Recurring drift risk.",
       "proposed_fix_es": "Disciplina: toda evolución de esquema/RLS entra primero como migración en db/migrations/ y luego se aplica; auditoría periódica repo↔prod.",
       "proposed_fix_en": "Discipline: every schema/RLS change lands first as a migration in db/migrations/ then is applied; periodic repo↔prod audit."
+    },
+    {
+      "id": "TD-011",
+      "title": "Edge Function drift between repo and deployed prod",
+      "severity": "MEDIUM",
+      "detected": "2026-06-22",
+      "status": "OPEN",
+      "affected": ["supabase/functions/"],
+      "description_es": "Prod despliega solo create-agent + wa-gateway. (1) wa-gateway no estaba en el repo → AÑADIDO en supabase/functions/wa-gateway/index.ts. (2) match-properties y notify-agent existen en el repo pero NO están desplegadas → F021 (matches cross-agent) no está viva. (3) No existe Edge Function del flujo OAuth de Google → F026 es solo esquema (parcial).",
+      "description_en": "Prod deploys only create-agent + wa-gateway. (1) wa-gateway was not in the repo → ADDED at supabase/functions/wa-gateway/index.ts. (2) match-properties and notify-agent exist in repo but are NOT deployed → F021 (cross-agent matches) is not live. (3) No Edge Function implements the Google OAuth flow → F026 is schema-only (partial).",
+      "proposed_fix_es": "Decidir por feature: desplegar match-properties/notify-agent si F021 debe estar viva; implementar+desplegar la función OAuth de Google para completar F026; o marcar explícitamente como diferidas.",
+      "proposed_fix_en": "Decide per feature: deploy match-properties/notify-agent if F021 should be live; implement+deploy the Google OAuth function to complete F026; or explicitly defer them."
     }
   ]
 }

@@ -4,7 +4,8 @@
       "date": "2026-06-22",
       "summary": "SALUD + AUDITAR PROYECTO. Live repo↔prod coherence audit. Resolved TD-008 as a false alarm: prod trigger enforce_user_id_equals_auth forces users.id=auth_user_id, so id==auth_user_id==auth.uid() for all; scoping via current_agent_id(). Found major drift: prod RLS consolidated + helpers + set_updated_at triggers + an undocumented Google Calendar/OAuth integration (agent_google_credentials, google_oauth_states) — none in repo. Captured live state in idempotent migration 07_reconcile_with_prod.sql (no-op on prod; nothing run against prod). Logged F026, D017/D018, TD-009 (resolved) + TD-010 (governance, open). Wrote docs/AUDIT-2026-06-22.md. v0.8.4, health 97.",
       "nodes_touched": ["8.10"],
-      "commits": ["chore(audit): reconcile repo with prod schema/RLS + capture Google integration (TD-008/009)"]
+      "commits": ["chore(audit): reconcile repo with prod schema/RLS + capture Google integration (TD-008/009)", "chore(edge): vendor wa-gateway from prod + correct F021/F026 status (TD-011)"],
+      "followup": "Edge Function audit (list/get_edge_function): prod runs only create-agent + wa-gateway. Added wa-gateway to repo. F021 marked IMPLEMENTED_NOT_DEPLOYED (match-properties/notify-agent not deployed); F026 marked PARTIAL (no Google OAuth function deployed). Logged TD-011. Not yet verified: column-level diff of business tables (#7)."
     },
     {
       "date": "2026-06-21",

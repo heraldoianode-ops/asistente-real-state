@@ -10,7 +10,7 @@
     "backend": "Supabase Edge Functions (Deno)",
     "database": "Supabase — mh-systems-platform (schema: asistente_real_state)",
     "auth": "Supabase Auth + @supabase/ssr",
-    "hosting": "Netlify (dashboard) + Supabase (DB + Edge Fn) + Hetzner CX11 (WhatsApp Gateway)",
+    "hosting": "Netlify (dashboard) + Supabase (DB + Edge Functions incl. wa-gateway). Hetzner CX11 build (whatsapp-gateway/) is an equivalent standalone alternative, not the deployed path.",
     "repo": "github.com/heraldoianode-ops/asistente-real-state",
     "branch_main": "main",
     "branch_dev": "claude/charming-feynman-gqdblz",
@@ -22,7 +22,9 @@
     "supabase_url": "https://nehfrtedwcmdlmbulhef.supabase.co",
     "db_schema": "asistente_real_state",
     "netlify_base": "dashboard",
-    "wa_gateway": "Hetzner CX11 — $4/month"
+    "wa_gateway": "Supabase Edge Function 'wa-gateway' (verify_jwt=false). Hetzner CX11 build available but not the deployed path.",
+    "edge_functions_deployed": ["create-agent", "wa-gateway"],
+    "edge_functions_in_repo_not_deployed": ["match-properties", "notify-agent"]
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
