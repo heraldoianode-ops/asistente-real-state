@@ -15,6 +15,7 @@
     { "id": "whatsapp", "name": "WhatsApp Cloud API", "status": "active", "host": "graph.facebook.com" },
     { "id": "anthropic", "name": "Anthropic Claude", "status": "optional", "host": "api.anthropic.com" },
     { "id": "openai", "name": "OpenAI", "status": "optional", "host": "api.openai.com" },
+    { "id": "gemini", "name": "Google Gemini (text-embedding-004, 768-dim)", "status": "active", "host": "generativelanguage.googleapis.com", "used_by": "embed-property", "secret": "GEMINI_API_KEY", "note": "Embeddings for F021. Replaces internal Ollama (unreachable from serverless)." },
     { "id": "google_drive", "name": "Google Drive", "status": "active", "host": "drive.google.com" },
     { "id": "resend", "name": "Resend Email", "status": "optional", "host": "api.resend.com" },
     { "id": "sentry", "name": "Sentry", "status": "active", "host": "sentry.io" },

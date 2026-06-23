@@ -1,23 +1,30 @@
 {
   "sessions": [
     {
+      "date": "2026-06-23",
+      "summary": "Edge Function + column-level repo↔prod audit (v0.8.5). Found prod runs only create-agent + wa-gateway; vendored the wa-gateway Edge Function into the repo. Column-by-column diff of all 15 tables: only missing column was events.google_event_id → added to migration 07 (users/app_settings/avatar_url already in migrations 04/05); TD-010 schema-diff closed. Fixed TD-012 (wa-gateway /buscar filtered non-existent properties.is_active → status='available', redeployed v6). Chose to fix the whole F021 chain: corrected RPC find_cross_agent_matches (vector(768), assigned_agent_id, preference_embedding, public on search_path, buyer/both) and applied to prod; fixed match-properties columns (v1) and notify-agent→wa-gateway service-role internal auth (v1 + wa-gateway v6); TD-013 resolved. Built+deployed embed-property v1 (Google text-embedding-004, 768-dim) which writes embeddings and fires match-properties (TD-014). All deploys validated except live Gemini call (no API key in session). Health 90.",
+      "nodes_touched": ["8.11"],
+      "commits": [
+        "chore(edge): vendor wa-gateway from prod + correct F021/F026 status (TD-011)",
+        "chore(audit): column-level repo↔prod diff — add events.google_event_id (TD-012)",
+        "fix(wa-gateway): /buscar filters properties.status, redeploy to prod (TD-012)",
+        "docs(audit): F021 matching chain is broken vs real schema (TD-013)",
+        "feat(f021): fix + deploy cross-agent matching chain (TD-013)",
+        "feat(f021): embed-property pipeline (Google text-embedding-004) (TD-014)"
+      ],
+      "followup": "F021 go-live needs config only (no code): (1) set Supabase Edge secret GEMINI_API_KEY; (2) set WHATSAPP_GATEWAY_URL=${SUPABASE_URL}/functions/v1/wa-gateway; (3) wire dashboard to POST embed-property {property_id|client_id} on create/edit; then validate end-to-end. Still open: F026 Google OAuth flow Edge Function (only schema exists) — remaining TD-011; TD-010 migration-discipline governance. Prod project = mh-systems-platform/nehfrtedwcmdlmbulhef, schema asistente_real_state."
+    },
+    {
       "date": "2026-06-22",
       "summary": "SALUD + AUDITAR PROYECTO. Live repo↔prod coherence audit. Resolved TD-008 as a false alarm: prod trigger enforce_user_id_equals_auth forces users.id=auth_user_id, so id==auth_user_id==auth.uid() for all; scoping via current_agent_id(). Found major drift: prod RLS consolidated + helpers + set_updated_at triggers + an undocumented Google Calendar/OAuth integration (agent_google_credentials, google_oauth_states) — none in repo. Captured live state in idempotent migration 07_reconcile_with_prod.sql (no-op on prod; nothing run against prod). Logged F026, D017/D018, TD-009 (resolved) + TD-010 (governance, open). Wrote docs/AUDIT-2026-06-22.md. v0.8.4, health 97.",
       "nodes_touched": ["8.10"],
-      "commits": ["chore(audit): reconcile repo with prod schema/RLS + capture Google integration (TD-008/009)", "chore(edge): vendor wa-gateway from prod + correct F021/F026 status (TD-011)", "chore(audit): column-level repo↔prod diff — add events.google_event_id, log TD-012"],
-      "followup": "Column-level diff repo↔prod COMPLETE (prod=mh-systems-platform/nehfrtedwcmdlmbulhef, schema asistente_real_state, 15 tables). Only missing column was events.google_event_id → added to migration 07 (users/app_settings/avatar_url already covered by migrations 04/05). Found prod bug TD-012: wa-gateway /buscar filters properties.is_active which does not exist. Open decisions for user: (a) fix+redeploy wa-gateway /buscar [TD-012]; (b) deploy match-properties/notify-agent for F021, implement Google OAuth fn for F026 [TD-011] — all touch prod."
+      "commits": ["chore(audit): reconcile repo with prod schema/RLS + capture Google integration (TD-008/009)"]
     },
     {
       "date": "2026-06-21",
       "summary": "TD-006 resolved: archived legacy FastAPI backend + old gateway + docker-compose to remote branch archive/legacy-fastapi-backend (@a41aba6; tag push blocked by proxy 403). Cleaned dead api.ts, next.config rewrite, README. Verified initial admin abuelo.pro@gmail.com already exists (Auth + profile role=admin, has signed in) — no action. TD-007 resolved: added auth_user_id + dropped hashed_password in migration 04 (a clean build failed at 05, which references users.auth_user_id; verified prod already matches). Found & logged TD-008 (MEDIUM): RLS keys off users.id=auth.uid() but app links via auth_user_id — latent (only admin exists, whose id==auth_user_id). v0.8.3.",
       "nodes_touched": ["8.9"],
       "commits": ["chore(td-006): archive legacy FastAPI backend + docker-compose cleanup", "fix(db): reconcile users schema with Supabase Auth (TD-007)"]
-    },
-    {
-      "date": "2025-06-08",
-      "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
-      "nodes_touched": ["all"],
-      "commits": ["feat: initial migration from architect-ai-framework"]
     }
   ]
 }

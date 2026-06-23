@@ -4,7 +4,7 @@
   "dimensions": {
     "debt": { "critical": 0, "high": 0, "medium": 2, "low": 1 },
     "alerts": [
-      "TD-014 (MEDIUM): F021 matching logic deployed+fixed, but no 768-dim embedding pipeline reachable from serverless → no matches produced. Needs embedding-provider decision",
+      "TD-014 (MEDIUM): embed-property deployed (Google text-embedding-004, 768-dim). F021 go-live pending config only: set GEMINI_API_KEY + WHATSAPP_GATEWAY_URL, wire dashboard to call embed-property. Not validated end-to-end (no API key in session)",
       "TD-011 (MEDIUM): only remaining deploy gap is the Google OAuth function (F026 schema-only)",
       "TD-010 (LOW): governance only — repo↔prod schema diff DONE; enforce migration discipline going forward"
     ]

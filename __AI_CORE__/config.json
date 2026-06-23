@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.8.4",
+    "version": "0.8.5",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-22T00:00:00Z"
+    "last_updated": "2026-06-23T00:00:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -23,12 +23,12 @@
     "db_schema": "asistente_real_state",
     "netlify_base": "dashboard",
     "wa_gateway": "Supabase Edge Function 'wa-gateway' (verify_jwt=false). Hetzner CX11 build available but not the deployed path.",
-    "edge_functions_deployed": ["create-agent", "wa-gateway"],
-    "edge_functions_in_repo_not_deployed": ["match-properties", "notify-agent"]
+    "edge_functions_deployed": ["create-agent", "wa-gateway", "match-properties", "notify-agent", "embed-property"],
+    "embeddings": "Google text-embedding-004 (768-dim) via Gemini API in embed-property; requires secret GEMINI_API_KEY"
   },
   "roadmap": {
     "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "AUDITED — repo↔prod reconciled (v0.8.4); production live (solernou.netlify.app)",
+    "current_node": "Edge Function + column-level audit (v0.8.5): wa-gateway vendored; /buscar fixed; F021 chain fixed+deployed; embedding pipeline (embed-property) built — pending GEMINI_API_KEY + dashboard wiring",
     "progress_pct": 100,
     "nodes": [
       { "id": "8.1", "name": "Dashboard → supabase-js direct", "status": "complete" },
@@ -40,13 +40,18 @@
       { "id": "8.7", "name": "Debt repair — 5 issues", "status": "complete" },
       { "id": "8.8", "name": "Production deploy fixes (TS build, supabase-config fallback, auth.tsx recursion, favicon) + F025 export", "status": "complete" },
       { "id": "8.9", "name": "TD-006 — archive legacy FastAPI backend + old gateway + docker-compose (tag legacy-fastapi-backend)", "status": "complete" },
-      { "id": "8.10", "name": "Audit + repo↔prod reconciliation (migration 07): RLS, triggers, current_agent_id, Google integration F026; TD-007/008/009 closed", "status": "complete" }
+      { "id": "8.10", "name": "Audit + repo↔prod reconciliation (migration 07): RLS, triggers, current_agent_id, Google integration F026; TD-007/008/009 closed", "status": "complete" },
+      { "id": "8.11", "name": "Edge Function + column-level audit: vendor wa-gateway; fix /buscar (TD-012); events.google_event_id (TD-010 diff); fix+deploy F021 chain RPC/match-properties/notify-agent (TD-013); build+deploy embed-property pipeline (TD-014, Google text-embedding-004)", "status": "complete" }
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["TD-010 — keep migration discipline; re-audit repo↔prod periodically"],
+    "pending_tomorrow": [
+      "F021 go-live config (TD-014): set secret GEMINI_API_KEY; set WHATSAPP_GATEWAY_URL=${SUPABASE_URL}/functions/v1/wa-gateway; wire dashboard to call embed-property on property/client create/edit; then validate end-to-end",
+      "F026: implement+deploy the Google OAuth flow Edge Function (only schema exists) — remaining part of TD-011",
+      "TD-010 — keep migration discipline; re-audit repo↔prod periodically"
+    ],
     "bugs_known": [],
-    "last_snap": "2026-06-22T00:00:00Z"
+    "last_snap": "2026-06-23T00:00:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
