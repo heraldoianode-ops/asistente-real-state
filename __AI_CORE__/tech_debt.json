@@ -67,8 +67,8 @@
       "detected": "2026-06-22",
       "status": "OPEN",
       "affected": ["process"],
-      "description_es": "La causa raíz de TD-007/008/009 fue aplicar DDL/RLS y features directo en Supabase sin migración versionada (viola R7). Riesgo recurrente de drift.",
-      "description_en": "Root cause of TD-007/008/009 was applying DDL/RLS and features directly in Supabase without a versioned migration (violates R7). Recurring drift risk.",
+      "description_es": "La causa raíz de TD-007/008/009 fue aplicar DDL/RLS y features directo en Supabase sin migración versionada (viola R7). Riesgo recurrente de drift. Diff columna-por-columna repo↔prod completado 2026-06-23 (15 tablas en asistente_real_state): única columna faltante era events.google_event_id → añadida en migración 07; resto del esquema coincide. Pendiente: gobernanza de proceso.",
+      "description_en": "Root cause of TD-007/008/009 was applying DDL/RLS and features directly in Supabase without a versioned migration (violates R7). Recurring drift risk. Column-level repo↔prod diff completed 2026-06-23 (15 tables in asistente_real_state): only missing column was events.google_event_id → added in migration 07; rest of the schema matches. Remaining: process governance.",
       "proposed_fix_es": "Disciplina: toda evolución de esquema/RLS entra primero como migración en db/migrations/ y luego se aplica; auditoría periódica repo↔prod.",
       "proposed_fix_en": "Discipline: every schema/RLS change lands first as a migration in db/migrations/ then is applied; periodic repo↔prod audit."
     },
@@ -83,6 +83,18 @@
       "description_en": "Prod deploys only create-agent + wa-gateway. (1) wa-gateway was not in the repo → ADDED at supabase/functions/wa-gateway/index.ts. (2) match-properties and notify-agent exist in repo but are NOT deployed → F021 (cross-agent matches) is not live. (3) No Edge Function implements the Google OAuth flow → F026 is schema-only (partial).",
       "proposed_fix_es": "Decidir por feature: desplegar match-properties/notify-agent si F021 debe estar viva; implementar+desplegar la función OAuth de Google para completar F026; o marcar explícitamente como diferidas.",
       "proposed_fix_en": "Decide per feature: deploy match-properties/notify-agent if F021 should be live; implement+deploy the Google OAuth function to complete F026; or explicitly defer them."
+    },
+    {
+      "id": "TD-012",
+      "title": "wa-gateway /buscar queries non-existent properties.is_active → search errors",
+      "severity": "MEDIUM",
+      "detected": "2026-06-23",
+      "status": "OPEN",
+      "affected": ["supabase/functions/wa-gateway/index.ts"],
+      "description_es": "El comando /buscar filtra properties con .eq('is_active', true), pero la tabla properties NO tiene columna is_active (usa 'status', default 'available'). PostgREST devuelve error → el bot responde 'Error al buscar'. La verificación de número registrado (whatsapp_numbers.is_active, que sí existe) funciona; la búsqueda de propiedades no. Detectado en el diff columna-por-columna repo↔prod. El código del repo es fiel a prod (mismo bug desplegado).",
+      "description_en": "The /buscar command filters properties with .eq('is_active', true), but the properties table has NO is_active column (it uses 'status', default 'available'). PostgREST errors → the bot replies 'Error al buscar'. The registered-number check (whatsapp_numbers.is_active, which does exist) works; property search does not. Found via the column-level repo↔prod diff. Repo code is faithful to prod (same deployed bug).",
+      "proposed_fix_es": "Reemplazar .eq('is_active', true) por .eq('status', 'available') en la consulta a properties y redesplegar wa-gateway (toca prod → requiere OK del usuario).",
+      "proposed_fix_en": "Replace .eq('is_active', true) with .eq('status', 'available') in the properties query and redeploy wa-gateway (touches prod → requires user OK)."
     }
   ]
 }

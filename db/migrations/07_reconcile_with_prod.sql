@@ -16,6 +16,13 @@
 
 SET search_path = asistente_real_state, public;
 
+-- ── Table-shape reconciliation (column-level repo↔prod audit, 2026-06-23) ─────
+-- Most of prod's table shape is already declared earlier: users.auth_user_id /
+-- DROP hashed_password (migration 04), users.avatar_url + app_settings
+-- (migration 05). The only column still missing from the repo was on events:
+-- Google Calendar sync stores the remote event id here.
+ALTER TABLE events ADD COLUMN IF NOT EXISTS google_event_id text;
+
 -- ── Identity enforcement: users.id := auth_user_id on insert ──────────────────
 CREATE OR REPLACE FUNCTION enforce_user_id_equals_auth()
 RETURNS trigger LANGUAGE plpgsql AS $$

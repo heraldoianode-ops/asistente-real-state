@@ -1,11 +1,12 @@
 {
   "status": "HEALTHY",
-  "score": 90,
+  "score": 88,
   "dimensions": {
-    "debt": { "critical": 0, "high": 0, "medium": 1, "low": 1 },
+    "debt": { "critical": 0, "high": 0, "medium": 2, "low": 1 },
     "alerts": [
+      "TD-012 (MEDIUM): wa-gateway /buscar filters properties.is_active (no such column) → property search errors. Fix: status='available' + redeploy (needs OK)",
       "TD-011 (MEDIUM): Edge Function drift — F021 (match-properties/notify-agent) not deployed; F026 Google OAuth function missing (schema-only)",
-      "TD-010 (LOW): enforce migration discipline; periodic repo↔prod audit"
+      "TD-010 (LOW): governance only — column-level repo↔prod diff DONE (events.google_event_id added); enforce migration discipline going forward"
     ]
   },
   "last_check": "2026-06-22",
