@@ -98,6 +98,18 @@
       "description_en": "The /buscar command filters properties with .eq('is_active', true), but the properties table has NO is_active column (it uses 'status', default 'available'). PostgREST errors → the bot replies 'Error al buscar'. The registered-number check (whatsapp_numbers.is_active, which does exist) works; property search does not. Found via the column-level repo↔prod diff. Repo code is faithful to prod (same deployed bug).",
       "proposed_fix_es": "Reemplazar .eq('is_active', true) por .eq('status', 'available') en la consulta a properties y redesplegar wa-gateway (toca prod → requiere OK del usuario).",
       "proposed_fix_en": "Replace .eq('is_active', true) with .eq('status', 'available') in the properties query and redeploy wa-gateway (touches prod → requires user OK)."
+    },
+    {
+      "id": "TD-013",
+      "title": "F021 cross-agent matching chain is broken against the real schema (not just undeployed)",
+      "severity": "MEDIUM",
+      "detected": "2026-06-23",
+      "status": "OPEN",
+      "affected": ["db/migrations/06_rpc_find_cross_agent_matches.sql", "supabase/functions/match-properties/index.ts", "supabase/functions/notify-agent/index.ts"],
+      "description_es": "Auditoría F021: deshacer la suposición 'código listo, solo falta deploy'. Defectos encadenados: (1) RPC find_cross_agent_matches NO existe en prod, y la def del repo (mig 06) no compila contra el esquema real: declara p_embedding vector(1536) pero los embeddings son vector(768); usa clients.agent_id (no existe → es assigned_agent_id) y clients.embedding (no existe → es preference_embedding). (2) match-properties inserta en cross_agent_matches columnas inexistentes: client_id→buyer_client_id, client_agent_id→buyer_agent_id, similarity_score→match_score, explanation→match_explanation (y el dedup .eq('client_id') igual). (3) notify-agent hace POST a wa-gateway /send SIN header Authorization, pero /send exige un JWT de usuario → 401. (4) No hay pipeline que pueble properties.embedding / clients.preference_embedding, y properties está vacía. Conclusión: desplegar tal cual = funciones que dan 500.",
+      "description_en": "F021 audit: debunks the 'code ready, just needs deploy' assumption. Chained defects: (1) RPC find_cross_agent_matches does NOT exist in prod, and the repo def (mig 06) won't compile against the real schema: declares p_embedding vector(1536) but embeddings are vector(768); uses clients.agent_id (missing → it's assigned_agent_id) and clients.embedding (missing → it's preference_embedding). (2) match-properties inserts non-existent cross_agent_matches columns: client_id→buyer_client_id, client_agent_id→buyer_agent_id, similarity_score→match_score, explanation→match_explanation (dedup .eq('client_id') too). (3) notify-agent POSTs to wa-gateway /send WITHOUT an Authorization header, but /send requires a user JWT → 401. (4) No pipeline populates properties.embedding / clients.preference_embedding, and properties is empty. Conclusion: deploying as-is = functions that 500.",
+      "proposed_fix_es": "Trabajo real de implementación (no un deploy): corregir mig 06 (vector(768), assigned_agent_id, preference_embedding) y reaplicar; corregir nombres de columnas en match-properties; resolver auth entre funciones (service-role token o ruta interna) en notify-agent; definir el pipeline de embeddings y datos de prueba. Recién entonces desplegar.",
+      "proposed_fix_en": "Real implementation work (not a deploy): fix mig 06 (vector(768), assigned_agent_id, preference_embedding) and re-apply; fix column names in match-properties; resolve function-to-function auth (service-role token or internal route) in notify-agent; define the embedding pipeline and seed data. Only then deploy."
     }
   ]
 }
