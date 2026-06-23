@@ -133,8 +133,13 @@ Deno.serve(async (req) => {
   if (sub === 'send') {
     const token = req.headers.get('Authorization')?.replace('Bearer ', '')
     if (!token) return json({ error: 'Unauthorized' }, 401)
-    const { data: { user } } = await supabase.auth.getUser(token)
-    if (!user) return json({ error: 'Unauthorized' }, 401)
+    // Trusted internal callers (e.g. notify-agent) authenticate with the service-role key;
+    // everyone else must present a valid Supabase user JWT.
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    if (!(serviceKey && token === serviceKey)) {
+      const { data: { user } } = await supabase.auth.getUser(token)
+      if (!user) return json({ error: 'Unauthorized' }, 401)
+    }
     let payload: { to?: string; message?: string }
     try { payload = await req.json() } catch { return json({ error: 'Invalid JSON' }, 400) }
     const { to, message } = payload ?? {}

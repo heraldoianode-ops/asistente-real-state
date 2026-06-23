@@ -13,10 +13,10 @@ Deno.serve(async (req) => {
     const { data: matches } = await supabase.rpc('find_cross_agent_matches', { p_property_id: property_id, p_embedding: prop.embedding, p_listing_agent_id: prop.listing_agent_id, p_threshold: 0.72 })
     const results = []
     for (const match of (matches ?? [])) {
-      const { data: existing } = await supabase.from('cross_agent_matches').select('id').eq('property_id', property_id).eq('client_id', match.client_id).maybeSingle()
+      const { data: existing } = await supabase.from('cross_agent_matches').select('id').eq('property_id', property_id).eq('buyer_client_id', match.client_id).maybeSingle()
       if (existing) continue
       const explanation = `Coincidencia: propiedad en ${prop.neighborhood??'zona'} (${prop.bedrooms??'?'} amb, $${prop.price??'?'}) compatible con cliente ${match.client_name} del agente ${match.agent_name}. Similitud: ${(match.similarity*100).toFixed(0)}%.`
-      const { data: inserted } = await supabase.from('cross_agent_matches').insert({ property_id, client_id: match.client_id, listing_agent_id: prop.listing_agent_id, client_agent_id: match.agent_id, similarity_score: match.similarity, explanation, status: 'pending' }).select('id').single()
+      const { data: inserted } = await supabase.from('cross_agent_matches').insert({ property_id, listing_agent_id: prop.listing_agent_id, buyer_client_id: match.client_id, buyer_agent_id: match.agent_id, buyer_client_name: match.client_name, match_score: match.similarity, match_explanation: explanation, status: 'pending' }).select('id').single()
       if (inserted) {
         results.push({ match_id: inserted.id, client_name: match.client_name, agent_name: match.agent_name })
         const gw = Deno.env.get('WHATSAPP_GATEWAY_URL')

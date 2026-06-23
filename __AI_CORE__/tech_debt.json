@@ -79,10 +79,10 @@
       "detected": "2026-06-22",
       "status": "OPEN",
       "affected": ["supabase/functions/"],
-      "description_es": "Prod despliega solo create-agent + wa-gateway. (1) wa-gateway no estaba en el repo → AÑADIDO en supabase/functions/wa-gateway/index.ts. (2) match-properties y notify-agent existen en el repo pero NO están desplegadas → F021 (matches cross-agent) no está viva. (3) No existe Edge Function del flujo OAuth de Google → F026 es solo esquema (parcial).",
-      "description_en": "Prod deploys only create-agent + wa-gateway. (1) wa-gateway was not in the repo → ADDED at supabase/functions/wa-gateway/index.ts. (2) match-properties and notify-agent exist in repo but are NOT deployed → F021 (cross-agent matches) is not live. (3) No Edge Function implements the Google OAuth flow → F026 is schema-only (partial).",
-      "proposed_fix_es": "Decidir por feature: desplegar match-properties/notify-agent si F021 debe estar viva; implementar+desplegar la función OAuth de Google para completar F026; o marcar explícitamente como diferidas.",
-      "proposed_fix_en": "Decide per feature: deploy match-properties/notify-agent if F021 should be live; implement+deploy the Google OAuth function to complete F026; or explicitly defer them."
+      "description_es": "Prod desplegaba solo create-agent + wa-gateway. (1) wa-gateway no estaba en el repo → AÑADIDO. (2) match-properties y notify-agent → DESPLEGADAS 2026-06-23 (v1; lógica F021 corregida, ver TD-013); resta el pipeline de embeddings (TD-014). (3) No existe Edge Function del flujo OAuth de Google → F026 sigue siendo solo esquema (parcial). Único pendiente de despliegue: la función OAuth de Google.",
+      "description_en": "Prod previously deployed only create-agent + wa-gateway. (1) wa-gateway was not in the repo → ADDED. (2) match-properties and notify-agent → DEPLOYED 2026-06-23 (v1; F021 logic fixed, see TD-013); embedding pipeline remains (TD-014). (3) No Edge Function implements the Google OAuth flow → F026 stays schema-only (partial). Only remaining deploy gap: the Google OAuth function.",
+      "proposed_fix_es": "Implementar+desplegar la función OAuth de Google para completar F026, o marcarla explícitamente como diferida.",
+      "proposed_fix_en": "Implement+deploy the Google OAuth function to complete F026, or explicitly defer it."
     },
     {
       "id": "TD-012",
@@ -104,12 +104,28 @@
       "title": "F021 cross-agent matching chain is broken against the real schema (not just undeployed)",
       "severity": "MEDIUM",
       "detected": "2026-06-23",
-      "status": "OPEN",
+      "status": "RESOLVED",
+      "resolved": "2026-06-23",
+      "resolution_es": "Corregido y desplegado: (1) RPC find_cross_agent_matches reescrito (vector(768), clients.assigned_agent_id, clients.preference_embedding, search_path incluye public para el operador <=>, filtro client_type buyer/both) y aplicado a prod (smoke test: 0 filas, sin error). (2) match-properties v1 con columnas correctas (buyer_client_id/buyer_agent_id/match_score/match_explanation/buyer_client_name). (3) notify-agent v1 envía Authorization service-role a wa-gateway /send, y wa-gateway v6 acepta la service-role key como caller interno. Remanente (datos/infra, no código) → TD-014.",
+      "resolution_en": "Fixed and deployed: (1) RPC find_cross_agent_matches rewritten (vector(768), clients.assigned_agent_id, clients.preference_embedding, search_path includes public for the <=> operator, client_type buyer/both filter) and applied to prod (smoke test: 0 rows, no error). (2) match-properties v1 with correct columns (buyer_client_id/buyer_agent_id/match_score/match_explanation/buyer_client_name). (3) notify-agent v1 sends a service-role Authorization to wa-gateway /send, and wa-gateway v6 accepts the service-role key as an internal caller. Remaining (data/infra, not code) → TD-014.",
       "affected": ["db/migrations/06_rpc_find_cross_agent_matches.sql", "supabase/functions/match-properties/index.ts", "supabase/functions/notify-agent/index.ts"],
       "description_es": "Auditoría F021: deshacer la suposición 'código listo, solo falta deploy'. Defectos encadenados: (1) RPC find_cross_agent_matches NO existe en prod, y la def del repo (mig 06) no compila contra el esquema real: declara p_embedding vector(1536) pero los embeddings son vector(768); usa clients.agent_id (no existe → es assigned_agent_id) y clients.embedding (no existe → es preference_embedding). (2) match-properties inserta en cross_agent_matches columnas inexistentes: client_id→buyer_client_id, client_agent_id→buyer_agent_id, similarity_score→match_score, explanation→match_explanation (y el dedup .eq('client_id') igual). (3) notify-agent hace POST a wa-gateway /send SIN header Authorization, pero /send exige un JWT de usuario → 401. (4) No hay pipeline que pueble properties.embedding / clients.preference_embedding, y properties está vacía. Conclusión: desplegar tal cual = funciones que dan 500.",
       "description_en": "F021 audit: debunks the 'code ready, just needs deploy' assumption. Chained defects: (1) RPC find_cross_agent_matches does NOT exist in prod, and the repo def (mig 06) won't compile against the real schema: declares p_embedding vector(1536) but embeddings are vector(768); uses clients.agent_id (missing → it's assigned_agent_id) and clients.embedding (missing → it's preference_embedding). (2) match-properties inserts non-existent cross_agent_matches columns: client_id→buyer_client_id, client_agent_id→buyer_agent_id, similarity_score→match_score, explanation→match_explanation (dedup .eq('client_id') too). (3) notify-agent POSTs to wa-gateway /send WITHOUT an Authorization header, but /send requires a user JWT → 401. (4) No pipeline populates properties.embedding / clients.preference_embedding, and properties is empty. Conclusion: deploying as-is = functions that 500.",
       "proposed_fix_es": "Trabajo real de implementación (no un deploy): corregir mig 06 (vector(768), assigned_agent_id, preference_embedding) y reaplicar; corregir nombres de columnas en match-properties; resolver auth entre funciones (service-role token o ruta interna) en notify-agent; definir el pipeline de embeddings y datos de prueba. Recién entonces desplegar.",
       "proposed_fix_en": "Real implementation work (not a deploy): fix mig 06 (vector(768), assigned_agent_id, preference_embedding) and re-apply; fix column names in match-properties; resolve function-to-function auth (service-role token or internal route) in notify-agent; define the embedding pipeline and seed data. Only then deploy."
+    },
+    {
+      "id": "TD-014",
+      "title": "No embedding pipeline reachable from serverless → F021 produces no matches",
+      "severity": "MEDIUM",
+      "detected": "2026-06-23",
+      "status": "OPEN",
+      "blocks": ["F021"],
+      "affected": ["supabase/functions/", "db (properties.embedding, clients.preference_embedding)"],
+      "description_es": "Los embeddings son vector(768), dimensión de Ollama nomic-embed-text (servicio 'ollama:11434', host interno del stack docker/Celery archivado en TD-006). Desde Edge Functions serverless ese host NO es alcanzable, así que nada puebla properties.embedding ni clients.preference_embedding → find_cross_agent_matches no encuentra candidatos y match-properties devuelve []. Además falta el disparador que llame a match-properties al crear/embeddear una propiedad, y la env var WHATSAPP_GATEWAY_URL (=${SUPABASE_URL}/functions/v1/wa-gateway) para que salga la notificación WhatsApp.",
+      "description_en": "Embeddings are vector(768), the dimension of Ollama nomic-embed-text (service 'ollama:11434', the internal host of the archived docker/Celery stack from TD-006). From serverless Edge Functions that host is NOT reachable, so nothing populates properties.embedding or clients.preference_embedding → find_cross_agent_matches finds no candidates and match-properties returns []. Also missing: the trigger that calls match-properties when a property is created/embedded, and the WHATSAPP_GATEWAY_URL env var (=${SUPABASE_URL}/functions/v1/wa-gateway) so the WhatsApp push can fire.",
+      "proposed_fix_es": "Decisión de proveedor de embeddings 768-dim alcanzable por HTTPS (recomendado: Google text-embedding-004, 768, ya hay integración Google; alt: Ollama hosteado público u OpenAI con otra dimensión → migrar columnas). Luego: función embed-on-write (trigger o llamada del dashboard) que escribe el vector y dispara match-properties; setear WHATSAPP_GATEWAY_URL.",
+      "proposed_fix_en": "Pick a 768-dim embedding provider reachable over HTTPS (recommended: Google text-embedding-004, 768, Google is already integrated; alt: a public hosted Ollama, or OpenAI at a different dim → migrate columns). Then: an embed-on-write function (trigger or dashboard call) that writes the vector and fires match-properties; set WHATSAPP_GATEWAY_URL."
     }
   ]
 }

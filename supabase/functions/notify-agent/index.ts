@@ -12,7 +12,8 @@ Deno.serve(async (req) => {
     const gatewayUrl = Deno.env.get('WHATSAPP_GATEWAY_URL')
     if (!gatewayUrl) return new Response(JSON.stringify({ ok: false, reason: 'WHATSAPP_GATEWAY_URL not set' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     const message = `🏠 *Nueva coincidencia*\n\n${explanation}\n\n_Ingresá al dashboard para ver los detalles._`
-    const res = await fetch(`${gatewayUrl}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: waNumber.phone_number, message }) })
+    // Service-to-service call: wa-gateway /send accepts the service-role key as a trusted internal caller.
+    const res = await fetch(`${gatewayUrl}/send`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` }, body: JSON.stringify({ to: waNumber.phone_number, message }) })
     return new Response(JSON.stringify({ ok: res.ok, match_id }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (err) {
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : 'Internal error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
