@@ -96,7 +96,7 @@ async function handleIncoming(body: WebhookBody | null) {
       .from('properties')
       .select('id,address,neighborhood,bedrooms,price,operation_type')
       .or(`address.ilike.%${query}%,neighborhood.ilike.%${query}%`)
-      .eq('is_active', true)
+      .eq('status', 'available')
       .limit(5)
     if (searchError) throw searchError
     if (!results?.length) { await sendMessage(from, `Sin resultados para "${rawQuery}".`); return }
