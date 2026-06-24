@@ -110,9 +110,9 @@ export default function AnalyticsPage() {
   const maxFunnel = Math.max(...funnel.map(f => f.count), 1)
 
   return (
-    <div className="flex h-screen bg-[hsl(var(--background))]">
+    <div className="flex h-screen pt-14 md:pt-0 bg-[hsl(var(--background))]">
       <Sidebar role={user?.role} />
-      <main className="flex-1 overflow-auto p-6">
+      <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="mb-6">
           <h1 className="text-xl font-bold text-[hsl(var(--foreground))]">Analytics</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Resumen de actividad e inteligencia conversacional</p>
