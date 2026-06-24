@@ -1,32 +1,26 @@
-# Asistente Real State
+# VALKIRIA RS
 
-PropTech AI platform — WhatsApp-first real estate assistant with LangChain ReAct agents, pgvector semantic search, XGBoost lead scoring, and a Next.js 14 dashboard.
+PropTech AI platform — WhatsApp-first real estate assistant with semantic search (pgvector), Supabase Edge Functions, and a Next.js 14 dashboard.
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | FastAPI + Python 3.12 |
-| Database | PostgreSQL 16 + pgvector |
-| Cache / Sessions | Redis 7 |
-| LLM (local-first) | Ollama (llama3) |
-| Agent framework | LangChain ReAct |
-| ML | XGBoost + LightGBM + SHAP |
-| Task queue | Celery + Celery Beat |
-| WhatsApp gateway | Node.js / Express |
-| Dashboard | Next.js 14 + Tailwind |
-| Infra | Docker Compose |
+| Frontend | Next.js 14 + Tailwind CSS + Radix UI |
+| Backend | Supabase Edge Functions (Deno) |
+| Database | Supabase PostgreSQL + pgvector (768-dim) |
+| Auth | Supabase Auth + @supabase/ssr |
+| WhatsApp gateway | Node.js / Express (Hetzner CX11) |
+| Hosting | Netlify (dashboard) + Supabase (DB + Edge Fn) |
 
 ## Roadmap
 
-| Phase | Node | Status |
+| Phase | Description | Status |
 |---|---|---|
-| 1 | Core backend + DB schema | COMPLETE |
-| 2 | ReAct agent + WhatsApp gateway | COMPLETE |
-| 3 | ML pipeline (XGBoost lead scoring) | COMPLETE |
-| 4 | RAG + semantic property search | COMPLETE |
-| 5 | Analytics dashboard + scraping | COMPLETE |
-| 6 | Meta-learning + production hardening | COMPLETE |
+| 1–6 | Core backend, agents, ML, RAG, analytics, hardening | COMPLETE |
+| 7 | Multi-tenant schema + RBAC + privacy (RLS) | COMPLETE |
+| 8 | Netlify + Supabase Native + Design System | COMPLETE (v0.8.2) |
+| 9 | Pipeline de Contexto Unificado y Multiplataforma | IN PROGRESS |
 
 ## Quick start
 
@@ -36,5 +30,5 @@ cp .env.example .env
 docker compose up -d
 ```
 
-Backend: http://localhost:8000/docs  
 Dashboard: http://localhost:3001
+WhatsApp Gateway: http://localhost:3000

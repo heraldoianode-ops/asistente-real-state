@@ -4,7 +4,7 @@
     { "id": "P002", "active": true, "rule": "All new endpoints require JWT auth unless explicitly public" },
     { "id": "P003", "active": true, "rule": "AI_POLICY env var controls LLM selection — never hardcode model" },
     { "id": "P004", "active": true, "rule": "pgvector queries must have ivfflat index and cosine distance" },
-    { "id": "P005", "active": true, "rule": "Celery tasks must be idempotent" },
+    { "id": "P005", "active": false, "rule": "Celery tasks must be idempotent", "note": "Celery removed in Nodo 9.1" },
     { "id": "P006", "active": true, "rule": "RAG chunks: size=1800, overlap=360 (20%)" }
   ]
 }
