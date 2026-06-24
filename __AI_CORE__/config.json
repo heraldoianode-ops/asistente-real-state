@@ -29,8 +29,8 @@
   },
   "roadmap": {
     "current_phase": "Fase 9 — Pipeline de Contexto Unificado y Multiplataforma",
-    "current_node": "9.3 — Optimización de Matching y Analytics Integrado",
-    "progress_pct": 50,
+    "current_node": "9.4 — Interfaz Multiplataforma Total (PC + Android)",
+    "progress_pct": 75,
     "completed_phases": [
       {
         "phase": "Fase 8 — Netlify + Supabase Native + Design System",
@@ -70,11 +70,14 @@
       {
         "id": "9.3",
         "name": "Optimización de Matching y Analytics Integrado",
-        "status": "pending",
+        "status": "complete",
+        "completed_at": "2026-06-24",
         "steps": [
-          "match-properties Edge Fn → incluir contexto dinámico de resúmenes WA",
-          "Inyectar objeciones/resumen en XGBoost lead scoring (SHAP)",
-          "Plotly analytics: funnel, forecast y timeline con interacciones WA procesadas"
+          "RPC find_cross_agent_matches_v2: pref+conv embeddings, weighted 40/60, threshold 0.65 — DONE",
+          "match-properties Edge Fn upgraded to v2 RPC + conversation context tag — DONE",
+          "score_lead RPC: rule-based scoring (6 factors, 100pts max) replaces XGBoost — DONE",
+          "Analytics page: 6 KPI cards + lead funnel chart + WA interaction/summary counts — DONE",
+          "Migration 08 applied (v2 RPC + score_lead function) — DONE"
         ]
       },
       {
@@ -90,7 +93,7 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Ejecutar Nodo 9.3 — Optimización de Matching y Analytics Integrado"],
+    "pending_tomorrow": ["Ejecutar Nodo 9.4 — Interfaz Multiplataforma Total (PC + Android)"],
     "bugs_known": [],
     "last_snap": "2026-06-24T00:00:00Z"
   },
