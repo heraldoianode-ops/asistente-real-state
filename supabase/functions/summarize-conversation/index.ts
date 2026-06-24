@@ -195,7 +195,7 @@ Deno.serve(async (req) => {
       await supabase.from('clients').update({ lead_stage: newStage }).eq('id', client_id)
     }
 
-    // Generate embedding for RAG indexing
+    // Generate embedding text for semantic search
     const embeddingText = [
       `Client: ${client.full_name}`,
       `Preferences: ${JSON.stringify(summaryJson.preferences)}`,
@@ -204,12 +204,41 @@ Deno.serve(async (req) => {
       `Key facts: ${(summaryJson.key_facts as string[] ?? []).join(', ')}`,
     ].join(' | ')
 
-    // Index as RAG document for agent context
+    // Generate embedding via Gemini text-embedding-004
+    const geminiKey = Deno.env.get('GEMINI_API_KEY')
+    let embeddingVector: string | null = null
+    if (geminiKey) {
+      const embedModel = 'text-embedding-004'
+      const embedRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${embedModel}:embedContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: `models/${embedModel}`, content: { parts: [{ text: embeddingText }] } }),
+        },
+      )
+      const embedJson = await embedRes.json()
+      const values = embedJson?.embedding?.values as number[] | undefined
+      if (values?.length) {
+        embeddingVector = `[${values.join(',')}]`
+      }
+    }
+
+    // Store embedding in conversation_summaries
+    if (embeddingVector) {
+      await supabase
+        .from('conversation_summaries')
+        .update({ embedding: embeddingVector })
+        .eq('id', summary.id)
+    }
+
+    // Index as RAG document with embedding
     await supabase.from('rag_documents').insert({
       title: `Conversation summary: ${client.full_name} (${periodEnd})`,
       source: `conversation_summary:${summary.id}`,
       chunk_index: 0,
       content: embeddingText,
+      ...(embeddingVector ? { embedding: embeddingVector } : {}),
     })
 
     return new Response(JSON.stringify({
