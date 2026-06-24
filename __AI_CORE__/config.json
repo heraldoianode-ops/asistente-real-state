@@ -29,8 +29,8 @@
   },
   "roadmap": {
     "current_phase": "Fase 9 — Pipeline de Contexto Unificado y Multiplataforma",
-    "current_node": "9.2 — Pipeline de Resúmenes Automáticos de WhatsApp",
-    "progress_pct": 25,
+    "current_node": "9.3 — Optimización de Matching y Analytics Integrado",
+    "progress_pct": 50,
     "completed_phases": [
       {
         "phase": "Fase 8 — Netlify + Supabase Native + Design System",
@@ -56,12 +56,15 @@
       {
         "id": "9.2",
         "name": "Pipeline de Resúmenes Automáticos de WhatsApp",
-        "status": "pending",
+        "status": "complete",
+        "completed_at": "2026-06-24",
         "steps": [
-          "Worker de extracción Celery+Redis (cierre de ciclo o periódico)",
-          "Prompt LLM → JSON estricto (preferencias, objeciones, estado operación)",
-          "Persistencia resumen en Supabase (perfil cliente + operación activa)",
-          "Embeddings 768-dim del resumen → pgvector RAG para contexto fresco del agente"
+          "Edge Function summarize-conversation (reemplaza Celery) — DONE",
+          "Prompt LLM → JSON estricto (preferencias, objeciones, estado operación) — DONE",
+          "Persistencia en conversation_summaries + auto-update client prefs/lead_stage — DONE",
+          "RAG indexing del resumen en rag_documents para contexto fresco — DONE",
+          "Gateway: almacena interacciones + trigger automático por umbral (SUMMARIZE_THRESHOLD) — DONE",
+          "Migration 07 aplicada en Supabase (tabla + RLS + índices pgvector) — DONE"
         ]
       },
       {
@@ -87,7 +90,7 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Ejecutar Nodo 9.2 — Pipeline de Resúmenes Automáticos de WhatsApp"],
+    "pending_tomorrow": ["Ejecutar Nodo 9.3 — Optimización de Matching y Analytics Integrado"],
     "bugs_known": [],
     "last_snap": "2026-06-24T00:00:00Z"
   },
