@@ -17,14 +17,14 @@ const VERIFY_TOKEN = process.env.WA_VERIFY_TOKEN
 const WA_TOKEN    = process.env.WA_TOKEN
 const WA_PHONE_ID = process.env.WA_PHONE_NUMBER_ID
 const SUPABASE_URL = process.env.SUPABASE_URL
-// Use anon key with RLS — never expose service role key here
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const SCHEMA = process.env.SUPABASE_SCHEMA || 'asistente_real_state'
 const WA_API_VERSION = process.env.WA_API_VERSION || 'v21.0'
+const CHAT_AGENT_URL = `${SUPABASE_URL}/functions/v1/chat-agent`
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { db: { schema: SCHEMA } })
 
-// Sanitize user input for SQL ILIKE to prevent wildcard injection
 function sanitizeLike(str) {
   return str.replace(/[%_\\]/g, (c) => `\\${c}`)
 }
@@ -42,14 +42,9 @@ app.post('/webhook', async (req, res) => {
   const msg = entry.messages[0]
   if (!msg?.timestamp) return
   const from = msg.from
-  const text = (msg.text?.body ?? '').trim().toLowerCase()
-  if (!text.startsWith('/buscar')) return
-  const rawQuery = text.replace('/buscar', '').trim()
-  if (!rawQuery) {
-    await sendMessage(from, 'Uso: /buscar [criterios]\nEjemplo: /buscar 3 amb Palermo 200000')
-    return
-  }
-  const query = sanitizeLike(rawQuery)
+  const text = (msg.text?.body ?? '').trim()
+  if (!text) return
+
   try {
     const { data: waNum } = await supabase
       .from('whatsapp_numbers')
@@ -57,24 +52,80 @@ app.post('/webhook', async (req, res) => {
       .eq('phone_number', from)
       .eq('is_active', true)
       .maybeSingle()
-    if (!waNum) { await sendMessage(from, 'Tu número no está registrado.'); return }
-    const { data: results, error: searchError } = await supabase
-      .from('properties')
-      .select('id,address,neighborhood,bedrooms,price,operation_type')
-      .or(`address.ilike.%${query}%,neighborhood.ilike.%${query}%`)
-      .eq('is_active', true)
-      .limit(5)
-    if (searchError) throw searchError
-    if (!results?.length) { await sendMessage(from, `Sin resultados para "${rawQuery}".`); return }
-    const lines = results.map((p, i) =>
-      `${i + 1}. ${p.address ?? p.neighborhood} — ${p.bedrooms ?? '?'} amb — $${p.price ?? '?'} (${p.operation_type})`
-    )
-    await sendMessage(from, `${results.length} propiedades encontradas:\n\n${lines.join('\n')}`)
+
+    if (text.toLowerCase() === 'escalar' || text.toLowerCase() === 'agente') {
+      await sendMessage(from, '🤝 Te conecto con un agente humano. En breve te contactarán.')
+      return
+    }
+
+    if (text.toLowerCase().startsWith('/buscar')) {
+      await handleBuscar(from, text, waNum?.agent_id)
+      return
+    }
+
+    await handleChatAgent(from, text, waNum?.agent_id)
   } catch (err) {
-    console.error(`[whatsapp-gateway /buscar "${rawQuery}"] error:`, err.message)
-    await sendMessage(from, 'Error al buscar. Intentá nuevamente.')
+    console.error(`[whatsapp-gateway] error processing message from ${from}:`, err.message)
+    await sendMessage(from, 'Hubo un error procesando tu mensaje. Por favor intentá de nuevo.')
   }
 })
+
+async function handleBuscar(from, text, agentId) {
+  const rawQuery = text.replace(/^\/buscar\s*/i, '').trim()
+  if (!rawQuery) {
+    await sendMessage(from, 'Uso: /buscar [criterios]\nEjemplo: /buscar 3 amb Palermo 200000')
+    return
+  }
+  const query = sanitizeLike(rawQuery)
+  const { data: results, error: searchError } = await supabase
+    .from('properties')
+    .select('id,address,neighborhood,bedrooms,price,operation_type')
+    .or(`address.ilike.%${query}%,neighborhood.ilike.%${query}%`)
+    .eq('is_active', true)
+    .limit(5)
+  if (searchError) throw searchError
+  if (!results?.length) { await sendMessage(from, `Sin resultados para "${rawQuery}".`); return }
+  const lines = results.map((p, i) =>
+    `${i + 1}. ${p.address ?? p.neighborhood} — ${p.bedrooms ?? '?'} amb — $${p.price ?? '?'} (${p.operation_type})`
+  )
+  await sendMessage(from, `${results.length} propiedades encontradas:\n\n${lines.join('\n')}`)
+}
+
+async function handleChatAgent(from, text, agentId) {
+  if (!SUPABASE_SERVICE_KEY) {
+    await sendMessage(from, 'El asistente AI no está configurado aún. Usá /buscar para buscar propiedades.')
+    return
+  }
+
+  const response = await fetch(CHAT_AGENT_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+    },
+    body: JSON.stringify({
+      phone_number: from,
+      message: text,
+      agent_id: agentId || null,
+    }),
+  })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    console.error(`[chat-agent] error ${response.status}:`, body)
+    await sendMessage(from, 'No pude procesar tu mensaje. Intentá de nuevo o escribí /buscar.')
+    return
+  }
+
+  const { reply, escalate } = await response.json()
+
+  if (escalate) {
+    await sendMessage(from, '🤝 Te conecto con un agente humano. En breve te contactarán.')
+    return
+  }
+
+  await sendMessage(from, reply)
+}
 
 app.post('/send', async (req, res) => {
   const { to, message } = req.body
@@ -87,7 +138,7 @@ app.post('/send', async (req, res) => {
   }
 })
 
-app.get('/health', (_req, res) => res.json({ ok: true }))
+app.get('/health', (_req, res) => res.json({ ok: true, agent: !!SUPABASE_SERVICE_KEY }))
 
 async function sendMessage(to, message) {
   const r = await fetch(`https://graph.facebook.com/${WA_API_VERSION}/${WA_PHONE_ID}/messages`, {
@@ -103,4 +154,4 @@ async function sendMessage(to, message) {
 }
 
 const PORT = process.env.PORT ?? 3001
-app.listen(PORT, () => console.log(`[whatsapp-gateway] Listening on :${PORT}`))
+app.listen(PORT, () => console.log(`[whatsapp-gateway] Listening on :${PORT} — AI agent: ${!!SUPABASE_SERVICE_KEY}`))

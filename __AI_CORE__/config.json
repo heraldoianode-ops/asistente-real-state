@@ -1,9 +1,9 @@
 {
   "meta": {
     "project": "Asistente-de-Real-State",
-    "version": "0.8.2",
+    "version": "0.9.0",
     "created_at": "2026-06-08T00:00:00Z",
-    "last_updated": "2026-06-12T03:15:00Z"
+    "last_updated": "2026-06-25T00:00:00Z"
   },
   "stack": {
     "frontend": "Next.js 14 (Netlify)",
@@ -25,9 +25,9 @@
     "wa_gateway": "Hetzner CX11 — $4/month"
   },
   "roadmap": {
-    "current_phase": "Fase 8 — Netlify + Supabase Native + Design System",
-    "current_node": "DEPLOYED — v0.8.2 live in production (solernou.netlify.app)",
-    "progress_pct": 100,
+    "current_phase": "Fase 9 — VALKIRYA RS WhatsApp AI Agent",
+    "current_node": "9.1 — chat-agent Edge Function + gateway upgrade",
+    "progress_pct": 30,
     "nodes": [
       { "id": "8.1", "name": "Dashboard → supabase-js direct", "status": "complete" },
       { "id": "8.2", "name": "Auth → @supabase/ssr + middleware", "status": "complete" },
@@ -40,7 +40,7 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Create initial admin user in Supabase Auth if login fails", "DEUDA TD-006 — remove legacy FastAPI backend + docker-compose cleanup"],
+    "pending_tomorrow": ["Deploy chat-agent Edge Function: supabase functions deploy chat-agent", "Set ANTHROPIC_API_KEY secret: supabase secrets set ANTHROPIC_API_KEY=sk-...", "Add SUPABASE_SERVICE_ROLE_KEY to Hetzner gateway env", "Run migration 07_wa_conversations.sql on Supabase", "Test full WhatsApp flow end-to-end", "DEUDA TD-006 — remove legacy FastAPI backend + docker-compose cleanup"],
     "bugs_known": [],
     "last_snap": "2026-06-12T03:15:00Z"
   },
