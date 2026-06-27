@@ -41,7 +41,7 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="flex h-screen bg-[hsl(var(--background))]">
+    <div className="flex h-screen pt-14 md:pt-0 bg-[hsl(var(--background))]">
       <Sidebar role={user?.role} />
       <main className="flex-1 overflow-auto p-6">
         <div className="mb-6">

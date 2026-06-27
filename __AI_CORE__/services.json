@@ -10,15 +10,15 @@
       "region": "sa-east-1",
       "note": "Platform DB. Each project = one schema. Never use public schema for app tables."
     },
-    { "id": "redis", "name": "Redis", "status": "active", "host": "redis:6379" },
-    { "id": "ollama", "name": "Ollama LLM", "status": "active", "host": "ollama:11434" },
+    { "id": "redis", "name": "Redis", "status": "removed", "host": "redis:6379", "note": "Removed in Nodo 9.1 — no Celery workers" },
+    { "id": "ollama", "name": "Ollama LLM", "status": "optional", "host": "ollama:11434" },
     { "id": "whatsapp", "name": "WhatsApp Cloud API", "status": "active", "host": "graph.facebook.com" },
     { "id": "anthropic", "name": "Anthropic Claude", "status": "optional", "host": "api.anthropic.com" },
     { "id": "openai", "name": "OpenAI", "status": "optional", "host": "api.openai.com" },
     { "id": "google_drive", "name": "Google Drive", "status": "active", "host": "drive.google.com" },
     { "id": "resend", "name": "Resend Email", "status": "optional", "host": "api.resend.com" },
     { "id": "sentry", "name": "Sentry", "status": "active", "host": "sentry.io" },
-    { "id": "celery", "name": "Celery Worker", "status": "active", "host": "internal" },
-    { "id": "gateway", "name": "WhatsApp Gateway (Node.js)", "status": "active", "host": "gateway:3000" }
+    { "id": "celery", "name": "Celery Worker", "status": "removed", "host": "internal", "note": "Removed in Nodo 9.1 — replaced by Edge Functions" },
+    { "id": "whatsapp-gateway", "name": "WhatsApp Gateway (Node.js)", "status": "active", "host": "whatsapp-gateway:3000", "note": "Modern gateway using Supabase direct" }
   ]
 }

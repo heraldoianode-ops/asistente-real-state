@@ -70,10 +70,10 @@ export default function CRMPage() {
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
-    <div className="flex h-screen bg-[hsl(var(--background))]">
+    <div className="flex h-screen pt-14 md:pt-0 bg-[hsl(var(--background))]">
       <Sidebar role={user?.role} />
-      <main className="flex-1 overflow-auto p-6">
-        <div className="flex items-center justify-between mb-6">
+      <main className="flex-1 overflow-auto p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-xl font-bold">CRM — Clientes</h1>
             <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">{total} clientes en total</p>
@@ -84,7 +84,7 @@ export default function CRMPage() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nombre o teléfono…"
-              className="pl-9 pr-4 py-2 text-sm border border-[hsl(var(--border))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] w-64"
+              className="pl-9 pr-4 py-2 text-sm border border-[hsl(var(--border))] rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] w-full sm:w-64"
             />
           </div>
         </div>
@@ -93,12 +93,33 @@ export default function CRMPage() {
             {error}
           </div>
         )}
-        <div className="card-creatio overflow-hidden">
-          {loading
-            ? <div className="flex items-center justify-center py-16"><div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" /></div>
-            : filtered.length === 0
-              ? <div className="text-center py-16 text-sm text-[hsl(var(--muted-foreground))]">{search ? 'Sin resultados.' : 'No hay clientes registrados.'}</div>
-              : <table className="w-full text-sm">
+        {loading ? (
+          <div className="flex items-center justify-center py-16"><div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="card-creatio text-center py-16 text-sm text-[hsl(var(--muted-foreground))]">{search ? 'Sin resultados.' : 'No hay clientes registrados.'}</div>
+        ) : (
+          <>
+            {/* Mobile: card view */}
+            <div className="md:hidden space-y-3">
+              {filtered.map(c => (
+                <div key={c.id} className="card-creatio p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm">{c.full_name}</span>
+                    <StatusBadge label={c.client_type === 'buyer' ? 'Comprador' : 'Vendedor'} variant={c.client_type === 'buyer' ? 'active' : 'pending'} />
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[hsl(var(--muted-foreground))]">
+                    <span>{c.phone ?? 'Sin tel.'}</span>
+                    <span>{STAGE_LABEL[c.lead_stage] ?? c.lead_stage}</span>
+                    <span>{c.budget ? `${c.currency ?? 'USD'} ${c.budget.toLocaleString()}` : 'Sin presup.'}</span>
+                  </div>
+                  {user?.role === 'admin' && <p className="text-xs text-[hsl(var(--muted-foreground))]">Agente: {getAgentName(c.users)}</p>}
+                </div>
+              ))}
+            </div>
+            {/* Desktop: table view */}
+            <div className="hidden md:block card-creatio overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--secondary))]">
                       {['Nombre', 'Teléfono', 'Tipo', 'Etapa', 'Presupuesto', ...(user?.role === 'admin' ? ['Agente'] : [])].map(h => (
@@ -119,8 +140,10 @@ export default function CRMPage() {
                     ))}
                   </tbody>
                 </table>
-          }
-        </div>
+              </div>
+            </div>
+          </>
+        )}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4 text-sm text-[hsl(var(--muted-foreground))]">
             <span>Página {page + 1} de {totalPages}</span>
@@ -128,16 +151,16 @@ export default function CRMPage() {
               <button
                 onClick={() => setPage(p => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="p-1.5 rounded-md border border-[hsl(var(--border))] disabled:opacity-40 hover:bg-[hsl(var(--secondary))]"
+                className="p-2.5 md:p-1.5 rounded-md border border-[hsl(var(--border))] disabled:opacity-40 hover:bg-[hsl(var(--secondary))]"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5 md:w-4 md:h-4" />
               </button>
               <button
                 onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="p-1.5 rounded-md border border-[hsl(var(--border))] disabled:opacity-40 hover:bg-[hsl(var(--secondary))]"
+                className="p-2.5 md:p-1.5 rounded-md border border-[hsl(var(--border))] disabled:opacity-40 hover:bg-[hsl(var(--secondary))]"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5 md:w-4 md:h-4" />
               </button>
             </div>
           </div>
