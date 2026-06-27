@@ -9,3 +9,24 @@
 [build.environment]
   NODE_VERSION            = "20"
   NEXT_TELEMETRY_DISABLED = "1"
+
+# ─── WhatsApp Webhook (Netlify Function) ───────────────────────────────────────
+# The function at netlify/functions/whatsapp-webhook.mjs handles both
+# GET (Meta verification) and POST (incoming messages).
+# Endpoint: https://solernou.netlify.app/api/whatsapp-webhook
+#
+# Required env vars (set in Netlify Dashboard > Site config > Environment variables):
+#   WA_VERIFY_TOKEN       — your custom verification string
+#   WA_TOKEN              — Meta permanent access token (System User)
+#   WA_PHONE_NUMBER_ID    — WhatsApp phone number ID from Meta dashboard
+#   SUPABASE_URL          — https://nehfrtedwcmdlmbulhef.supabase.co
+#   SUPABASE_ANON_KEY     — Supabase publishable anon key
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from   = "/api/whatsapp-webhook"
+  to     = "/.netlify/functions/whatsapp-webhook"
+  status = 200
