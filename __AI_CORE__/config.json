@@ -13,7 +13,7 @@
     "backend": "Supabase Edge Functions (Deno)",
     "database": "Supabase — mh-systems-platform (schema: asistente_real_state)",
     "auth": "Supabase Auth + @supabase/ssr",
-    "hosting": "Netlify (dashboard) + Supabase (DB + Edge Fn) + Hetzner CX11 (WhatsApp Gateway)",
+    "hosting": "Netlify (dashboard + WhatsApp Gateway as Functions) + Supabase (DB + Edge Fn)",
     "repo": "github.com/heraldoianode-ops/asistente-real-state",
     "branch_main": "main",
     "branch_dev": "claude/epic-feynman-d36kpq",
@@ -98,9 +98,16 @@
     ]
   },
   "session_state": {
-    "pending_tomorrow": ["Definir Fase 10 o preparar PR para merge a main"],
+    "pending_tomorrow": [
+      "Activar 2FA en Meta Business para poder configurar webhook",
+      "Configurar webhook en Meta: URL=https://solernou.netlify.app/.netlify/functions/wa-webhook, token=VALKIRYA RS",
+      "Cargar env vars en Netlify: WA_VERIFY_TOKEN, WA_TOKEN, WA_PHONE_NUMBER_ID, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY",
+      "Setear LLM_API_KEY en Supabase Dashboard (para summarize-conversation)",
+      "Deployar branch claude/funny-hopper-pc2laq en Netlify",
+      "Definir Fase 10 o preparar PR para merge a main"
+    ],
     "bugs_known": [],
-    "last_snap": "2026-06-24T00:00:00Z"
+    "last_snap": "2026-06-27T00:00:00Z"
   },
   "ai_policy": {
     "default_llm": "ollama",
