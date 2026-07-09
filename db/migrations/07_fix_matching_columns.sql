@@ -4,7 +4,10 @@
 -- neither of which exist — the real columns are assigned_agent_id and
 -- preference_embedding vector(768). p_embedding was also declared as
 -- vector(1536), incompatible with the 768-dim vectors actually stored
--- (see properties.embedding / clients.preference_embedding).
+-- (see properties.embedding / clients.preference_embedding). The function's
+-- search_path also excluded "public", where the vector extension (and its
+-- <=> operator) is installed, so the <=> comparison could never resolve
+-- even with the column names fixed.
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION asistente_real_state.find_cross_agent_matches(
@@ -15,7 +18,7 @@ CREATE OR REPLACE FUNCTION asistente_real_state.find_cross_agent_matches(
 )
 RETURNS TABLE (client_id UUID, client_name TEXT, agent_id UUID, agent_name TEXT, similarity FLOAT)
 LANGUAGE sql STABLE SECURITY DEFINER
-SET search_path = asistente_real_state
+SET search_path = asistente_real_state, public
 AS $$
   SELECT
     c.id                                         AS client_id,
