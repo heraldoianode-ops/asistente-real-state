@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import AdminGuard from '@/components/AdminGuard'
+import { AppShell } from '@/components/AppShell'
 import { StatusBadge } from '@/components/StatusBadge'
 import { createClient } from '@/lib/supabase'
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase-config'
@@ -71,12 +72,9 @@ export default function AgentsPage() {
 
   return (
     <AdminGuard>
-      <div className="p-6">
+      <AppShell title="Agentes">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-bold">Agentes</h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">{agents.length} agente{agents.length !== 1 ? 's' : ''} registrado{agents.length !== 1 ? 's' : ''}</p>
-          </div>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">{agents.length} agente{agents.length !== 1 ? 's' : ''} registrado{agents.length !== 1 ? 's' : ''}</p>
           <div className="flex items-center gap-2">
             <button onClick={loadAgents} className="p-2 rounded-md border border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))] transition-colors"><RefreshCw className="w-4 h-4" /></button>
             <button data-testid="btn-create-agent" onClick={() => setShowModal(true)}
@@ -140,7 +138,7 @@ export default function AgentsPage() {
             </form>
           </div>
         )}
-      </div>
+      </AppShell>
     </AdminGuard>
   )
 }

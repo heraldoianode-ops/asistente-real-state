@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import AdminGuard from '@/components/AdminGuard'
+import { AppShell } from '@/components/AppShell'
 import { StatusBadge } from '@/components/StatusBadge'
 import { createClient } from '@/lib/supabase'
 import { Plus, RefreshCw } from 'lucide-react'
@@ -44,12 +45,9 @@ export default function WhatsAppPage() {
 
   return (
     <AdminGuard>
-      <div className="p-6">
+      <AppShell title="Números WhatsApp">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-xl font-bold">Números WhatsApp</h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">{numbers.length} número{numbers.length!==1?'s':''} registrado{numbers.length!==1?'s':''}</p>
-          </div>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">{numbers.length} número{numbers.length!==1?'s':''} registrado{numbers.length!==1?'s':''}</p>
           <div className="flex items-center gap-2">
             <button onClick={loadNumbers} className="p-2 rounded-md border border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))] transition-colors"><RefreshCw className="w-4 h-4" /></button>
             <button onClick={()=>setShowModal(true)} className="flex items-center gap-2 bg-[hsl(var(--primary))] hover:bg-[hsl(207,100%,35%)] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -100,7 +98,7 @@ export default function WhatsAppPage() {
             </form>
           </div>
         )}
-      </div>
+      </AppShell>
     </AdminGuard>
   )
 }

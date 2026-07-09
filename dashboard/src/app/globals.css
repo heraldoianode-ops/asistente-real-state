@@ -21,7 +21,7 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --ring: 207 100% 40%;
-    --radius: 0.375rem;
+    --radius: 0.5rem;
     --sidebar-bg: 213 30% 15%;
     --sidebar-fg: 210 30% 85%;
     --sidebar-hover: 213 25% 22%;
@@ -32,6 +32,12 @@
     --status-inactive-fg: 0 72% 40%;
     --status-pending-bg: 38 92% 92%;
     --status-pending-fg: 38 80% 32%;
+    --chart-blue: #0070CC;
+    --chart-green: #22A050;
+    --chart-orange: #E29612;
+    --chart-pink: #DF2060;
+    --chart-purple: #7D5FC7;
+    --chart-gray: #B7BFCB;
   }
 }
 
@@ -41,7 +47,7 @@
 }
 
 .card-creatio {
-  @apply bg-white rounded-lg border border-border shadow-sm;
+  @apply bg-white rounded-[14px] border border-border shadow-sm;
 }
 
 .table-creatio tbody tr:hover {
