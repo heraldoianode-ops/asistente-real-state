@@ -16,7 +16,7 @@ interface Client {
   phone: string | null
   budget: number | null
   currency: string | null
-  agent_id: string
+  assigned_agent_id: string
   users: { full_name: string | null } | { full_name: string | null }[] | null
 }
 
@@ -39,10 +39,10 @@ export default function CRMPage() {
     const supabase = createClient()
     let q = supabase
       .from('clients')
-      .select('id, full_name, client_type, lead_stage, phone, budget, currency, agent_id, users(full_name)', { count: 'exact' })
+      .select('id, full_name, client_type, lead_stage, phone, budget, currency, assigned_agent_id, users(full_name)', { count: 'exact' })
       .order('full_name')
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-    if (user.role !== 'admin') q = q.eq('agent_id', user.id)
+    if (user.role !== 'admin') q = q.eq('assigned_agent_id', user.id)
     ;(async () => {
       try {
         const { data, count, error: err } = await q
