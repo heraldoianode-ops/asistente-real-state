@@ -32,8 +32,8 @@ interface InquiryRow {
 }
 interface MatchRow {
   id: string
-  explanation: string
-  similarity_score: number
+  match_explanation: string
+  match_score: number
   status: string
   created_at: string
   properties: { address: string | null; neighborhood: string | null } | { address: string | null; neighborhood: string | null }[] | null
@@ -60,7 +60,7 @@ export default function DashboardPage() {
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
     let clientsQuery = supabase.from('clients').select('id, lead_stage, created_at').order('created_at', { ascending: false }).limit(2000)
-    if (!isAdmin) clientsQuery = clientsQuery.eq('agent_id', user.id)
+    if (!isAdmin) clientsQuery = clientsQuery.eq('assigned_agent_id', user.id)
 
     let eventsQuery = supabase.from('events').select('id', { count: 'exact', head: true }).gte('scheduled_at', monthStart)
     if (!isAdmin) eventsQuery = eventsQuery.eq('agent_id', user.id)
@@ -75,7 +75,7 @@ export default function DashboardPage() {
 
     let matchesQuery = supabase
       .from('cross_agent_matches')
-      .select('id, explanation, similarity_score, status, created_at, properties(address, neighborhood)')
+      .select('id, match_explanation, match_score, status, created_at, properties(address, neighborhood)')
       .order('created_at', { ascending: false })
       .limit(5)
     if (!isAdmin) matchesQuery = matchesQuery.eq('listing_agent_id', user.id)
@@ -356,8 +356,8 @@ export default function DashboardPage() {
                   {matches.map(m => (
                     <tr key={m.id} onClick={() => setSelectedMatch(m)} className="border-t border-[#EEF1F5] cursor-pointer hover:bg-[hsl(var(--secondary))] transition-colors">
                       <td className="px-5 py-2.5 font-semibold">{getPropLabel(m.properties)}</td>
-                      <td className="px-5 py-2.5 text-[hsl(var(--muted-foreground))] max-w-[260px] truncate">{m.explanation}</td>
-                      <td className="px-5 py-2.5 font-bold">{Math.round(m.similarity_score * 100)}%</td>
+                      <td className="px-5 py-2.5 text-[hsl(var(--muted-foreground))] max-w-[260px] truncate">{m.match_explanation}</td>
+                      <td className="px-5 py-2.5 font-bold">{Math.round(m.match_score * 100)}%</td>
                       <td className="px-5 py-2.5">
                         <StatusBadge label={m.status === 'pending' ? 'Pendiente' : m.status === 'accepted' ? 'Aceptado' : 'Rechazado'}
                           variant={m.status === 'pending' ? 'pending' : m.status === 'accepted' ? 'active' : 'inactive'} />
@@ -428,11 +428,11 @@ export default function DashboardPage() {
         <Modal onClose={() => setSelectedMatch(null)} width={460}>
           <ModalHeader title={getPropLabel(selectedMatch.properties)} onClose={() => setSelectedMatch(null)} />
           <div className="px-6 pb-6 pt-3.5">
-            <div className="text-[13px] text-[#3E4C5E] leading-relaxed mb-4">{selectedMatch.explanation}</div>
+            <div className="text-[13px] text-[#3E4C5E] leading-relaxed mb-4">{selectedMatch.match_explanation}</div>
             <div className="flex items-center gap-3.5">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: conicGradient(Math.round(selectedMatch.similarity_score * 100), CHART_PALETTE[0], '#EEF1F5') }}>
+              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: conicGradient(Math.round(selectedMatch.match_score * 100), CHART_PALETTE[0], '#EEF1F5') }}>
                 <div className="w-[42px] h-[42px] rounded-full bg-white flex items-center justify-center text-xs font-extrabold" style={{ color: CHART_PALETTE[0] }}>
-                  {Math.round(selectedMatch.similarity_score * 100)}%
+                  {Math.round(selectedMatch.match_score * 100)}%
                 </div>
               </div>
               <div>
