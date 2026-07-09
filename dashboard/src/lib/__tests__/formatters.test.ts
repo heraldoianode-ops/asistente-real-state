@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getPropLabel, getAgentName, pickFirst } from '../formatters'
+import { getPropLabel, getAgentName, pickFirst, formatMoney, initialsOf, STAGE_LABEL, PROPERTY_TYPE_LABEL } from '../formatters'
 
 describe('pickFirst', () => {
   it('returns null for null', () => expect(pickFirst(null)).toBeNull())
@@ -35,4 +35,19 @@ describe('getAgentName', () => {
     expect(getAgentName([{ full_name: 'Maria Lopez' }])).toBe('Maria Lopez'))
   it('returns — when full_name is null', () =>
     expect(getAgentName({ full_name: null })).toBe('—'))
+})
+
+describe('formatMoney', () => {
+  it('formats with default USD currency', () => expect(formatMoney(150000)).toBe('USD 150.000'))
+  it('formats with a given currency', () => expect(formatMoney(900, 'ARS')).toBe('ARS 900'))
+})
+
+describe('initialsOf', () => {
+  it('returns first letters of first two words', () => expect(initialsOf('Laura Gómez')).toBe('LG'))
+  it('falls back to first two chars for single word', () => expect(initialsOf('Cliente')).toBe('CL'))
+})
+
+describe('STAGE_LABEL / PROPERTY_TYPE_LABEL', () => {
+  it('maps known lead stages', () => expect(STAGE_LABEL.qualified).toBe('Calificado'))
+  it('maps known property types', () => expect(PROPERTY_TYPE_LABEL.apartment).toBe('Departamento'))
 })

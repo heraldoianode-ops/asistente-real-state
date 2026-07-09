@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import AdminGuard from '@/components/AdminGuard'
+import { AppShell } from '@/components/AppShell'
 import { createClient } from '@/lib/supabase'
 import { Download, FileJson, FileSpreadsheet } from 'lucide-react'
 
@@ -70,10 +71,9 @@ export default function ExportPage() {
 
   return (
     <AdminGuard>
-      <div className="p-6">
+      <AppShell title="Exportar datos">
         <div className="mb-6">
-          <h1 className="text-xl font-bold">Exportar datos</h1>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Descarga por sección en CSV o JSON</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">Descarga por sección en CSV o JSON</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-md bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))] text-sm">{error}</div>}
         {lastExport && <div className="mb-4 p-3 rounded-md bg-[hsl(var(--accent))] text-sm">Exportado: {lastExport}</div>}
@@ -107,7 +107,7 @@ export default function ExportPage() {
         <p className="mt-4 text-xs text-[hsl(var(--muted-foreground))] flex items-center gap-1.5">
           <Download className="w-3.5 h-3.5" /> Las exportaciones respetan RLS: como admin se incluyen todas las filas de cada sección.
         </p>
-      </div>
+      </AppShell>
     </AdminGuard>
   )
 }

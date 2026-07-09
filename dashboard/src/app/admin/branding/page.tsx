@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import AdminGuard from '@/components/AdminGuard'
+import { AppShell } from '@/components/AppShell'
 import { createClient } from '@/lib/supabase'
 import { ImagePlus, Trash2 } from 'lucide-react'
 
@@ -65,10 +66,9 @@ export default function BrandingPage() {
 
   return (
     <AdminGuard>
-      <div className="p-6">
+      <AppShell title="Marca">
         <div className="mb-6">
-          <h1 className="text-xl font-bold">Marca</h1>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Logo y banner de la empresa — subí imágenes desde tu PC o teléfono</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">Logo y banner de la empresa — subí imágenes desde tu PC o teléfono</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-md bg-[hsl(var(--status-inactive-bg))] text-[hsl(var(--status-inactive-fg))] text-sm">{error}</div>}
         {saved && <div className="mb-4 p-3 rounded-md bg-[hsl(var(--accent))] text-sm">{saved}</div>}
@@ -101,7 +101,7 @@ export default function BrandingPage() {
             </div>
           ))}
         </div>
-      </div>
+      </AppShell>
     </AdminGuard>
   )
 }

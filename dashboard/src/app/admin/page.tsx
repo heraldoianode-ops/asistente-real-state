@@ -1,15 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Sidebar } from '@/components/Sidebar'
+import { AppShell } from '@/components/AppShell'
 import { StatusBadge } from '@/components/StatusBadge'
 import { createClient } from '@/lib/supabase'
-import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { Users, Building2, MessageSquare, Phone } from 'lucide-react'
 
 interface Stats { agents: number; properties: number; matches: number; wa_numbers: number }
 
 export default function AdminPage() {
-  const { user } = useCurrentUser()
   const [stats, setStats] = useState<Stats>({ agents: 0, properties: 0, matches: 0, wa_numbers: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,14 +39,11 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="flex h-screen bg-[hsl(var(--background))]">
-      <Sidebar role={user?.role} />
-      <main className="flex-1 overflow-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-xl font-bold">Administración</h1>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">Resumen de la plataforma</p>
-        </div>
-        {loading ? (
+    <AppShell title="Administración">
+      <div className="mb-6">
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">Resumen de la plataforma</p>
+      </div>
+      {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-[hsl(var(--primary))] border-t-transparent rounded-full animate-spin" />
           </div>
@@ -84,7 +79,6 @@ export default function AdminPage() {
             </div>
           </>
         )}
-      </main>
-    </div>
+    </AppShell>
   )
 }
