@@ -5,6 +5,16 @@
       "summary": "Full project migration from architect-ai-framework to dedicated repo. All 137 files pushed.",
       "nodes_touched": ["all"],
       "commits": ["feat: initial migration from architect-ai-framework"]
+    },
+    {
+      "date": "2026-07-09",
+      "summary": "Applied the Interactive CRM Environment Design handoff to the dashboard (AppShell/Header layout, full analytics dashboard with real data, client/property/match detail modals) — merged #5. Found and fixed postcss.config.js missing entirely (Tailwind never compiled, whole app rendered unstyled). Ran AUDITORIA per R21: found TD-007 (clients.agent_id and cross_agent_matches column-name drift breaking CRM Clientes and AI matching since Fase 7/8, plus a search_path bug in find_cross_agent_matches excluding the public schema where pgvector lives) — fixed and merged (#6, #7), migration applied and verified live against mh-systems-platform via Supabase MCP.",
+      "nodes_touched": ["9.1", "9.2"],
+      "commits": [
+        "feat(dashboard): apply Interactive CRM Environment Design aesthetic (#5)",
+        "fix(matching): resolve clients.agent_id/cross_agent_matches column drift (#6)",
+        "fix(matching): include public schema in find_cross_agent_matches search_path (#7)"
+      ]
     }
   ]
 }

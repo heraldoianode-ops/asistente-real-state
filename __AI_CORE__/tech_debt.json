@@ -1,6 +1,19 @@
 {
   "debts": [
     {
+      "id": "TD-007",
+      "title": "clients.agent_id / cross_agent_matches column drift broke CRM Clientes and AI matching",
+      "severity": "CRITICAL",
+      "detected": "2026-07-09",
+      "status": "RESOLVED",
+      "resolved": "2026-07-09",
+      "affected": ["dashboard/src/app/crm/page.tsx", "dashboard/src/app/analytics/page.tsx", "db/migrations/06_rpc_find_cross_agent_matches.sql", "supabase/functions/match-properties/index.ts"],
+      "description_es": "Encontrado en AUDITORIA (R21): el frontend consultaba clients.agent_id (real: assigned_agent_id) y cross_agent_matches.explanation/similarity_score (real: match_explanation/match_score). La función RPC find_cross_agent_matches referenciaba clients.agent_id/embedding (real: assigned_agent_id/preference_embedding vector(768), no vector(1536)) y su search_path excluía public, donde vive la extensión vector, por lo que el operador <=> nunca resolvía. La edge function match-properties insertaba con nombres de columna inexistentes en cross_agent_matches. Resultado: CRM — Clientes nunca cargaba y el matching cross-agent por IA nunca funcionó desde Fase 7/8.",
+      "description_en": "Found during AUDITORIA (R21): frontend queried clients.agent_id (real: assigned_agent_id) and cross_agent_matches.explanation/similarity_score (real: match_explanation/match_score). RPC find_cross_agent_matches referenced clients.agent_id/embedding (real: assigned_agent_id/preference_embedding vector(768), not vector(1536)) and its search_path excluded public, where the vector extension lives, so the <=> operator never resolved. Edge function match-properties inserted using column names that don't exist on cross_agent_matches. Result: CRM — Clientes never loaded and cross-agent AI matching never worked since Fase 7/8.",
+      "fix_es": "PR #6 (frontend + RPC column names) y PR #7 (search_path de la función). Migración 07_fix_matching_columns.sql aplicada y verificada en vivo contra mh-systems-platform (nehfrtedwcmdlmbulhef) vía Supabase MCP — smoke test del RPC sin errores, sin nuevas alertas en get_advisors.",
+      "fix_en": "PR #6 (frontend + RPC column names) and PR #7 (function search_path). Migration 07_fix_matching_columns.sql applied and verified live against mh-systems-platform (nehfrtedwcmdlmbulhef) via Supabase MCP — RPC smoke test ran with no errors, no new get_advisors findings."
+    },
+    {
       "id": "TD-006",
       "title": "Legacy FastAPI backend unused by dashboard",
       "severity": "LOW",
