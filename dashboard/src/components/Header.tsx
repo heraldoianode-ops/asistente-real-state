@@ -57,6 +57,11 @@ export function Header({ title, user, onSearch, searchPlaceholder }: HeaderProps
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder={searchPlaceholder ?? 'Buscar…'}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              name="header-search"
               className="w-full pl-9 pr-3.5 py-2 rounded-[9px] border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-sm outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent"
             />
           </div>

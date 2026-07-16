@@ -74,6 +74,11 @@ export default function CRMPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar por nombre o teléfono…"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            name="crm-client-search"
             className="w-full pl-3.5 pr-3.5 py-2 text-sm border border-[hsl(var(--border))] rounded-[9px] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))]"
           />
         </div>
